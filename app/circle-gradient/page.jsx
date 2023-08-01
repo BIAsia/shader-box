@@ -85,14 +85,14 @@ export default function Page() {
                     </div>
                 </PageHeader>
                 <Hero titleA={'Circle Gradient'} subtitle={'/Buzz'}></Hero>
-                <PageFooter>
+                {/* <PageFooter>
                     <div className="h-4 flex items-center flex-grow">
                         <a href="" className="header-text text-opacity-70 text-white link link--leda link--leda--bottom">TUX Toolbox ↗</a>
                     </div>
                     <div className="h-4 flex items-center flex-grow">
                         <a href="" className="header-text text-opacity-70 text-white link link--leda link--leda--bottom">TUX Website ↗</a>
                     </div>
-                </PageFooter>
+                </PageFooter> */}
 
             </div>
 
