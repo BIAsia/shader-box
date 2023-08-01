@@ -1,11 +1,21 @@
 'use client'
+import { PageHeader } from "@/components/PageHeader"
+import { PageFooter } from "@/components/PageFooter"
+import { Hero } from "@/components/Hero"
+import { Panel } from "@/components/Panel"
+import { Leva } from 'leva'
 
 import dynamic from 'next/dynamic'
 import { Suspense } from 'react'
 
-const Logo = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Logo), { ssr: false })
-const Dog = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Dog), { ssr: false })
-const Duck = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Duck), { ssr: false })
+// const WaterGradientDream = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Logo), { ssr: false })
+const CircleBg = dynamic(() => import("@/templates/Shader/circleBg"), {
+  ssr: false,
+})
+const GradientBg = dynamic(() => import("@/templates/Shader/gradientBg"), {
+  ssr: false,
+})
+const Common = dynamic(() => import('@/components/canvas/View').then((mod) => mod.Common), { ssr: false })
 const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.View), {
   ssr: false,
   loading: () => (
@@ -21,62 +31,72 @@ const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.
     </div>
   ),
 })
-const Common = dynamic(() => import('@/components/canvas/View').then((mod) => mod.Common), { ssr: false })
+
 
 export default function Page() {
+  const colors = {
+    elevation1: "#ffffff1A",
+    elevation2: "#ffffff00",
+    elevation3: "#ffffff00",
+    accent1: "#ffffff21",
+    accent2: "#ffffff21",
+    accent3: "#ffffff21",
+    highlight1: "#ffffff45",
+    highlight2: "#ffffff",
+    highlight3: "#ffffff",
+    vivid1: "#ffffff"
+  }
+  const sizes = {
+    rootWidth: '240px',
+    rowHeight: '20px',
+    folderHeight: '48px',
+    controlWidth: '120px',
+    titleBarHeight: "32px"
+  }
+  const space = {
+    rowGap: '8px'
+  }
+
+  const theme = {
+    colors,
+    sizes,
+    space
+  };
+
   return (
     <>
-      <div className='mx-auto flex w-full flex-col flex-wrap items-center md:flex-row  lg:w-4/5'>
-        {/* jumbo */}
-        <div className='flex w-full flex-col items-start justify-center p-12 text-center md:w-2/5 md:text-left'>
-          <p className='w-full uppercase'>Next + React Three Fiber</p>
-          <h1 className='my-4 text-5xl font-bold leading-tight'>Next 3D Starter</h1>
-          <p className='mb-8 text-2xl leading-normal'>A minimalist starter for React, React-three-fiber and Threejs.</p>
+      <div className='h-screen w-screen flex flex-col justify-between items-start absolute z-10'>
+        <View className='absolute flex h-full w-full flex-col items-center justify-center'>
+          <CircleBg scale={1.7} />
+        </View>
+        <div className="top-32 right-8 absolute w-60">
+          <Leva theme={theme} flat={true} fill />
         </div>
 
-        <div className='w-full text-center md:w-3/5'>
-          <View className='flex h-96 w-full flex-col items-center justify-center'>
-            <Suspense fallback={null}>
-              <Logo route='/blob' scale={0.6} position={[0, 0, 0]} />
-              <Common />
-            </Suspense>
-          </View>
-        </div>
+        <PageHeader>
+          <div className="h-4 flex items-center flex-grow">
+            <a href="" className="header-text font-medium text-white link link--leda">Mockup →</a>
+          </div>
+          <div className="h-4 flex items-center flex-grow">
+            <a href="" className="header-text font-medium text-white link link--leda">Import Guidance →</a>
+          </div>
+          <div className="h-4 flex items-center flex-grow">
+            <a href="" className="header-text font-medium text-white link link--leda">Create Your Own →</a>
+          </div>
+        </PageHeader>
+        <Hero titleA={'Circle Gradient'} subtitle={'/Buzz'}></Hero>
+        {/* <PageFooter>
+                    <div className="h-4 flex items-center flex-grow">
+                        <a href="" className="header-text text-opacity-70 text-white link link--leda link--leda--bottom">TUX Toolbox ↗</a>
+                    </div>
+                    <div className="h-4 flex items-center flex-grow">
+                        <a href="" className="header-text text-opacity-70 text-white link link--leda link--leda--bottom">TUX Website ↗</a>
+                    </div>
+                </PageFooter> */}
+
       </div>
 
-      <div className='mx-auto flex w-full flex-col flex-wrap items-center p-12 md:flex-row  lg:w-4/5'>
-        {/* first row */}
-        <div className='relative h-48 w-full py-6 sm:w-1/2 md:my-12 md:mb-40'>
-          <h2 className='mb-3 text-3xl font-bold leading-none text-gray-800'>Events are propagated</h2>
-          <p className='mb-8 text-gray-600'>Drag, scroll, pinch, and rotate the canvas to explore the 3D scene.</p>
-        </div>
-        <div className='relative my-12 h-48 w-full py-6 sm:w-1/2 md:mb-40'>
-          <View orbit className='relative h-full  sm:h-48 sm:w-full'>
-            <Suspense fallback={null}>
-              <Dog scale={2} position={[0, -1.6, 0]} rotation={[0.0, -0.3, 0]} />
-              <Common color={'lightpink'} />
-            </Suspense>
-          </View>
-        </div>
-        {/* second row */}
-        <div className='relative my-12 h-48 w-full py-6 sm:w-1/2 md:mb-40'>
-          <View orbit className='relative h-full animate-bounce sm:h-48 sm:w-full'>
-            <Suspense fallback={null}>
-              <Duck route='/blob' scale={2} position={[0, -1.6, 0]} />
-              <Common color={'lightblue'} />
-            </Suspense>
-          </View>
-        </div>
-        <div className='w-full p-6 sm:w-1/2'>
-          <h2 className='mb-3 text-3xl font-bold leading-none text-gray-800'>Dom and 3D are synchronized</h2>
-          <p className='mb-8 text-gray-600'>
-            3D Divs are renderer through the View component. It uses gl.scissor to cut the viewport into segments. You
-            tie a view to a tracking div which then controls the position and bounds of the viewport. This allows you to
-            have multiple views with a single, performant canvas. These views will follow their tracking elements,
-            scroll along, resize, etc.
-          </p>
-        </div>
-      </div>
+
     </>
   )
 }
