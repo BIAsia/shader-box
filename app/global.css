@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "tt";
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: normal;
+  src: url("../public/fonts/TikTok-VF.ttf") format("ttf"),
+    url("../public/fonts/TikTok-VF.woff2") format("woff2");
+  src: url("../public/fonts/TikTok-VF.woff2") format("woff2") tech("variations");
+}
+
 @layer base {
   * {
     box-sizing: border-box;
@@ -16,4 +26,171 @@
     padding: 0;
     overflow: hidden;
   }
+}
+
+h1 {
+  font-size: 100px;
+  font-style: oblique;
+  font-weight: 300;
+  line-height: 110%;
+}
+
+.header-text {
+  font-size: 14px;
+  font-style: normal;
+  line-height: 130%;
+  letter-spacing: 0.093px;
+}
+
+.button {
+  pointer-events: auto;
+  cursor: pointer;
+  /* background: #e7e7e7; */
+  border: #fff 1px solid;
+  padding: 1.5rem 3rem;
+  margin: 0;
+  font-family: inherit;
+  font-size: inherit;
+  position: relative;
+  display: inline-block;
+}
+
+.button::before,
+.button::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.button--mimas {
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  /* border-radius: 9rem; */
+  overflow: hidden;
+  color: #fff;
+  background: #e7e7e7;
+}
+
+
+.button--mimas span {
+  position: relative;
+  mix-blend-mode: difference;
+}
+
+.button--mimas::before {
+  content: '';
+  background: #ffffff;
+  width: 120%;
+  left: -10%;
+  transform: skew(30deg);
+  transition: transform 0.4s cubic-bezier(0.3, 1, 0.8, 1);
+}
+
+.button--mimas:hover::before {
+  transform: translate3d(100%, 0, 0);
+}
+
+
+
+.link {
+  cursor: pointer;
+  position: relative;
+  white-space: nowrap;
+}
+
+.link::before,
+.link::after {
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  top: 100%;
+  left: 0;
+  pointer-events: none;
+}
+
+.link::before {
+  content: '';
+  /* show by default */
+}
+
+.link--leda {
+  overflow: hidden;
+  line-height: 4.15;
+}
+
+.link--leda::before {
+  height: 1px;
+  top: calc(100% - 5px);
+  transform-origin: 100% 50%;
+  transform: scale3d(0, 1, 1);
+  transition: transform 0.3s cubic-bezier(0.5, 0.5, 0.3, 1);
+}
+
+.link--leda--bottom::before {
+  top: 4px;
+}
+
+.link--leda:hover::before {
+  transform-origin: 0% 50%;
+  transform: scale3d(1, 1, 1);
+}
+
+.link--leda::after {
+  content: attr(data-text);
+  height: 100%;
+  top: 0;
+  background: none;
+  transform-origin: 100% 50%;
+  transform: translate3d(150%, 0, 0);
+  transition: transform 0.3s cubic-bezier(0.5, 0.5, 0.3, 1);
+}
+
+.link--leda:hover::after {
+  transform: translate3d(0, 0, 0);
+}
+
+.link--leda span {
+  display: inline-block;
+  transition: transform 0.3s cubic-bezier(0.5, 0.5, 0.3, 1);
+}
+
+.link--leda:hover span {
+  transform: translate3d(-150%, 0, 0);
+}
+
+
+
+.tp-dfwv {
+  top: 120px !important;
+  right: 32px !important;
+  z-index: 100 !important;
+}
+
+:root {
+  --tp-base-background-color: hsla(230, 0%, 100%, 0.15);
+  --tp-base-shadow-color: hsla(0, 0%, 100%, 0.10);
+  --tp-button-background-color: hsla(230, 0%, 100%, 0.29);
+  --tp-button-background-color-active: hsla(0, 0%, 85%, 0.29);
+  --tp-button-background-color-focus: hsla(0, 0%, 90%, 0.29);
+  --tp-button-background-color-hover: hsla(0, 0%, 95%, 0.29);
+  --tp-button-foreground-color: hsla(230, 0%, 100%, 1.00);
+  --tp-container-background-color: hsla(230, 0%, 100%, 0.69);
+  --tp-container-background-color-active: hsla(0, 0%, 85%, 1.00);
+  --tp-container-background-color-focus: hsla(0, 0%, 90%, 1.00);
+  --tp-container-background-color-hover: hsla(0, 0%, 95%, 1.00);
+  --tp-container-foreground-color: hsla(230, 0%, 0%, 0.80);
+  --tp-groove-foreground-color: hsla(230, 0%, 100%, 0.10);
+  --tp-input-background-color: hsla(230, 0%, 100%, 0.30);
+  --tp-input-background-color-active: hsla(0, 0%, 85%, 0.30);
+  --tp-input-background-color-focus: hsla(0, 0%, 90%, 0.30);
+  --tp-input-background-color-hover: hsla(0, 0%, 95%, 0.30);
+  --tp-input-foreground-color: hsla(230, 0%, 100%, 1.00);
+  --tp-label-foreground-color: hsla(230, 0%, 100%, 0.70);
+  --tp-monitor-background-color: hsla(230, 0%, 100%, 0.00);
+  --tp-monitor-foreground-color: hsla(230, 0%, 100%, 1.00);
 }

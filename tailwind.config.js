@@ -4,6 +4,9 @@ module.exports = {
   darkMode: 'media', // or 'media' or 'class'
   theme: {
     extend: {},
+    fontFamily: {
+      sans: ['tt', 'sans-serif']
+    },
   },
   variants: {
     extend: {},

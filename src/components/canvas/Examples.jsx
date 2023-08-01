@@ -6,6 +6,24 @@ import * as THREE from 'three'
 import { useMemo, useRef, useState } from 'react'
 import { Line, useCursor, MeshDistortMaterial } from '@react-three/drei'
 import { useRouter } from 'next/navigation'
+import Shader from '@/templates/Shader/Shader'
+
+
+export const WaterGradientDream = ({ route = '/', ...props }) => {
+  const router = useRouter()
+  const materialRef = useRef(null);
+  const [hovered, hover] = useState(false)
+  useCursor(hovered)
+  return (
+    <mesh
+      {...props}>
+      <planeBufferGeometry args={[10, 10, 192, 192]} />
+      {/* @ts-ignore */}
+      <Shader />
+    </mesh>
+  )
+}
+
 
 export const Blob = ({ route = '/', ...props }) => {
   const router = useRouter()
