@@ -4,7 +4,7 @@ import { useRef, useState, useEffect } from 'react'
 import { shaderMaterial } from '@react-three/drei'
 import { Mesh } from 'three'
 import { easing } from 'maath'
-import { useControls, Leva, folder } from 'leva'
+import { useControls, Leva, folder, useCreateStore } from 'leva'
 
 import vertex from './glsl/circleShader.vert'
 import fragment from './glsl/circleShader.frag'
@@ -46,11 +46,12 @@ interface circleProps {
 
 // shader material combined with mesh
 const CircleBg = (props: Mesh) => {
+  // const circleBgStore = useCreateStore();
   const { scale, position, morph } = useControls({
     scale: { value: 1.4, min: 0.1, max: 3 },
     position: { value: { x: 0, y: 0 }, step: 0.5, },
     morph: { value: 4.2, min: -10, max: 20 }
-  });
+  }, { storeId: 'circle-gradient' });
 
   const colors = useControls({
     colors: folder({
@@ -59,14 +60,14 @@ const CircleBg = (props: Mesh) => {
       color3: '#2b2d42',
       colorbg: '#000000'
     })
-  });
+  }, { storeId: 'circle-gradient' });
 
   const animation = useControls({
     animation: folder({
       speed: { value: 1, min: 0.2, max: 3 },
-      strength: { value: 1, min: 0.2, max: 3 },
-    }, { collapsed: true })
-  });
+      strength: { value: 1, min: 0.2, max: 10 },
+    }, { collapsed: false })
+  }, { storeId: 'circle-gradient' });
 
 
   const { viewport, size } = useThree()

@@ -35,6 +35,13 @@ h1 {
   line-height: 110%;
 }
 
+h2 {
+  font-size: 32px;
+  font-style: oblique;
+  font-weight: 300;
+  line-height: 110%;
+}
+
 .header-text {
   font-size: 14px;
   font-style: normal;

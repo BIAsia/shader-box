@@ -18,7 +18,7 @@ const Common = dynamic(() => import('@/components/canvas/View').then((mod) => mo
 const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.View), {
     ssr: false,
     loading: () => (
-        <div className='flex h-96 w-full flex-col items-center justify-center'>
+        <div className='absolute flex h-96 w-full flex-col items-center justify-center'>
             <svg className='-ml-1 mr-3 h-5 w-5 animate-spin text-black' fill='none' viewBox='0 0 24 24'>
                 <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
                 <path
@@ -80,15 +80,15 @@ export default function Page() {
                         <a href="" className="header-text font-medium text-white link link--leda">Create Your Own →</a>
                     </div>
                 </PageHeader>
-                <Hero titleA={'Water Gradient'} subtitle={'/Dream'}></Hero>
-                {/* <PageFooter>
+                <Hero titleA={'Lava Gradient'} subtitle={'-Default'}></Hero>
+                <PageFooter>
                     <div className="h-4 flex items-center flex-grow">
                         <a href="" className="header-text text-opacity-70 text-white link link--leda link--leda--bottom">TUX Toolbox ↗</a>
                     </div>
                     <div className="h-4 flex items-center flex-grow">
                         <a href="" className="header-text text-opacity-70 text-white link link--leda link--leda--bottom">TUX Website ↗</a>
                     </div>
-                </PageFooter> */}
+                </PageFooter>
 
             </div>
 

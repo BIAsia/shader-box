@@ -12,6 +12,9 @@ import { Suspense } from 'react'
 const CircleBg = dynamic(() => import("@/templates/Shader/circleBg"), {
   ssr: false,
 })
+const TextureBg = dynamic(() => import("@/templates/Shader/textureFlowBg/gradientBg"), {
+  ssr: false,
+})
 const GradientBg = dynamic(() => import("@/templates/Shader/gradientBg"), {
   ssr: false,
 })
@@ -19,7 +22,7 @@ const Common = dynamic(() => import('@/components/canvas/View').then((mod) => mo
 const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.View), {
   ssr: false,
   loading: () => (
-    <div className='flex h-96 w-full flex-col items-center justify-center'>
+    <div className='absolute flex h-96 w-full flex-col items-center justify-center'>
       <svg className='-ml-1 mr-3 h-5 w-5 animate-spin text-black' fill='none' viewBox='0 0 24 24'>
         <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
         <path
@@ -67,11 +70,12 @@ export default function Page() {
     <>
       <div className='h-screen w-screen flex flex-col justify-between items-start absolute z-10'>
         <View className='absolute flex h-full w-full flex-col items-center justify-center'>
-          <CircleBg scale={1.7} />
+          <TextureBg />
         </View>
         <div className="top-32 right-8 absolute w-60">
           <Leva theme={theme} flat={true} fill />
         </div>
+
 
         <PageHeader>
           <div className="h-4 flex items-center flex-grow">
@@ -84,15 +88,15 @@ export default function Page() {
             <a href="" className="header-text font-medium text-white link link--leda">Create Your Own →</a>
           </div>
         </PageHeader>
-        <Hero titleA={'Circle Gradient'} subtitle={'/Buzz'}></Hero>
-        {/* <PageFooter>
-                    <div className="h-4 flex items-center flex-grow">
-                        <a href="" className="header-text text-opacity-70 text-white link link--leda link--leda--bottom">TUX Toolbox ↗</a>
-                    </div>
-                    <div className="h-4 flex items-center flex-grow">
-                        <a href="" className="header-text text-opacity-70 text-white link link--leda link--leda--bottom">TUX Website ↗</a>
-                    </div>
-                </PageFooter> */}
+        <Hero titleA={'Circle Gradient'} subtitle={'-Default'}></Hero>
+        <PageFooter>
+          <div className="h-4 flex items-center flex-grow">
+            <a href="" className="header-text text-opacity-70 text-white link link--leda link--leda--bottom">TUX Toolbox ↗</a>
+          </div>
+          <div className="h-4 flex items-center flex-grow">
+            <a href="" className="header-text text-opacity-70 text-white link link--leda link--leda--bottom">TUX Website ↗</a>
+          </div>
+        </PageFooter>
 
       </div>
 

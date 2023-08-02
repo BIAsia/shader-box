@@ -5,13 +5,14 @@ import { shaderMaterial } from "@react-three/drei";
 import { Mesh } from "three";
 import { useControls, folder, useCreateStore } from 'leva'
 
-import vertex from "./glsl/gradientShader.vert";
-import fragment from "./glsl/gradientShader.frag";
+import vertex from "./gradientShader.vert";
+import fragment from "./gradientShader.frag";
 
 
 // custom shader material
 const WaterGradientMaterial = shaderMaterial(
   {
+    uResolution: new THREE.Vector2(0, 0),
     uTime: 0,
     uSpeed: 0.05,
     uNoiseDensity: 1.2,
@@ -34,7 +35,8 @@ extend({ WaterGradientMaterial });
 
 
 // shader material combined with mesh
-const GradientBg = (props: Mesh) => {
+const TextureBg = (props: Mesh) => {
+  const { viewport, size } = useThree()
   //const waterBgStore = useCreateStore();
   const { scale, morph } = useControls({
     scale: { value: 1.0, min: 0.1, max: 3 },
@@ -110,10 +112,10 @@ const GradientBg = (props: Mesh) => {
     >
       <planeBufferGeometry args={[10, 10, 192, 192]} />
       {/* @ts-ignore */}
-      <waterGradientMaterial key={WaterGradientMaterial.key} ref={materialRef} uLightness={advanced.lightness} uSpeed={animation.speed * 0.01} uNoiseDensity={advanced.density} uNoiseStrength={morph} />
+      <waterGradientMaterial key={WaterGradientMaterial.key} ref={materialRef} uResolution={new THREE.Vector2(viewport.width, viewport.height)} uLightness={advanced.lightness} uSpeed={animation.speed * 0.01} uNoiseDensity={advanced.density} uNoiseStrength={morph} />
 
     </mesh>
   );
 };
 
-export default GradientBg;
+export default TextureBg;
