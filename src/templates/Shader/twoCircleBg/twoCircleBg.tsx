@@ -3,29 +3,30 @@ import { useFrame, extend, useThree } from "@react-three/fiber";
 import { useRef, useState, useEffect } from "react";
 import { shaderMaterial } from "@react-three/drei";
 import { Mesh } from "three";
+import { easing } from 'maath'
 import { useControls, folder, useCreateStore } from 'leva'
 
-import vertex from "./textureShader.vert";
-import fragment from "./textureShader.frag";
+import vertex from "./twoCircle.vert";
+import fragment from "./twoCircle.frag";
+
 
 
 // custom shader material
-const CustomMaterial = shaderMaterial(
+const TwoCircleMaterial = shaderMaterial(
   {
     uResolution: new THREE.Vector2(0, 0),
     uTime: 0,
+    uMouse: new THREE.Vector2(),
     uSpeed: 0.05,
+    uScale: 1.0,
     uNoiseDensity: 1.2,
     uNoiseStrength: 1.4,
-    uColor: ["#e23a66", "#2287ba", "#f09878"].map(
+    uColor: ["#e23a66", "#2287ba", "#f09878", "#000"].map(
       (color) => new THREE.Color(color)
     ),
     uLightness: 0.2,
-    uDensity: 25.,
-    uPosEffect: new THREE.Vector2(1., 0.5),
-    uEffect: 0.9,
-    uMorph: 1.54,
-    uDirection: new THREE.Vector2(1, 1),
+    uRoot: new THREE.Vector2(0, 0),
+    uMorph: 3.,
   },
   vertex,
   fragment
@@ -34,43 +35,43 @@ const CustomMaterial = shaderMaterial(
 // This is the 🔑 that HMR will renew if this file is edited
 // It works for THREE.ShaderMaterial as well as for drei/shaderMaterial
 // @ts-ignore
-CustomMaterial.key = THREE.MathUtils.generateUUID();
+TwoCircleMaterial.key = THREE.MathUtils.generateUUID();
 
-extend({ CustomMaterial });
+extend({ TwoCircleMaterial });
 
 
 // shader material combined with mesh
-const TextureBg = (props: Mesh) => {
-  const { viewport, size } = useThree()
-  //const waterBgStore = useCreateStore();
-  const { scale, morph, effect } = useControls({
-    scale: { value: 1.0, min: 0.1, max: 3 },
-    morph: { value: 1.52, min: 0.2, max: 3.5 },
-    effect: { value: { x: 1, y: 1 } },
-  }, { storeId: 'water-gradient' });
+const TwoCircleBg = (props: Mesh) => {
+  const { scale, morph, position } = useControls({
+    scale: { value: 0.65, min: 0.1, max: 3 },
+    morph: { value: 1.47, min: 0.2, max: 3 },
+    position: { value: { x: 0, y: 0 }, step: 0.5, },
+  });
 
   const colors = useControls({
     colors: folder({
-      color1: '#2461f0',
-      color2: '#5179be',
+      color1: '#1044be',
+      color2: '#789ede',
       color3: '#2b2d42',
+      colorbg: '#000'
     })
-  }, { storeId: 'water-gradient' });
+  });
 
   const animation = useControls({
     animation: folder({
       speed: { value: 3, min: 0.1, max: 10 },
     }, { collapsed: false })
-  }, { storeId: 'water-gradient' });
+  });
 
   const advanced = useControls({
     advanced: folder({
-      // density: { value: 1.41, min: 0.1, max: 3 },
+      density: { value: 1.32, min: 0.1, max: 3 },
+      lightness: { value: 0.2, min: -1, max: 1 },
     }, { collapsed: false })
-  }, { storeId: 'water-gradient' });
+  });
 
 
-
+  const { viewport, size } = useThree()
   //设置状态
   const [isDarkMode, setIsDarkMode] = useState(true)
   // 监听与设置
@@ -92,35 +93,44 @@ const TextureBg = (props: Mesh) => {
 
   // set palettes
   const paletteLight = ["#0888B8", "#0870A8", "#f09878"].map((color) => new THREE.Color(color))
-  const paletteDark = [colors.color1, colors.color2, colors.color3].map((color) => new THREE.Color(color))
+  const paletteDark = ["#ef233c", "#8d99ae", "#2b2d42"].map((color) => new THREE.Color(color))
 
   // animation
-  useFrame(({ clock }) => {
-    const a = clock.getElapsedTime()
-    if (materialRef.current) {
-      materialRef.current.uniforms.uTime.value = a * 10
-      materialRef.current.uniforms.uColor.value = paletteDark
+  useFrame((state, delta) => {
 
+    //const a = state.clock.getElapsedTime()
+    if (materialRef.current) {
+      materialRef.current.uniforms.uTime.value += delta * 10.
+      //materialRef.current.uniforms.uMouse.value = state.pointer;
+
+      easing.damp2(materialRef.current.uniforms.uMouse.value, state.pointer, 0.3, delta * 0.5)
+      //materialRef.current.uniforms.uTime.value = a * 10
+      materialRef.current.uniforms.uResolution.value = new THREE.Vector2(viewport.width, viewport.height)
 
       // changed via light/dark mode
       // if (isDarkMode) {
       //   materialRef.current.uniforms.uColor.value = paletteDark
       // } else materialRef.current.uniforms.uColor.value = paletteLight
     }
+
+
   })
 
   return (
     <mesh
       ref={meshRef}
-      scale={scale + 1.37}
+      onPointerMove={(e) => console.log('move')}
     // {...props}
     >
-      <planeBufferGeometry args={[10, 10, 192, 192]} />
+      <planeBufferGeometry args={[viewport.width, viewport.height]} />
       {/* @ts-ignore */}
-      <customMaterial key={CustomMaterial.key} ref={materialRef} uResolution={new THREE.Vector2(viewport.width, viewport.height)} uLightness={advanced.lightness} uSpeed={animation.speed * 0.01} uDensity={advanced.density} uMorph={morph} uDirection={new THREE.Vector2(effect.x, effect.y)} />
+      <twoCircleMaterial key={TwoCircleMaterial.key} uMorph={morph} uRoot={new THREE.Vector2(position.x, position.y)} uScale={scale} ref={materialRef} uColor={[colors.color1, colors.color2, colors.color3, colors.colorbg].map(
+        (color) => new THREE.Color(color)
+      )} />
+      {/* <meshNormalMaterial /> */}
 
     </mesh>
   );
 };
 
-export default TextureBg;
+export default TwoCircleBg;

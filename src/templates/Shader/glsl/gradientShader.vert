@@ -117,7 +117,7 @@ void main() {
   float t = uTime * uSpeed;
   float distortion = 0.75 * cnoise(0.43 * position * uNoiseDensity + t);
 
-  vec3 pos = position + normal * distortion * uNoiseStrength;
+  vec3 pos = position + normal * distortion * (6.0-uNoiseStrength);
   vPos = pos;
 
   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.);

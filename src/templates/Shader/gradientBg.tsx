@@ -43,8 +43,8 @@ const GradientBg = (props: Mesh) => {
 
   const colors = useControls({
     colors: folder({
-      color1: '#1044be',
-      color2: '#789ede',
+      color1: '#0c9deb',
+      color2: '#5383d5',
       color3: '#2b2d42',
     })
   }, { storeId: 'water-gradient' });
@@ -93,7 +93,6 @@ const GradientBg = (props: Mesh) => {
     if (materialRef.current) {
       materialRef.current.uniforms.uTime.value = a * 10
       materialRef.current.uniforms.uColor.value = paletteDark
-
 
       // changed via light/dark mode
       // if (isDarkMode) {

@@ -69,7 +69,7 @@ export default function Page() {
     <>
       <div className='h-screen w-screen flex flex-col justify-between items-start absolute z-10'>
 
-        <Mock overlay={imageSrc}></Mock>
+        <Mock overlay={imageSrc} setOverlay={setImageSrc}></Mock>
         <div className="top-32 right-8 absolute w-60">
           <Leva theme={theme} flat={true} fill />
         </div>

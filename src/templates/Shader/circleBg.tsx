@@ -51,7 +51,7 @@ const CircleBg = (props: Mesh) => {
     scale: { value: 1.4, min: 0.1, max: 3 },
     position: { value: { x: 0, y: 0 }, step: 0.5, },
     morph: { value: 4.2, min: -10, max: 20 }
-  }, { storeId: 'circle-gradient' });
+  });
 
   const colors = useControls({
     colors: folder({
@@ -60,14 +60,14 @@ const CircleBg = (props: Mesh) => {
       color3: '#2b2d42',
       colorbg: '#000000'
     })
-  }, { storeId: 'circle-gradient' });
+  });
 
   const animation = useControls({
     animation: folder({
       speed: { value: 1, min: 0.2, max: 3 },
       strength: { value: 1, min: 0.2, max: 10 },
     }, { collapsed: false })
-  }, { storeId: 'circle-gradient' });
+  });
 
 
   const { viewport, size } = useThree()
@@ -111,11 +111,12 @@ const CircleBg = (props: Mesh) => {
       easing.damp2(materialRef.current.uniforms.uMouse.value, state.pointer, 0.3, delta * 0.5)
       //materialRef.current.uniforms.uTime.value = a * 10
       materialRef.current.uniforms.uResolution.value = new THREE.Vector2(viewport.width, viewport.height)
+      materialRef.current.uniforms.uColor.value = paletteDark
 
       // changed via light/dark mode
-      if (isDarkMode) {
-        materialRef.current.uniforms.uColor.value = paletteDark
-      } else materialRef.current.uniforms.uColor.value = paletteLight
+      // if (isDarkMode) {
+      //   materialRef.current.uniforms.uColor.value = paletteDark
+      // } else materialRef.current.uniforms.uColor.value = paletteLight
     }
 
 

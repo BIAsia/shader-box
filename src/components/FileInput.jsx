@@ -13,14 +13,19 @@ const FileInput = ({ setImageSrc }) => {
 
         reader.onloadend = () => {
             setImageSrc(reader.result);
+            console.log("loaded")
         }
 
         if (file) {
             reader.readAsDataURL(file);
         } else {
-            setImageSrc(null);
+            setImageSrc("/img/Overlay.png");
         }
     };
+
+    const handleResetClick = (e) => {
+        setImageSrc("/img/Overlay.png")
+    }
 
     return (
         <div className="w-full py-2">
@@ -36,6 +41,7 @@ const FileInput = ({ setImageSrc }) => {
                 onChange={handleImageUpload}
                 className="hidden"
             />
+            {/* <button className='mx-2 px-2 text-white transition-all opacity-50 hover:opacity-90 text-sm' onClick={handleResetClick}>RESET</button> */}
         </div>
     );
 }

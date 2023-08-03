@@ -4,7 +4,13 @@ import dynamic from 'next/dynamic'
 import CircleBg from '@/templates/Shader/circleBg'
 import GradientBg from '@/templates/Shader/gradientBg'
 import TextureBg from '@/templates/Shader/textureFlowBg/textureBg'
+// import TwoCircleBg from '@/templates/Shader/twoCirlceBg/twoCirlceBg'
+
 import { FileInput } from "@/components/FileInput"
+
+const TwoCircleBg = dynamic(() => import("@/templates/Shader/twoCircleBg/twoCircleBg"), {
+    ssr: false,
+})
 
 // export const metadata = {
 
@@ -29,13 +35,15 @@ const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.
 const ShaderBg = ({ shader, title, subtitle, setOverlay }) => {
     const shaders = [
         <GradientBg />,
+        <TextureBg />,
         <CircleBg />,
-        <TextureBg />
+        <TwoCircleBg />,
     ]
     const titles = [
         { title: 'Lava Gradient', subtitle: '-Diffuse' },
-        { title: 'Circle Gradient', subtitle: '-Diffuse' },
-        { title: 'Zebra Flow', subtitle: '-Sharp' },
+        { title: 'Lava Gradient', subtitle: '-Zebra' },
+        { title: 'Circle Gradient', subtitle: '-Single' },
+        { title: 'Circle Gradient', subtitle: '-Double' },
     ]
     const [currentShader, setCurrentShader] = useState(0)
     const handleClickNext = () => {
