@@ -37,15 +37,15 @@ extend({ WaterGradientMaterial });
 const GradientBg = (props: Mesh) => {
   //const waterBgStore = useCreateStore();
   const { scale, morph } = useControls({
-    scale: { value: 1.0, min: 0.1, max: 3 },
-    morph: { value: 1.52, min: 0.2, max: 3 },
+    scale: { value: 0.65, min: 0.1, max: 3 },
+    morph: { value: 4.2, min: 0.2, max: 3 },
   }, { storeId: 'water-gradient' });
 
   const colors = useControls({
     colors: folder({
-      color1: '#0888B8',
-      color2: '#0870A8',
-      color3: '#f09878',
+      color1: '#1044be',
+      color2: '#789ede',
+      color3: '#2b2d42',
     })
   }, { storeId: 'water-gradient' });
 

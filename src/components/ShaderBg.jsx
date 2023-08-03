@@ -3,7 +3,8 @@ import React, { useState, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import CircleBg from '@/templates/Shader/circleBg'
 import GradientBg from '@/templates/Shader/gradientBg'
-import TextureBg from '@/templates/Shader/textureFlowBg/gradientBg'
+import TextureBg from '@/templates/Shader/textureFlowBg/textureBg'
+import { FileInput } from "@/components/FileInput"
 
 // export const metadata = {
 
@@ -25,11 +26,16 @@ const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.
     ),
 })
 
-const ShaderBg = ({ shader, title, subtitle }) => {
+const ShaderBg = ({ shader, title, subtitle, setOverlay }) => {
     const shaders = [
-        <CircleBg />,
         <GradientBg />,
+        <CircleBg />,
         <TextureBg />
+    ]
+    const titles = [
+        { title: 'Lava Gradient', subtitle: '-Diffuse' },
+        { title: 'Circle Gradient', subtitle: '-Diffuse' },
+        { title: 'Zebra Flow', subtitle: '-Sharp' },
     ]
     const [currentShader, setCurrentShader] = useState(0)
     const handleClickNext = () => {
@@ -41,15 +47,19 @@ const ShaderBg = ({ shader, title, subtitle }) => {
 
     return (
         <>
-            <div className='p-12 z-10'>
-                <div className='pb-6'>
-                    <h2 className='text-white'>{title}</h2>
-                    <h2 className='text-white'>{subtitle}</h2>
-                </div>
+            <div className='p-8 z-10 flex flex-col justify-between items-start h-full'>
                 <div>
-                    <button className='pr-4 text-white opacity-50 hover:opacity-100' onClick={handleClickPrev}>Prev</button>
-                    <button className='pr-4 text-white opacity-50 hover:opacity-100' onClick={handleClickNext}>Next</button>
+                    <div className='pb-6'>
+                        <h2 className='text-white'>{titles[currentShader].title}</h2>
+                        <h2 className='text-white'>{titles[currentShader].subtitle}</h2>
+                    </div>
+                    <div>
+                        <button className='mr-4 text-white linkn link--mneme' onClick={handleClickPrev}>Prev</button>
+                        <button className='mr-4 text-white linkn link--mneme' onClick={handleClickNext}>Next</button>
+                    </div>
                 </div>
+
+                <FileInput setImageSrc={setOverlay}></FileInput>
             </div>
             <View className='absolute flex h-full w-full flex-col items-center justify-center -z-10'>
                 {shaders[currentShader]}

@@ -1,8 +1,10 @@
 'use client'
+import React, { useState, useEffect, useRef } from 'react'
 import { PageHeader } from "@/components/PageHeader"
 import { PageFooter } from "@/components/PageFooter"
-import { Hero } from "@/components/Hero"
-import { Panel } from "@/components/Panel"
+import { Mock } from "@/components/Mock"
+import { ShaderHeader } from "@/components/ShaderHeader"
+import { ShaderBg } from "@/components/ShaderBg"
 import { Leva } from 'leva'
 
 import dynamic from 'next/dynamic'
@@ -10,9 +12,6 @@ import { Suspense } from 'react'
 
 // const WaterGradientDream = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Logo), { ssr: false })
 const CircleBg = dynamic(() => import("@/templates/Shader/circleBg"), {
-  ssr: false,
-})
-const TextureBg = dynamic(() => import("@/templates/Shader/textureFlowBg/gradientBg"), {
   ssr: false,
 })
 const GradientBg = dynamic(() => import("@/templates/Shader/gradientBg"), {
@@ -34,7 +33,6 @@ const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.
     </div>
   ),
 })
-
 
 export default function Page() {
   const colors = {
@@ -66,30 +64,17 @@ export default function Page() {
     space
   };
 
+  const [imageSrc, setImageSrc] = useState("/img/Overlay.png");
   return (
     <>
       <div className='h-screen w-screen flex flex-col justify-between items-start absolute z-10'>
-        <View className='absolute flex h-full w-full flex-col items-center justify-center'>
-          <TextureBg />
-        </View>
+
+        <Mock overlay={imageSrc}></Mock>
         <div className="top-32 right-8 absolute w-60">
           <Leva theme={theme} flat={true} fill />
         </div>
-
-
-        <PageHeader>
-          <div className="h-4 flex items-center flex-grow">
-            <a href="" className="header-text font-medium text-white link link--leda">Mockup →</a>
-          </div>
-          <div className="h-4 flex items-center flex-grow">
-            <a href="" className="header-text font-medium text-white link link--leda">Import Guidance →</a>
-          </div>
-          <div className="h-4 flex items-center flex-grow">
-            <a href="" className="header-text font-medium text-white link link--leda">Create Your Own →</a>
-          </div>
-        </PageHeader>
-        <Hero titleA={'Circle Gradient'} subtitle={'-Default'}></Hero>
-        <PageFooter>
+        <ShaderBg className="absolute -z-10" shader={<GradientBg />} title={'Lava Gradient'} subtitle={'-Default'} setOverlay={setImageSrc}></ShaderBg>
+        <PageFooter title={'Shader Box'}>
           <div className="h-4 flex items-center flex-grow">
             <a href="" className="header-text text-opacity-70 text-white link link--leda link--leda--bottom">TUX Toolbox ↗</a>
           </div>

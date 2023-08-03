@@ -5,12 +5,12 @@ import { shaderMaterial } from "@react-three/drei";
 import { Mesh } from "three";
 import { useControls, folder, useCreateStore } from 'leva'
 
-import vertex from "./gradientShader.vert";
-import fragment from "./gradientShader.frag";
+import vertex from "./textureShader.vert";
+import fragment from "./textureShader.frag";
 
 
 // custom shader material
-const WaterGradientMaterial = shaderMaterial(
+const CustomMaterial = shaderMaterial(
   {
     uResolution: new THREE.Vector2(0, 0),
     uTime: 0,
@@ -21,6 +21,9 @@ const WaterGradientMaterial = shaderMaterial(
       (color) => new THREE.Color(color)
     ),
     uLightness: 0.2,
+    uDensity: 25.,
+    uPosEffect: new THREE.Vector2(1., 0.5),
+    uEffect: 0.9,
   },
   vertex,
   fragment
@@ -29,25 +32,26 @@ const WaterGradientMaterial = shaderMaterial(
 // This is the 🔑 that HMR will renew if this file is edited
 // It works for THREE.ShaderMaterial as well as for drei/shaderMaterial
 // @ts-ignore
-WaterGradientMaterial.key = THREE.MathUtils.generateUUID();
+CustomMaterial.key = THREE.MathUtils.generateUUID();
 
-extend({ WaterGradientMaterial });
+extend({ CustomMaterial });
 
 
 // shader material combined with mesh
 const TextureBg = (props: Mesh) => {
   const { viewport, size } = useThree()
   //const waterBgStore = useCreateStore();
-  const { scale, morph } = useControls({
+  const { scale, morph, effect } = useControls({
     scale: { value: 1.0, min: 0.1, max: 3 },
     morph: { value: 1.52, min: 0.2, max: 3 },
+    effect: { value: 0.1, min: 0.1, max: 3 },
   }, { storeId: 'water-gradient' });
 
   const colors = useControls({
     colors: folder({
-      color1: '#0888B8',
-      color2: '#0870A8',
-      color3: '#f09878',
+      color1: '#2461f0',
+      color2: '#5179be',
+      color3: '#2b2d42',
     })
   }, { storeId: 'water-gradient' });
 
@@ -59,8 +63,7 @@ const TextureBg = (props: Mesh) => {
 
   const advanced = useControls({
     advanced: folder({
-      density: { value: 1.32, min: 0.1, max: 3 },
-      lightness: { value: 0.2, min: -1, max: 1 },
+      density: { value: 1.41, min: 0.1, max: 3 },
     }, { collapsed: false })
   }, { storeId: 'water-gradient' });
 
@@ -112,7 +115,7 @@ const TextureBg = (props: Mesh) => {
     >
       <planeBufferGeometry args={[10, 10, 192, 192]} />
       {/* @ts-ignore */}
-      <waterGradientMaterial key={WaterGradientMaterial.key} ref={materialRef} uResolution={new THREE.Vector2(viewport.width, viewport.height)} uLightness={advanced.lightness} uSpeed={animation.speed * 0.01} uNoiseDensity={advanced.density} uNoiseStrength={morph} />
+      <customMaterial key={CustomMaterial.key} ref={materialRef} uResolution={new THREE.Vector2(viewport.width, viewport.height)} uLightness={advanced.lightness} uSpeed={animation.speed * 0.01} uDensity={advanced.density} uNoiseStrength={morph} uEffect={effect} />
 
     </mesh>
   );
