@@ -6,6 +6,7 @@ uniform vec3 uColor[4];
 uniform float uScale;
 uniform vec2 uRoot;
 uniform float uMorph;
+uniform float uLightness;
 
 
 float hash11(float p) {
@@ -116,5 +117,5 @@ void main() {
 
     // vec4 diffuseColor = vec4(mix(mix(uColor[0], uColor[1], smoothstep(-3.0, 3.0, vPos.x)), uColor[2], vPos.z),1);
     
-    gl_FragColor = fragColor + vec4(uColor[3]+0.1, 1.0);
+    gl_FragColor = fragColor + vec4(uColor[3]+0.1, 1.0) + uLightness;
 }
