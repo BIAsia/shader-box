@@ -4,6 +4,8 @@ import { useRef, useState, useEffect } from "react";
 import { shaderMaterial } from "@react-three/drei";
 import { Mesh } from "three";
 import { useControls, folder, useCreateStore } from 'leva'
+import { EffectComposer, Noise } from "@react-three/postprocessing";
+import { BlendFunction } from 'postprocessing'
 
 import vertex from "./textureShader.vert";
 import fragment from "./textureShader.frag";
@@ -43,10 +45,11 @@ extend({ CustomMaterial });
 const TextureBg = (props: Mesh) => {
   const { viewport, size } = useThree()
   //const waterBgStore = useCreateStore();
-  const { scale, morph, effect } = useControls({
+  const { scale, morph, effect, noisy } = useControls({
     scale: { value: 1.0, min: 0.1, max: 3 },
     morph: { value: 1.52, min: 0.2, max: 3.5 },
     effect: { value: { x: 1, y: 1 } },
+    noisy: true,
   }, { storeId: 'water-gradient' });
 
   const colors = useControls({
@@ -118,7 +121,9 @@ const TextureBg = (props: Mesh) => {
       <planeBufferGeometry args={[10, 10, 192, 192]} />
       {/* @ts-ignore */}
       <customMaterial key={CustomMaterial.key} ref={materialRef} uResolution={new THREE.Vector2(viewport.width, viewport.height)} uLightness={advanced.lightness} uSpeed={animation.speed * 0.01} uDensity={advanced.density} uMorph={morph} uDirection={new THREE.Vector2(effect.x, effect.y)} />
-
+      <EffectComposer enabled={noisy}>
+        <Noise premultiply blendFunction={BlendFunction.ADD} />
+      </EffectComposer>
     </mesh>
   );
 };

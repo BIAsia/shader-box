@@ -4,6 +4,8 @@ import { useRef, useState, useEffect } from "react";
 import { shaderMaterial } from "@react-three/drei";
 import { Mesh } from "three";
 import { useControls, folder, useCreateStore } from 'leva'
+import { EffectComposer, Noise } from "@react-three/postprocessing";
+import { BlendFunction } from 'postprocessing'
 
 import vertex from "./glsl/gradientShader.vert";
 import fragment from "./glsl/gradientShader.frag";
@@ -36,9 +38,10 @@ extend({ WaterGradientMaterial });
 // shader material combined with mesh
 const GradientBg = (props: Mesh) => {
   //const waterBgStore = useCreateStore();
-  const { scale, morph } = useControls({
+  const { scale, morph, noisy } = useControls({
     scale: { value: 0.65, min: 0.1, max: 3 },
     morph: { value: 4.2, min: 0.2, max: 3 },
+    noisy: false,
   }, { storeId: 'water-gradient' });
 
   const colors = useControls({
@@ -110,7 +113,9 @@ const GradientBg = (props: Mesh) => {
       <planeBufferGeometry args={[10, 10, 192, 192]} />
       {/* @ts-ignore */}
       <waterGradientMaterial key={WaterGradientMaterial.key} ref={materialRef} uLightness={advanced.lightness} uSpeed={animation.speed * 0.01} uNoiseDensity={advanced.density} uNoiseStrength={morph} />
-
+      <EffectComposer enabled={noisy}>
+        <Noise premultiply blendFunction={BlendFunction.ADD} />
+      </EffectComposer>
     </mesh>
   );
 };

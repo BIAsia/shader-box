@@ -5,6 +5,8 @@ import { shaderMaterial } from "@react-three/drei";
 import { Mesh } from "three";
 import { easing } from 'maath'
 import { useControls, folder, useCreateStore } from 'leva'
+import { EffectComposer, Noise } from "@react-three/postprocessing";
+import { BlendFunction } from 'postprocessing'
 
 import vertex from "./twoCircle.vert";
 import fragment from "./twoCircle.frag";
@@ -42,10 +44,11 @@ extend({ TwoCircleMaterial });
 
 // shader material combined with mesh
 const TwoCircleBg = (props: Mesh) => {
-  const { scale, morph, position } = useControls({
+  const { scale, morph, position, noisy } = useControls({
     scale: { value: 0.65, min: 0.1, max: 3 },
     morph: { value: 1.47, min: 0.2, max: 3 },
     position: { value: { x: 0, y: 0 }, step: 0.5, },
+    noisy: true,
   });
 
   const colors = useControls({
@@ -127,6 +130,9 @@ const TwoCircleBg = (props: Mesh) => {
       <twoCircleMaterial key={TwoCircleMaterial.key} uMorph={morph} uRoot={new THREE.Vector2(position.x, position.y)} uScale={scale} ref={materialRef} uColor={[colors.color1, colors.color2, colors.color3, colors.colorbg].map(
         (color) => new THREE.Color(color)
       )} />
+      <EffectComposer enabled={noisy}>
+        <Noise premultiply blendFunction={BlendFunction.ADD} />
+      </EffectComposer>
       {/* <meshNormalMaterial /> */}
 
     </mesh>

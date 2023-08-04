@@ -5,6 +5,8 @@ import { shaderMaterial } from '@react-three/drei'
 import { Mesh } from 'three'
 import { easing } from 'maath'
 import { useControls, Leva, folder, useCreateStore } from 'leva'
+import { EffectComposer, Noise } from "@react-three/postprocessing";
+import { BlendFunction } from 'postprocessing'
 
 import vertex from './glsl/circleShader.vert'
 import fragment from './glsl/circleShader.frag'
@@ -47,10 +49,11 @@ interface circleProps {
 // shader material combined with mesh
 const CircleBg = (props: Mesh) => {
   // const circleBgStore = useCreateStore();
-  const { scale, position, morph } = useControls({
+  const { scale, position, morph, noisy } = useControls({
     scale: { value: 1.4, min: 0.1, max: 3 },
     position: { value: { x: 0, y: 0 }, step: 0.5, },
-    morph: { value: 4.2, min: -10, max: 20 }
+    morph: { value: 4.2, min: -10, max: 20 },
+    noisy: true,
   });
 
   const colors = useControls({
@@ -132,6 +135,9 @@ const CircleBg = (props: Mesh) => {
       <planeBufferGeometry args={[viewport.width, viewport.height]} />
       {/* @ts-ignore */}
       <circleGlitchMaterial key={CircleGlitchMaterial.key} ref={materialRef} />
+      <EffectComposer enabled={noisy}>
+        <Noise premultiply blendFunction={BlendFunction.ADD} />
+      </EffectComposer>
       {/* <meshNormalMaterial /> */}
 
     </mesh>
