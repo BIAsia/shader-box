@@ -66,8 +66,8 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay }) => {
                         <button className='mr-4 text-white linkn link--mneme' onClick={handleClickNext}>Next</button>
                     </div>
                 </div>
-
                 <FileInput setImageSrc={setOverlay}></FileInput>
+
             </div>
             <View className='absolute flex h-full w-full flex-col items-center justify-center -z-10'>
                 {shaders[currentShader]}
