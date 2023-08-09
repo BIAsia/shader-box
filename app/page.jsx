@@ -65,16 +65,18 @@ export default function Page() {
   };
 
   const [imageSrc, setImageSrc] = useState("/img/Overlay.png");
+
+  const [isMockVisible, setMockVisible] = useState(true);
+
+  const handleButtonClick = () => {
+    setMockVisible(!isMockVisible);
+  };
   return (
     <>
       <div className='h-screen w-screen flex flex-col justify-between items-start absolute z-10'>
+        <ShaderBg className="absolute -z-10" shader={<GradientBg />} title={'Lava Gradient'} subtitle={'-Default'} setOverlay={setImageSrc} setMockVisible={handleButtonClick} isMockVisible={isMockVisible}></ShaderBg>
+        {isMockVisible && <Mock overlay={imageSrc} setOverlay={setImageSrc}></Mock>}
 
-
-        <div className="top-32 right-8 absolute w-60">
-          <Leva theme={theme} flat={true} fill />
-        </div>
-        <ShaderBg className="absolute -z-10" shader={<GradientBg />} title={'Lava Gradient'} subtitle={'-Default'} setOverlay={setImageSrc}></ShaderBg>
-        <Mock overlay={imageSrc} setOverlay={setImageSrc}></Mock>
         <PageFooter title={'Shader Box'}>
           <div className="h-4 flex items-center flex-grow">
             <a href="https://tux-ds.cn.goofy.app/toolbox?auth=admin" className="header-text text-opacity-70 text-white link link--leda link--leda--bottom">TUX Toolbox ↗</a>
@@ -83,6 +85,9 @@ export default function Page() {
             <a href="https://tux-ds.cn.goofy.app/" className="header-text text-opacity-70 text-white link link--leda link--leda--bottom">TUX Website ↗</a>
           </div>
         </PageFooter>
+        <div className="top-32 right-8 absolute w-60">
+          <Leva theme={theme} flat={true} fill />
+        </div>
 
       </div>
 

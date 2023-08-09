@@ -32,7 +32,7 @@ const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.
     ),
 })
 
-const ShaderBg = ({ shader, title, subtitle, setOverlay }) => {
+const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockVisible }) => {
     const shaders = [
         <GradientBg />,
         <TextureBg />,
@@ -66,7 +66,11 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay }) => {
                         <button className='mr-4 text-white linkn link--mneme' onClick={handleClickNext}>Next</button>
                     </div>
                 </div>
-                <FileInput setImageSrc={setOverlay}></FileInput>
+                <div className='flex'>
+                    {isMockVisible && <FileInput setImageSrc={setOverlay}></FileInput>}
+                    <button className='text-white opacity-70 transition-all hover:opacity-100 text-sm' onClick={setMockVisible}>{isMockVisible ? 'Hide Mock' : 'Show Mock'}</button>
+                </div>
+
 
             </div>
             <View className='absolute flex h-full w-full flex-col items-center justify-center -z-10'>

@@ -28,7 +28,7 @@ const FileInput = ({ setImageSrc }) => {
     }
 
     return (
-        <div className="py-2">
+        <div className="py-2 mr-4">
             <label
                 htmlFor="file-upload"
                 className="w-full cursor-pointer text-sm border border-white border-opacity-50 font-medium hover:bg-white hover:text-black text-white py-2 px-4 transition">
