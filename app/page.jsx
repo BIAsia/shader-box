@@ -67,6 +67,9 @@ export default function Page() {
   const [imageSrc, setImageSrc] = useState("/img/Overlay.png");
 
   const [isMockVisible, setMockVisible] = useState(true);
+  useEffect(() => {
+    setMockVisible(window.innerWidth > 460);
+  }, [])
 
   const handleButtonClick = () => {
     setMockVisible(!isMockVisible);

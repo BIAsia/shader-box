@@ -12,6 +12,10 @@ const TwoCircleBg = dynamic(() => import("@/templates/Shader/twoCircleBg/twoCirc
     ssr: false,
 })
 
+const ShinyCircleBg = dynamic(() => import("@/templates/Shader/shinyCircleBg/shinyCircleBg"), {
+    ssr: false,
+})
+
 // export const metadata = {
 
 // }
@@ -38,12 +42,14 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
         <TextureBg />,
         <CircleBg />,
         <TwoCircleBg />,
+        <ShinyCircleBg />,
     ]
     const titles = [
         { title: 'Lava Gradient', subtitle: '-Diffuse' },
         { title: 'Lava Gradient', subtitle: '-Zebra' },
         { title: 'Circle Gradient', subtitle: '-Single' },
         { title: 'Circle Gradient', subtitle: '-Double' },
+        { title: 'Circle Gradient', subtitle: '-OKLAB' },
     ]
     const [currentShader, setCurrentShader] = useState(0)
     const handleClickNext = () => {
