@@ -7,12 +7,12 @@ import { useControls, folder, useCreateStore } from 'leva'
 import { EffectComposer, Noise } from "@react-three/postprocessing";
 import { BlendFunction } from 'postprocessing'
 
-import vertex from "./sharpGradient.vert";
-import fragment from "./sharpGradient.frag";
+import vertex from "./sharpGradientR.vert";
+import fragment from "./sharpGradientR.frag";
 
 
 // custom shader material
-const SharpGradientMaterial = shaderMaterial(
+const SharpGradientRMaterial = shaderMaterial(
   {
     uResolution: new THREE.Vector2(0, 0),
     uTime: 0,
@@ -22,7 +22,7 @@ const SharpGradientMaterial = shaderMaterial(
     uColor: ["#e23a66", "#2287ba", "#f09878", "#000000"].map(
       (color) => new THREE.Color(color)
     ),
-    uLightness: 0.,
+    uLightness: 0.2,
     uDensity: 25.,
     uPosEffect: new THREE.Vector2(1., 0.5),
     // uEffect: 0.9,
@@ -37,13 +37,13 @@ const SharpGradientMaterial = shaderMaterial(
 // This is the 🔑 that HMR will renew if this file is edited
 // It works for THREE.ShaderMaterial as well as for drei/shaderMaterial
 // @ts-ignore
-SharpGradientMaterial.key = THREE.MathUtils.generateUUID();
+SharpGradientRMaterial.key = THREE.MathUtils.generateUUID();
 
-extend({ SharpGradientMaterial });
+extend({ SharpGradientRMaterial });
 
 
 // shader material combined with mesh
-const SharpGradientBg = (props: Mesh) => {
+const SharpGradientRBg = (props: Mesh) => {
   const { viewport, size } = useThree()
   //const waterBgStore = useCreateStore();
   const { scale, morph, effect, noisy } = useControls({
@@ -122,7 +122,7 @@ const SharpGradientBg = (props: Mesh) => {
     >
       <planeBufferGeometry args={[viewport.width, viewport.height, 1, 1]} />
       {/* @ts-ignore */}
-      <sharpGradientMaterial key={SharpGradientMaterial.key} ref={materialRef} uColor={[colors.color1, colors.color2, colors.color3, colors.color4].map((color) => new THREE.Color(color))} uResolution={new THREE.Vector2(viewport.width, viewport.height)} uLightness={advanced.lightness} uSpeed={animation.speed} uDensity={advanced.density} uCol={advanced.columns} />
+      <sharpGradientRMaterial key={SharpGradientRMaterial.key} ref={materialRef} uColor={[colors.color1, colors.color2, colors.color3, colors.color4].map((color) => new THREE.Color(color))} uResolution={new THREE.Vector2(viewport.width, viewport.height)} uLightness={advanced.lightness} uSpeed={animation.speed} uDensity={advanced.density} uCol={advanced.columns} />
       <EffectComposer enabled={noisy}>
         <Noise premultiply blendFunction={BlendFunction.ADD} />
       </EffectComposer>
@@ -130,4 +130,4 @@ const SharpGradientBg = (props: Mesh) => {
   );
 };
 
-export default SharpGradientBg;
+export default SharpGradientRBg;

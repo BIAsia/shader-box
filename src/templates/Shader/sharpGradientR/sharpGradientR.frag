@@ -83,25 +83,26 @@ void main() {
     float h = 0.;
 
 
-    float pointA = 0.2;
-    float pointB = 0.6;
+    float pointA = 0.4;
+    float pointB = 0.9;
 
     
 
     // float frag_1 = coord.y/h;
     // float frag_2 = (coord.y-h) / (1.-h);
 
-    float speed = uTime*uSpeed*0.1;
+    float speed = uTime*(5.)*0.01;
 
     float steper = floor(st.x)+0.1;
     steper *= cos(speed*0.1);
     vec3 fragColor = vec3(coord.y);
     // coord.y += 0.2;
 
-    // pointA = 0.5*(floor(st.x+2.)/col);
+    pointA = 0.5*(floor(st.x+2.)/col);
     coord.y += (cos(steper)+2.)*0.1;
-    // coord.y += 0.1*uScale*cos(steper*(speed*0.001));
+    // coord.y += cos(steper(speed*0.01));
     // coord.y += abs(0.01*cos(steper*speed*0.01));
+    coord.y -= 0.8*sin(steper*speed*uSpeed*0.01);
     // vec3 gradientA = mix(uColor[0], uColor[1],clamp(coord.y/pointA, 0., 1.));
     // vec3 gradientB = mix(uColor[1], uColor[2],clamp((coord.y-pointA)/(pointB-pointA), 0., 1.));
     // vec3 gradientC = mix(uColor[2], uColor[3], clamp(1.-(1.-coord.y)/(1.-pointB), 0., 1.));
@@ -115,6 +116,7 @@ void main() {
         // fragColor = mix(gradientA, gradientB, step(pointA, coord.y));
     fragColor = mix(fragColor, gradientC, step(pointB, coord.y));
     fragColor = oklab2srgb(fragColor);
+
     fragColor += uLightness;
 
     // vec3 fragColor = mix(mix(uColor[0], uColor[1], frag_1), mix(uColor[1], uColor[2], frag_2), step(h, coord.y));

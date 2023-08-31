@@ -19,6 +19,9 @@ const ShinyCircleBg = dynamic(() => import("@/templates/Shader/shinyCircleBg/shi
 const SharpGradientBg = dynamic(() => import("@/templates/Shader/sharpGradient/sharpGradient"), {
     ssr: false,
 })
+const SharpGradientRBg = dynamic(() => import("@/templates/Shader/sharpGradientR/sharpGradientR"), {
+    ssr: false,
+})
 
 // export const metadata = {
 
@@ -43,6 +46,7 @@ const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.
 const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockVisible }) => {
     const shaders = [
         <SharpGradientBg />,
+        <SharpGradientRBg />,
         <GradientBg />,
         <TextureBg />,
         <CircleBg />,
@@ -51,7 +55,8 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
 
     ]
     const titles = [
-        { title: 'Column Gradient', subtitle: '-Sharp' },
+        { title: 'Column Gradient', subtitle: '-curve' },
+        { title: 'Column Gradient', subtitle: '-slash' },
         { title: 'Lava Gradient', subtitle: '-Diffuse' },
         { title: 'Lava Gradient', subtitle: '-Zebra' },
         { title: 'Circle Gradient', subtitle: '-Hole' },
