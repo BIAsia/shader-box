@@ -55,8 +55,8 @@ const SharpGradientBg = (props: Mesh) => {
 
   const colors = useControls({
     colors: folder({
-      color1: '#2461f0',
-      color2: '#5179be',
+      color1: '#000000',
+      color2: '#45a8de',
       color3: '#2b2d42',
       color4: '#000000',
     })
