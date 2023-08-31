@@ -80,14 +80,14 @@ export default function Page() {
         <ShaderBg className="absolute -z-10" shader={<GradientBg />} title={'Lava Gradient'} subtitle={'-Default'} setOverlay={setImageSrc} setMockVisible={handleButtonClick} isMockVisible={isMockVisible}></ShaderBg>
         {isMockVisible && <Mock overlay={imageSrc} setOverlay={setImageSrc}></Mock>}
 
-        <PageFooter title={'Shader Box'}>
+        {/* <PageFooter title={'Shader Box'}>
           <div className="h-4 flex items-center flex-grow">
             <a href="https://tux-ds.cn.goofy.app/toolbox?auth=admin" className="header-text text-opacity-70 text-white link link--leda link--leda--bottom">TUX Toolbox ↗</a>
           </div>
           <div className="h-4 flex items-center flex-grow">
             <a href="https://tux-ds.cn.goofy.app/" className="header-text text-opacity-70 text-white link link--leda link--leda--bottom">TUX Website ↗</a>
           </div>
-        </PageFooter>
+        </PageFooter> */}
         <div className="top-32 right-8 absolute w-60">
           <Leva theme={theme} flat={true} fill />
         </div>
