@@ -9,6 +9,10 @@ import { Leva } from 'leva'
 
 import dynamic from 'next/dynamic'
 import { Suspense } from 'react'
+import ReactGA from 'react-ga';
+ReactGA.initialize('G-JFF0CZQNDN');
+ReactGA.pageview(window.location.pathname + window.location.search);
+
 
 // const WaterGradientDream = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Logo), { ssr: false })
 const CircleBg = dynamic(() => import("@/templates/Shader/circleBg"), {
