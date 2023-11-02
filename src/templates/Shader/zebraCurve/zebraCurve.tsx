@@ -7,21 +7,28 @@ import { useControls, folder, useCreateStore } from 'leva'
 import { EffectComposer, Noise } from "@react-three/postprocessing";
 import { BlendFunction } from 'postprocessing'
 
-import vertex from "./glsl/gradientShader.vert";
-import fragment from "./glsl/gradientShader.frag";
+import vertex from "./zebraCurve.vert";
+import fragment from "./zebraCurve.frag";
 
 
 // custom shader material
-const WaterGradientMaterial = shaderMaterial(
+const ZebraCurveMaterial = shaderMaterial(
   {
+    uResolution: new THREE.Vector2(0, 0),
     uTime: 0,
     uSpeed: 0.05,
     uNoiseDensity: 1.2,
     uNoiseStrength: 1.4,
-    uColor: ["#e23a66", "#2287ba", "#f09878"].map(
+    uColor: ["#e23a66", "#2287ba", "#f09878", "#000000"].map(
       (color) => new THREE.Color(color)
     ),
-    uLightness: 0.2,
+    uLightness: 0.,
+    uDensity: 25.,
+    uPosEffect: new THREE.Vector2(1., 0.5),
+    // uEffect: 0.9,
+    // uMorph: 1.54,
+    uDirection: new THREE.Vector2(1, 1),
+    uCol: 25,
   },
   vertex,
   fragment
@@ -30,25 +37,28 @@ const WaterGradientMaterial = shaderMaterial(
 // This is the 🔑 that HMR will renew if this file is edited
 // It works for THREE.ShaderMaterial as well as for drei/shaderMaterial
 // @ts-ignore
-WaterGradientMaterial.key = THREE.MathUtils.generateUUID();
+ZebraCurveMaterial.key = THREE.MathUtils.generateUUID();
 
-extend({ WaterGradientMaterial });
+extend({ ZebraCurveMaterial });
 
 
 // shader material combined with mesh
-const GradientBg = (props: Mesh) => {
+const ZebraCurveBg = (props: Mesh) => {
+  const { viewport, size } = useThree()
   //const waterBgStore = useCreateStore();
-  const { scale, morph, noisy } = useControls({
-    scale: { value: 0.65, min: 0.1, max: 3 },
-    morph: { value: 4.2, min: 0.2, max: 3 },
-    noisy: false,
+  const { scale, morph, effect, noisy } = useControls({
+    // scale: { value: 1.0, min: 0.1, max: 3 },
+    // morph: { value: 1.52, min: 0.2, max: 3.5 },
+    // effect: { value: { x: 1, y: 1 } },
+    noisy: true,
   }, { storeId: 'water-gradient' });
 
   const colors = useControls({
     colors: folder({
-      color1: '#0c9deb',
-      color2: '#5383d5',
+      color1: '#000000',
+      color2: '#45a8de',
       color3: '#2b2d42',
+      color4: '#000000',
     })
   }, { storeId: 'water-gradient' });
 
@@ -60,8 +70,8 @@ const GradientBg = (props: Mesh) => {
 
   const advanced = useControls({
     advanced: folder({
-      density: { value: 1.32, min: 0.1, max: 3 },
-      lightness: { value: 0.2, min: -1, max: 1 },
+      columns: { value: 25, min: 1, max: 50 },
+      lightness: { value: 0., min: - 1, max: 1 },
     }, { collapsed: false })
   }, { storeId: 'water-gradient' });
 
@@ -82,7 +92,6 @@ const GradientBg = (props: Mesh) => {
   // 被改变的状态
   console.log(isDarkMode)
 
-
   // set ref
   const meshRef = useRef<THREE.Mesh>(null);
   const materialRef = useRef<THREE.ShaderMaterial>(null);
@@ -96,7 +105,8 @@ const GradientBg = (props: Mesh) => {
     const a = clock.getElapsedTime()
     if (materialRef.current) {
       materialRef.current.uniforms.uTime.value = a * 10
-      materialRef.current.uniforms.uColor.value = paletteDark
+      // materialRef.current.uniforms.uColor.value = paletteDark
+
 
       // changed via light/dark mode
       // if (isDarkMode) {
@@ -108,12 +118,11 @@ const GradientBg = (props: Mesh) => {
   return (
     <mesh
       ref={meshRef}
-      scale={scale + 1.37}
     // {...props}
     >
-      <planeBufferGeometry args={[10, 10, 192, 192]} />
+      <planeBufferGeometry args={[viewport.width, viewport.height, 1, 1]} />
       {/* @ts-ignore */}
-      <waterGradientMaterial key={WaterGradientMaterial.key} ref={materialRef} uLightness={advanced.lightness} uSpeed={animation.speed * 0.01} uNoiseDensity={advanced.density} uNoiseStrength={morph} />
+      <zebraCurveMaterial key={ZebraCurveMaterial.key} ref={materialRef} uColor={[colors.color1, colors.color2, colors.color3, colors.color4].map((color) => new THREE.Color(color))} uResolution={new THREE.Vector2(viewport.width, viewport.height)} uLightness={advanced.lightness} uSpeed={animation.speed} uDensity={advanced.density} uCol={advanced.columns} />
       <EffectComposer enabled={noisy}>
         <Noise premultiply blendFunction={BlendFunction.ADD} />
       </EffectComposer>
@@ -121,4 +130,4 @@ const GradientBg = (props: Mesh) => {
   );
 };
 
-export default GradientBg;
+export default ZebraCurveBg;

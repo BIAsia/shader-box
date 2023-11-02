@@ -23,6 +23,10 @@ const SharpGradientRBg = dynamic(() => import("@/templates/Shader/sharpGradientR
     ssr: false,
 })
 
+const ZebraCurveBg = dynamic(() => import("@/templates/Shader/zebraCurve/zebraCurve"), {
+    ssr: false,
+})
+
 // export const metadata = {
 
 // }
@@ -45,6 +49,7 @@ const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.
 
 const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockVisible }) => {
     const shaders = [
+        <ZebraCurveBg />,
         <SharpGradientBg />,
         <SharpGradientRBg />,
         <GradientBg />,
@@ -55,6 +60,7 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
 
     ]
     const titles = [
+        { title: 'Zebra Gradient', subtitle: '-curve' },
         { title: 'Column Gradient', subtitle: '-curve' },
         { title: 'Column Gradient', subtitle: '-slash' },
         { title: 'Lava Gradient', subtitle: '-Diffuse' },
