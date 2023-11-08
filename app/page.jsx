@@ -9,9 +9,8 @@ import { Leva } from 'leva'
 
 import dynamic from 'next/dynamic'
 import { Suspense } from 'react'
-import ReactGA from 'react-ga';
+import ReactGA from 'react-ga4';
 ReactGA.initialize('G-JFF0CZQNDN');
-ReactGA.pageview(window.location.pathname + window.location.search);
 
 
 // const WaterGradientDream = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Logo), { ssr: false })
@@ -69,6 +68,8 @@ export default function Page() {
   };
 
   const [imageSrc, setImageSrc] = useState("/img/Overlay.png");
+
+  ReactGA.send({ hitType: "pageview", page: "/home", title: "Visit" });
 
   const [isMockVisible, setMockVisible] = useState(true);
   useEffect(() => {
