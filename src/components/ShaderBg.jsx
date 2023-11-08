@@ -98,7 +98,7 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
 
 
             </div>
-            <View className='absolute flex h-full w-full flex-col items-center justify-center -z-10'>
+            <View className='absolute flex h-full w-full flex-col items-center justify-center -z-10' id='shaderView'>
                 {shaders[currentShader]}
             </View>
         </>

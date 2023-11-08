@@ -4,7 +4,7 @@ import { useRef, useState, useEffect } from "react";
 import { shaderMaterial } from "@react-three/drei";
 import { Mesh } from "three";
 import { easing } from 'maath'
-import { useControls, folder, useCreateStore } from 'leva'
+import { useControls, folder, useCreateStore, button } from 'leva'
 import { EffectComposer, Noise } from "@react-three/postprocessing";
 import { BlendFunction } from 'postprocessing'
 
@@ -44,6 +44,15 @@ extend({ TwoCircleMaterial });
 
 // shader material combined with mesh
 const TwoCircleBg = (props: Mesh) => {
+  const gl = useThree((state) => state.gl)
+  const exportActions = useControls({
+    'Capture Image': button(() => {
+      const link = document.createElement('a')
+      link.setAttribute('download', 'canvas.png')
+      link.setAttribute('href', gl.domElement.toDataURL('image/png').replace('image/png', 'image/octet-stream'))
+      link.click()
+    })
+  });
   const { scale, morph, position, noisy } = useControls({
     scale: { value: 0.65, min: 0.1, max: 3 },
     morph: { value: 1.47, min: 0.2, max: 3 },
@@ -72,6 +81,8 @@ const TwoCircleBg = (props: Mesh) => {
       lightness: { value: 0.2, min: -1, max: 1 },
     }, { collapsed: false })
   });
+
+
 
 
   const { viewport, size } = useThree()

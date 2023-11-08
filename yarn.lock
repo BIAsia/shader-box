@@ -2203,6 +2203,11 @@ caniuse-lite@^1.0.30001406, caniuse-lite@^1.0.30001449, caniuse-lite@^1.0.300014
   resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001478.tgz"
   integrity sha512-gMhDyXGItTHipJj2ApIvR+iVB5hd0KP3svMWWXDvZOmjzJJassGLMfxRkQCSYgGd2gtdL/ReeiyvMSFD1Ss6Mw==
 
+canvas-to-video@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/canvas-to-video/-/canvas-to-video-1.0.1.tgz"
+  integrity sha512-0eDyb5tWAUwX6oElES97HYfzJuA4mI9k5GjlW0ohNnnoRffLZ1tiJW+5PGt+pNk2M2k+HE3IQ5EJ0mhP913Liw==
+
 chalk@^2.4.2:
   version "2.4.2"
   resolved "https://registry.npmjs.org/chalk/-/chalk-2.4.2.tgz"

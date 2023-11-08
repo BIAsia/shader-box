@@ -5,12 +5,16 @@ import { PageFooter } from "@/components/PageFooter"
 import { Mock } from "@/components/Mock"
 import { ShaderHeader } from "@/components/ShaderHeader"
 import { ShaderBg } from "@/components/ShaderBg"
-import { Leva } from 'leva'
+import { Leva, button, useControls, folder } from 'leva'
 
 import dynamic from 'next/dynamic'
+import record from 'canvas-to-video'
 import { Suspense } from 'react'
 import ReactGA from 'react-ga4';
 ReactGA.initialize('G-JFF0CZQNDN');
+
+
+
 
 
 // const WaterGradientDream = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Logo), { ssr: false })

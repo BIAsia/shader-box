@@ -3,7 +3,7 @@ import { useFrame, extend, useThree } from "@react-three/fiber";
 import { useRef, useState, useEffect } from "react";
 import { shaderMaterial } from "@react-three/drei";
 import { Mesh } from "three";
-import { useControls, folder, useCreateStore } from 'leva'
+import { useControls, folder, useCreateStore, button } from 'leva'
 import { EffectComposer, Noise } from "@react-three/postprocessing";
 import { BlendFunction } from 'postprocessing'
 
@@ -45,6 +45,15 @@ extend({ SharpGradientRMaterial });
 // shader material combined with mesh
 const SharpGradientRBg = (props: Mesh) => {
   const { viewport, size } = useThree()
+  const gl = useThree((state) => state.gl)
+  const exportActions = useControls({
+    'Capture Image': button(() => {
+      const link = document.createElement('a')
+      link.setAttribute('download', 'canvas.png')
+      link.setAttribute('href', gl.domElement.toDataURL('image/png').replace('image/png', 'image/octet-stream'))
+      link.click()
+    })
+  });
   //const waterBgStore = useCreateStore();
   const { scale, morph, effect, noisy } = useControls({
     // scale: { value: 1.0, min: 0.1, max: 3 },
