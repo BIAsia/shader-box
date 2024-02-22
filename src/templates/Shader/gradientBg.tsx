@@ -48,7 +48,7 @@ const GradientBg = (props: Mesh) => {
     })
   });
   const { scale, morph, noisy } = useControls({
-    scale: { value: 0.65, min: 0.1, max: 3 },
+    scale: { value: 0.65, min: -2, max: 3 },
     morph: { value: 4.2, min: 0.2, max: 3 },
     noisy: false,
   }, { storeId: 'water-gradient' });
@@ -125,8 +125,8 @@ const GradientBg = (props: Mesh) => {
       <planeBufferGeometry args={[10, 10, 192, 192]} />
       {/* @ts-ignore */}
       <waterGradientMaterial key={WaterGradientMaterial.key} ref={materialRef} uLightness={advanced.lightness} uSpeed={animation.speed * 0.01} uNoiseDensity={advanced.density} uNoiseStrength={morph} />
-      <EffectComposer enabled={noisy}>
-        <Noise premultiply blendFunction={BlendFunction.ADD} />
+      <EffectComposer disableNormalPass multisampling={0}>
+        {noisy && <Noise premultiply blendFunction={BlendFunction.ADD} />}
       </EffectComposer>
     </mesh>
   );

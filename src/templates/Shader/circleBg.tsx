@@ -146,8 +146,8 @@ const CircleBg = (props: Mesh) => {
       <planeBufferGeometry args={[viewport.width, viewport.height]} />
       {/* @ts-ignore */}
       <circleGlitchMaterial key={CircleGlitchMaterial.key} ref={materialRef} />
-      <EffectComposer enabled={noisy}>
-        <Noise premultiply blendFunction={BlendFunction.ADD} />
+      <EffectComposer disableNormalPass multisampling={0}>
+        {noisy && <Noise premultiply blendFunction={BlendFunction.ADD} />}
       </EffectComposer>
       {/* <meshNormalMaterial /> */}
 

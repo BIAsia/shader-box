@@ -131,8 +131,8 @@ const TextureBg = (props: Mesh) => {
       <planeBufferGeometry args={[10, 10, 192, 192]} />
       {/* @ts-ignore */}
       <customMaterial key={CustomMaterial.key} ref={materialRef} uResolution={new THREE.Vector2(viewport.width, viewport.height)} uLightness={advanced.lightness} uSpeed={animation.speed * 0.01} uDensity={advanced.density} uMorph={morph} uDirection={new THREE.Vector2(effect.x, effect.y)} />
-      <EffectComposer enabled={noisy}>
-        <Noise premultiply blendFunction={BlendFunction.ADD} />
+      <EffectComposer disableNormalPass multisampling={0}>
+        {noisy && <Noise premultiply blendFunction={BlendFunction.ADD} />}
       </EffectComposer>
     </mesh>
   );

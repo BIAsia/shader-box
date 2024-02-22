@@ -141,8 +141,8 @@ const TwoCircleBg = (props: Mesh) => {
       <twoCircleMaterial key={TwoCircleMaterial.key} uLightness={advanced.lightness} uMorph={morph} uRoot={new THREE.Vector2(position.x, position.y)} uScale={scale} ref={materialRef} uColor={[colors.color1, colors.color2, colors.color3, colors.colorbg].map(
         (color) => new THREE.Color(color)
       )} />
-      <EffectComposer enabled={noisy}>
-        <Noise premultiply blendFunction={BlendFunction.ADD} />
+      <EffectComposer disableNormalPass multisampling={0}>
+        {noisy && <Noise premultiply blendFunction={BlendFunction.ADD} />}
       </EffectComposer>
       {/* <meshNormalMaterial /> */}
 

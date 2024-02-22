@@ -132,8 +132,8 @@ const SharpGradientRBg = (props: Mesh) => {
       <planeBufferGeometry args={[viewport.width, viewport.height, 1, 1]} />
       {/* @ts-ignore */}
       <sharpGradientRMaterial key={SharpGradientRMaterial.key} ref={materialRef} uColor={[colors.color1, colors.color2, colors.color3, colors.color4].map((color) => new THREE.Color(color))} uResolution={new THREE.Vector2(viewport.width, viewport.height)} uLightness={advanced.lightness} uSpeed={animation.speed} uDensity={advanced.density} uCol={advanced.columns} />
-      <EffectComposer enabled={noisy}>
-        <Noise premultiply blendFunction={BlendFunction.ADD} />
+      <EffectComposer disableNormalPass multisampling={0}>
+        {noisy && <Noise premultiply blendFunction={BlendFunction.ADD} />}
       </EffectComposer>
     </mesh>
   );

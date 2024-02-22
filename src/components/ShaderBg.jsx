@@ -1,12 +1,24 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
-import CircleBg from '@/templates/Shader/circleBg'
-import GradientBg from '@/templates/Shader/gradientBg'
-import TextureBg from '@/templates/Shader/textureFlowBg/textureBg'
+// import CircleBg from '@/templates/Shader/circleBg'
+// import GradientBg from '@/templates/Shader/gradientBg'
+// import TextureBg from '@/templates/Shader/textureFlowBg/textureBg'
 // import TwoCircleBg from '@/templates/Shader/twoCirlceBg/twoCirlceBg'
 
 import { FileInput } from "@/components/FileInput"
+
+const GradientBg = dynamic(() => import("@/templates/Shader/gradientBg"), {
+    ssr: true,
+})
+
+const TextureBg = dynamic(() => import("@/templates/Shader/textureFlowBg/textureBg"), {
+    ssr: false,
+})
+
+const CircleBg = dynamic(() => import("@/templates/Shader/circleBg"), {
+    ssr: false,
+})
 
 const TwoCircleBg = dynamic(() => import("@/templates/Shader/twoCircleBg/twoCircleBg"), {
     ssr: false,
