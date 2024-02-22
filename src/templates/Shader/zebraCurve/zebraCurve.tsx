@@ -79,7 +79,7 @@ const ZebraCurveBg = (props: Mesh) => {
 
   const advanced = useControls({
     advanced: folder({
-      columns: { value: 25, min: 1, max: 50 },
+      columns: { value: 35, min: 1, max: 50 },
       lightness: { value: 0., min: - 1, max: 1 },
     }, { collapsed: false })
   }, { storeId: 'water-gradient' });
