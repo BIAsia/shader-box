@@ -22,6 +22,8 @@ const WaterGradientMaterial = shaderMaterial(
       (color) => new THREE.Color(color)
     ),
     uLightness: 0.2,
+    uChroma: 0.2,
+    uPos: [0, 0]
   },
   vertex,
   fragment
@@ -47,9 +49,10 @@ const GradientBg = (props: Mesh) => {
       link.click()
     })
   });
-  const { scale, morph, noisy } = useControls({
+  const { scale, morph, position, noisy } = useControls({
     scale: { value: 0.65, min: -2, max: 3 },
     morph: { value: 4.2, min: 0.2, max: 3 },
+    position: { value: [0, 0], min: [-10, -10], max: [10, 10], step: 1 },
     noisy: false,
   }, { storeId: 'water-gradient' });
 
@@ -63,14 +66,16 @@ const GradientBg = (props: Mesh) => {
 
   const animation = useControls({
     animation: folder({
-      speed: { value: 3, min: 0.1, max: 10 },
+      speed: { value: 3, min: 0.1, max: 3 },
     }, { collapsed: false })
   }, { storeId: 'water-gradient' });
 
   const advanced = useControls({
     advanced: folder({
       density: { value: 1.32, min: 0.1, max: 3 },
+      saturation: { value: 0.2, min: -1, max: 1 },
       lightness: { value: 0.2, min: -1, max: 1 },
+
     }, { collapsed: false })
   }, { storeId: 'water-gradient' });
 
@@ -124,7 +129,7 @@ const GradientBg = (props: Mesh) => {
     >
       <planeBufferGeometry args={[10, 10, 192, 192]} />
       {/* @ts-ignore */}
-      <waterGradientMaterial key={WaterGradientMaterial.key} ref={materialRef} uLightness={advanced.lightness} uSpeed={animation.speed * 0.01} uNoiseDensity={advanced.density} uNoiseStrength={morph} />
+      <waterGradientMaterial key={WaterGradientMaterial.key} ref={materialRef} uLightness={advanced.lightness} uChroma={advanced.saturation} uSpeed={animation.speed * 0.01} uNoiseDensity={advanced.density} uNoiseStrength={morph} uPos={position} />
       <EffectComposer disableNormalPass multisampling={0}>
         {noisy && <Noise premultiply blendFunction={BlendFunction.ADD} />}
       </EffectComposer>

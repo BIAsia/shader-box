@@ -71,7 +71,7 @@ const ShinyCircleBg = (props: Mesh) => {
 
   const animation = useControls({
     animation: folder({
-      speed: { value: 3, min: 0.1, max: 10 },
+      speed: { value: 3, min: 0.1, max: 3 },
     }, { collapsed: false })
   });
 
