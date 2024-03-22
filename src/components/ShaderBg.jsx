@@ -39,6 +39,14 @@ const ZebraCurveBg = dynamic(() => import("@/templates/Shader/zebraCurve/zebraCu
     ssr: false,
 })
 
+const PortalBg = dynamic(() => import("@/templates/Shader/portal/portal"), {
+    ssr: false,
+})
+
+const HighlightBg = dynamic(() => import("@/templates/Shader/highlight/highlight"), {
+    ssr: false,
+})
+
 // export const metadata = {
 
 // }
@@ -61,6 +69,7 @@ const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.
 
 const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockVisible }) => {
     const shaders = [
+        // <HighlightBg />,
         <ZebraCurveBg />,
         <SharpGradientBg />,
         <SharpGradientRBg />,
@@ -72,6 +81,7 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
 
     ]
     const titles = [
+        // { title: 'Highlight', subtitle: '-curve' },
         { title: 'Zebra Gradient', subtitle: '-curve' },
         { title: 'Column Gradient', subtitle: '-curve' },
         { title: 'Column Gradient', subtitle: '-slash' },
@@ -110,6 +120,25 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
 
 
             </div>
+
+
+            {/* <div className='w-full flex flex-col items-center justify-center'>
+                <div className='w-screen h-screen flex items-center justify-center absolute top-0 left-0'>
+                    <View style={{ width: 390 * 0.6, height: 844 * 0.6, userSelect: 'none', pointerEvents: 'none' }} className='absolute md:scale-125' id='shaderView'>
+                        {shaders[currentShader]}
+                    </View>
+
+                </div>
+            </div> */}
+
+            {/* <div className='w-screen h-screen flex items-center justify-center absolute top-0 left-0'>
+                <div className='absolute md:scale-125 h-full w-full flex-col items-top justify-top' style={{ width: 456 * 0.6, height: 844 * 0.6 }} >
+                    <View className='h-full w-full -z-10' id='shaderView'>
+                        {shaders[currentShader]}
+                    </View>
+                </div>
+            </div> */}
+
             <View className='absolute flex h-full w-full flex-col items-center justify-center -z-10' id='shaderView'>
                 {shaders[currentShader]}
             </View>
