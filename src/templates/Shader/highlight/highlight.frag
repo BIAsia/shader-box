@@ -11,6 +11,8 @@ uniform float uHue;
 uniform float uHasParticle;
 uniform float uParticleSize;
 uniform vec2 uParticlePos;
+uniform bool uIsPolar;
+uniform float uColorCol;
 // const float PI = 3.14159265358979323846;
 #define PI 3.1415927
 #define TWO_PI 6.283185
@@ -347,21 +349,39 @@ void main() {
     vec3 color = mix(uColor[0], uColor[1], r2);
     color = mix(uColor[2], color, r3);
 
-    // 多点渐变测试
-    vec3 col = RAMP(uColor, r0 * 0.5);
-
     // color = mix(color, uColor[2], r * 2. - 0.5);
     float a = atan(uv.y, uv.x);
     // float count = 3. + sin(t) * .3;
     float count = uCol;
+
+    // vec3 ColorList[5];
+    // ColorList[0] = uColor[0];
+    // ColorList[1] = uColor[1];
+    // ColorList[2] = uColor[2];
+    // ColorList[3] = uColor[3];
+    // ColorList[4] = uColor[0];
+
+    vec2 uvPolarColor = vec2(uvColor.x, uvColor.y + uResolution.y * 0.5 + 1.);
+
+    // 多点渐变测试
+    vec3 col = RAMP(uColor, r0 * uColorCol);
+    float alpha = smoothstep(0., 1., r);
+    if(uIsPolar) {
+        col = RAMP(uColor, 0.3 * atan(uvPolarColor.y, uvPolarColor.x * 4.));
+        col *= alpha;
+    }
+    //col = RAMP(ColorList, r2 * 0.5) 
 
     vec3 fragColor = color;
     // vec3 fragColor = color * butterFlyOriginal(a, r, count, t);
 
     fragColor = color * vec3(butterFlyC(a, r, count, t));
     fragColor = col * vec3(butterFlyC(a, r, count, t));
+    // fragColor = col;
 
-    fragColor -= 0.5 * uColor[3] * vec3(butterFlyC(a * .5, r * 2., count * .5, t));
+    // fragColor *= alpha;
+
+    // fragColor -= 0.5 * uColor[3] * vec3(butterFlyC(a * .5, r * 2., count * .5, t));
     //fragColor -= 0.5 * uColor[1] * vec3(butterFlyOriginal(a * 2., r * .5, count * .15, t));
     // fragColor = vec3(r3);
     // fragColor = blend(fragColor, uColor[0]);

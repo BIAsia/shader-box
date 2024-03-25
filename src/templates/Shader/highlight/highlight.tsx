@@ -26,10 +26,12 @@ const HighlightMaterial = shaderMaterial(
     // uMorph: 1.54,
     // uDirection: new THREE.Vector2(1, 1),
     uCol: 25,
+    uColorCol: 0.5,
     uHue: 148,
     uHasParticle: true,
     uParticleSize: 1,
     uParticlePos: new THREE.Vector2(0.0, 0.0),
+    uIsPolar: false
   },
   vertex,
   fragment
@@ -70,6 +72,7 @@ const SharpGradientBg = (props: Mesh) => {
       color4: '#000000',
       hue: { value: 148, min: 0.0, max: 360.0 },
       lightness: { value: 0., min: - 1, max: 1 },
+      isPolar: { value: false },
     })
   });
 
@@ -82,6 +85,7 @@ const SharpGradientBg = (props: Mesh) => {
   const advanced = useControls({
     advanced: folder({
       columns: { value: 4, min: 1, max: 10, step: 1 },
+      colorCol: { value: 0.5, min: 0, max: 2, step: 0.01 },
       hasParticle: { value: 1., min: 0, max: 1, step: 0.1 },
       particlePos: { value: { x: 0., y: 0. }, step: 0.1 },
       particleSize: { value: 1, min: 0, max: 10 },
@@ -138,7 +142,7 @@ const SharpGradientBg = (props: Mesh) => {
     >
       <planeBufferGeometry args={[viewport.width, viewport.height, 1, 1]} />
       {/* @ts-ignore */}
-      <highlightMaterial key={HighlightMaterial.key} ref={materialRef} uColor={[colors.color1, colors.color2, colors.color3, colors.color4].map((color) => new THREE.Color(color))} uResolution={new THREE.Vector2(viewport.width, viewport.height)} uLightness={colors.lightness} uSpeed={animation.speed} uPos={new THREE.Vector2(position.x, position.y)} uCol={advanced.columns} uHue={colors.hue} uHasParticle={advanced.hasParticle} uParticlePos={new THREE.Vector2(advanced.particlePos.x, advanced.particlePos.y)} uParticleSize={advanced.particleSize} />
+      <highlightMaterial key={HighlightMaterial.key} ref={materialRef} uColor={[colors.color1, colors.color2, colors.color3, colors.color4].map((color) => new THREE.Color(color))} uResolution={new THREE.Vector2(viewport.width, viewport.height)} uLightness={colors.lightness} uSpeed={animation.speed} uPos={new THREE.Vector2(position.x, position.y)} uCol={advanced.columns} uHue={colors.hue} uHasParticle={advanced.hasParticle} uParticlePos={new THREE.Vector2(advanced.particlePos.x, advanced.particlePos.y)} uParticleSize={advanced.particleSize} uIsPolar={colors.isPolar} uColorCol={advanced.colorCol} />
       <EffectComposer disableNormalPass multisampling={0}>
         {noisy && <Noise premultiply blendFunction={BlendFunction.ADD} />}
       </EffectComposer>
