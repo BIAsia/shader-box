@@ -2,16 +2,12 @@ varying vec3 vPos;
 uniform vec3 uColor[4];
 uniform float uLightness;
 uniform vec2 uResolution;
-uniform vec2 uPosEffect;
-uniform float uEffect;
+uniform vec2 uPos;
 uniform float uTime;
 uniform float uSpeed;
 uniform float uScale;
-uniform float uDensity;
-uniform float uMorph;
 uniform float uCol;
 uniform float uHue;
-uniform vec2 uDirection;
 const float PI = 3.14159265358979323846;
 
 vec3 hsl2rgb(in vec3 c) {
@@ -165,7 +161,7 @@ void main() {
 
     vec2 coord = vPos.xy / uResolution.xy + vec2(0.5);
     coord = vPos.xy + vec2(0.5);
-    float t = uTime * 0.15;
+    float t = uTime * 0.15 * (uSpeed * 0.3);
     vec2 uv = coord - vec2(0.5);
     vec2 transUV = vPos.xy / uResolution.xy + 0.5;
 
@@ -173,8 +169,8 @@ void main() {
 
     testLCH = lch2rgb(testLCH);
 
-    vec2 uvColor = uv + vec2(0., -1.0);
-    uv += vec2(0., -1.0);
+    uv -= vec2(uPos.x, -uPos.y);
+    vec2 uvColor = uv;
 
     uv *= rotate2d(t * 0.2);
 
@@ -192,7 +188,7 @@ void main() {
     // color = mix(color, uColor[2], r * 2. - 0.5);
     float a = atan(uv.y, uv.x);
     // float count = 3. + sin(t) * .3;
-    float count = 4.;
+    float count = uCol;
 
     vec3 fragColor = color;
     // vec3 fragColor = color * butterFlyOriginal(a, r, count, t);

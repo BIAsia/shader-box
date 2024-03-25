@@ -17,17 +17,14 @@ const HighlightMaterial = shaderMaterial(
     uResolution: new THREE.Vector2(0, 0),
     uTime: 0,
     uSpeed: 0.05,
-    uNoiseDensity: 1.2,
-    uNoiseStrength: 1.4,
     uColor: ["#e23a66", "#2287ba", "#f09878", "#000000"].map(
       (color) => new THREE.Color(color)
     ),
     uLightness: 0.,
-    uDensity: 25.,
-    uPosEffect: new THREE.Vector2(1., 0.5),
+    uPos: new THREE.Vector2(0.0, 0.0),
     // uEffect: 0.9,
     // uMorph: 1.54,
-    uDirection: new THREE.Vector2(1, 1),
+    // uDirection: new THREE.Vector2(1, 1),
     uCol: 25,
     uHue: 148,
   },
@@ -56,12 +53,11 @@ const SharpGradientBg = (props: Mesh) => {
     })
   });
   //const waterBgStore = useCreateStore();
-  const { scale, morph, effect, noisy } = useControls({
+  const { scale, position, noisy } = useControls({
     scale: { value: 1.0, min: 0.1, max: 3 },
-    morph: { value: 1.52, min: 0.2, max: 3.5 },
-    effect: { value: { x: 1, y: 1 } },
+    position: { value: { x: 0, y: -1 } },
     noisy: true,
-  }, { storeId: 'water-gradient' });
+  });
 
   const colors = useControls({
     colors: folder({
@@ -70,21 +66,22 @@ const SharpGradientBg = (props: Mesh) => {
       color3: '#2b2d42',
       color4: '#000000',
       hue: { value: 148, min: 0.0, max: 360.0 },
+      lightness: { value: 0., min: - 1, max: 1 },
     })
-  }, { storeId: 'water-gradient' });
+  });
 
   const animation = useControls({
     animation: folder({
-      speed: { value: 3, min: 0.1, max: 3 },
+      speed: { value: 3, min: 0.1, max: 10 },
     }, { collapsed: false })
-  }, { storeId: 'water-gradient' });
+  });
 
   const advanced = useControls({
     advanced: folder({
-      columns: { value: 25, min: 1, max: 50 },
-      lightness: { value: 0., min: - 1, max: 1 },
+      columns: { value: 4, min: 1, max: 10, step: 1 },
+
     }, { collapsed: false })
-  }, { storeId: 'water-gradient' });
+  });
 
 
 
@@ -136,7 +133,7 @@ const SharpGradientBg = (props: Mesh) => {
     >
       <planeBufferGeometry args={[viewport.width, viewport.height, 1, 1]} />
       {/* @ts-ignore */}
-      <highlightMaterial key={HighlightMaterial.key} ref={materialRef} uColor={[colors.color1, colors.color2, colors.color3, colors.color4].map((color) => new THREE.Color(color))} uResolution={new THREE.Vector2(viewport.width, viewport.height)} uLightness={advanced.lightness} uSpeed={animation.speed} uDensity={advanced.density} uCol={advanced.columns} uHue={colors.hue} />
+      <highlightMaterial key={HighlightMaterial.key} ref={materialRef} uColor={[colors.color1, colors.color2, colors.color3, colors.color4].map((color) => new THREE.Color(color))} uResolution={new THREE.Vector2(viewport.width, viewport.height)} uLightness={colors.lightness} uSpeed={animation.speed} uPos={new THREE.Vector2(position.x, position.y)} uCol={advanced.columns} uHue={colors.hue} />
       <EffectComposer disableNormalPass multisampling={0}>
         {noisy && <Noise premultiply blendFunction={BlendFunction.ADD} />}
       </EffectComposer>

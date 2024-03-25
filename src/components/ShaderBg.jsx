@@ -69,7 +69,7 @@ const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.
 
 const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockVisible }) => {
     const shaders = [
-        // <HighlightBg />,
+        <HighlightBg />,
         <ZebraCurveBg />,
         <SharpGradientBg />,
         <SharpGradientRBg />,
@@ -81,7 +81,7 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
 
     ]
     const titles = [
-        // { title: 'Highlight', subtitle: '-curve' },
+        { title: 'Highlight', subtitle: '-curve' },
         { title: 'Zebra Gradient', subtitle: '-curve' },
         { title: 'Column Gradient', subtitle: '-curve' },
         { title: 'Column Gradient', subtitle: '-slash' },
