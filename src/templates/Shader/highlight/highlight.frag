@@ -1,5 +1,6 @@
 varying vec3 vPos;
 uniform vec3 uColor[4];
+uniform vec3 uBgColor;
 uniform float uLightness;
 uniform vec2 uResolution;
 uniform vec2 uPos;
@@ -421,6 +422,8 @@ void main() {
 
     vec3 particles = layeredParticles(coord * 0.3 - vec2(uParticlePos.x, -uParticlePos.y), SIZE_MOD, ALPHA_MOD, LAYERS_COUNT, 3.);
     fragColor += particles * uHasParticle;
+
+    fragColor += uBgColor;
 
     //fragColor = vec3(v.x);
     gl_FragColor = vec4(fragColor, 1.);
