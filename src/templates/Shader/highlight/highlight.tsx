@@ -72,7 +72,7 @@ const SharpGradientBg = (props: Mesh) => {
       color3: '#2b2d42',
       color4: '#000000',
       bgColor: '#000000',
-      hue: { value: 148, min: 0.0, max: 360.0 },
+      //hue: { value: 148, min: 0.0, max: 360.0 },
       lightness: { value: 0., min: - 1, max: 1 },
       isPolar: { value: false },
     })

@@ -418,7 +418,11 @@ void main() {
     //vec3 fragColor2 = vec3(dist * 0.5) * uColor[0];
     //fragColor *= vec3(v.x * 1., v.y * 2., .8 - v.y * v.x);
    // fragColor = fragColor1 + fragColor2;
-    fragColor += uLightness;
+    if(uLightness >= 0.) {
+        fragColor = mix(fragColor, vec3(1, 1, 1), uLightness);
+    } else {
+        fragColor = mix(fragColor, vec3(0, 0, 0), -uLightness);
+    }
 
     vec3 particles = layeredParticles(coord * 0.3 - vec2(uParticlePos.x, -uParticlePos.y), SIZE_MOD, ALPHA_MOD, LAYERS_COUNT, 3.);
     fragColor += particles * uHasParticle;
