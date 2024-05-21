@@ -9,9 +9,9 @@ uniform float uSpeed;
 uniform float uScale;
 uniform float uCol;
 uniform float uHue;
-uniform float uHasParticle;
-uniform float uParticleSize;
-uniform vec2 uParticlePos;
+//uniform float uHasParticle;
+//uniform float uParticleSize;
+//uniform vec2 uParticlePos;
 uniform bool uIsPolar;
 uniform float uColorCol;
 // const float PI = 3.14159265358979323846;
@@ -22,7 +22,7 @@ uniform float uColorCol;
 #define MOVEMENT_SPEED 1.5
 #define MOVEMENT_DIRECTION vec2(0.7, -1.0)
 
-#define PARTICLE_SIZE 0.005*uParticleSize
+#define PARTICLE_SIZE 0.005*0.1
 
 #define PARTICLE_SCALE (vec2(0.9, 1.6))
 #define PARTICLE_SCALE_VAR (vec2(0.05, 0.2))
@@ -424,8 +424,8 @@ void main() {
         fragColor = mix(fragColor, vec3(0, 0, 0), -uLightness);
     }
 
-    vec3 particles = layeredParticles(coord * 0.3 - vec2(uParticlePos.x, -uParticlePos.y), SIZE_MOD, ALPHA_MOD, LAYERS_COUNT, 3.);
-    fragColor += particles * uHasParticle;
+    //vec3 particles = layeredParticles(coord * 0.3 - vec2(uParticlePos.x, -uParticlePos.y), SIZE_MOD, ALPHA_MOD, LAYERS_COUNT, 3.);
+    //fragColor += particles * uHasParticle;
 
     fragColor += uBgColor;
 

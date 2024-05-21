@@ -47,6 +47,10 @@ const HighlightBg = dynamic(() => import("@/templates/Shader/highlight/highlight
     ssr: false,
 })
 
+const SpinBg = dynamic(() => import("@/templates/Shader/spin/spin"), {
+    ssr: false,
+})
+
 // export const metadata = {
 
 // }
@@ -69,6 +73,7 @@ const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.
 
 const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockVisible }) => {
     const shaders = [
+        <SpinBg />,
         <HighlightBg />,
         <ZebraCurveBg />,
         <SharpGradientBg />,
@@ -81,6 +86,7 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
 
     ]
     const titles = [
+        { title: 'Spin', subtitle: '-diffuse' },
         { title: 'Highlight', subtitle: '-curve' },
         { title: 'Zebra Gradient', subtitle: '-curve' },
         { title: 'Column Gradient', subtitle: '-curve' },

@@ -7,12 +7,12 @@ import { useControls, folder, useCreateStore, button } from 'leva'
 import { EffectComposer, Noise } from "@react-three/postprocessing";
 import { BlendFunction } from 'postprocessing'
 
-import vertex from "./highlight.vert";
-import fragment from "./highlight.frag";
+import vertex from "./spin.vert";
+import fragment from "./spin.frag";
 
 
 // custom shader material
-const HighlightMaterial = shaderMaterial(
+const SpinMaterial = shaderMaterial(
   {
     uResolution: new THREE.Vector2(0, 0),
     uTime: 0,
@@ -32,7 +32,8 @@ const HighlightMaterial = shaderMaterial(
     uHasParticle: true,
     uParticleSize: 1,
     uParticlePos: new THREE.Vector2(0.0, 0.0),
-    uIsPolar: false
+    uIsPolar: false,
+    uTimeStamp: 0.0,
   },
   vertex,
   fragment
@@ -41,9 +42,9 @@ const HighlightMaterial = shaderMaterial(
 // This is the 🔑 that HMR will renew if this file is edited
 // It works for THREE.ShaderMaterial as well as for drei/shaderMaterial
 // @ts-ignore
-HighlightMaterial.key = THREE.MathUtils.generateUUID();
+SpinMaterial.key = THREE.MathUtils.generateUUID();
 
-extend({ HighlightMaterial });
+extend({ SpinMaterial });
 
 
 // shader material combined with mesh
@@ -61,7 +62,7 @@ const SharpGradientBg = (props: Mesh) => {
   //const waterBgStore = useCreateStore();
   const { scale, position, noisy } = useControls({
     scale: { value: 1.0, min: 0.1, max: 3 },
-    position: { value: { x: 0, y: -1 } },
+    position: { value: { x: 0, y: 0 } },
     noisy: false,
   });
 
@@ -81,13 +82,14 @@ const SharpGradientBg = (props: Mesh) => {
   const animation = useControls({
     animation: folder({
       speed: { value: 1, min: 0.1, max: 10 },
+      timeStamp: { value: 1, min: 0.1, max: 10 },
     }, { collapsed: false })
   });
 
   const advanced = useControls({
     advanced: folder({
-      columns: { value: 4, min: 1, max: 10, step: 1 },
-      colorZoom: { value: 0.5, min: 0, max: 2, step: 0.01 },
+      columns: { value: 2, min: 1, max: 10, step: 1 },
+      centerDark: { value: 0.5, min: 0, max: 2, step: 0.01 },
       //hasParticle: { value: 0., min: 0, max: 1, step: 0.1 },
       //particlePos: { value: { x: 0., y: 0. }, step: 0.1 },
       //particleSize: { value: 1, min: 0, max: 10 },
@@ -144,7 +146,7 @@ const SharpGradientBg = (props: Mesh) => {
     >
       <planeBufferGeometry args={[viewport.width, viewport.height, 1, 1]} />
       {/* @ts-ignore */}
-      <highlightMaterial key={HighlightMaterial.key} ref={materialRef} uColor={[colors.color1, colors.color2, colors.color3, colors.color4].map((color) => new THREE.Color(color))} uResolution={new THREE.Vector2(viewport.width, viewport.height)} uBgColor={colors.bgColor} uLightness={colors.lightness} uSpeed={animation.speed} uPos={new THREE.Vector2(position.x, position.y)} uCol={advanced.columns} uHue={colors.hue} uIsPolar={colors.isPolar} uColorCol={advanced.colorZoom} />
+      <spinMaterial key={SpinMaterial.key} ref={materialRef} uColor={[colors.color1, colors.color2, colors.color3, colors.color4].map((color) => new THREE.Color(color))} uResolution={new THREE.Vector2(viewport.width, viewport.height)} uBgColor={colors.bgColor} uLightness={colors.lightness} uSpeed={animation.speed} uPos={new THREE.Vector2(position.x, position.y)} uCol={advanced.columns} uHue={colors.hue} uIsPolar={colors.isPolar} uColorCol={advanced.centerDark} uTimeStamp={animation.timeStamp} />
       <EffectComposer disableNormalPass multisampling={0}>
         {noisy && <Noise premultiply blendFunction={BlendFunction.ADD} />}
       </EffectComposer>
