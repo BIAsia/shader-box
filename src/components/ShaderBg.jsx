@@ -51,6 +51,10 @@ const SpinBg = dynamic(() => import("@/templates/Shader/spin/spin"), {
     ssr: false,
 })
 
+const EdgeBg = dynamic(() => import("@/templates/Shader/edge/edge"), {
+    ssr: false,
+})
+
 // export const metadata = {
 
 // }
@@ -73,6 +77,7 @@ const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.
 
 const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockVisible }) => {
     const shaders = [
+        // <EdgeBg />,
         <SpinBg />,
         <HighlightBg />,
         <ZebraCurveBg />,
@@ -86,6 +91,7 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
 
     ]
     const titles = [
+        // { title: 'Edge', subtitle: '-diffuse' },
         { title: 'Spin', subtitle: '-diffuse' },
         { title: 'Highlight', subtitle: '-curve' },
         { title: 'Zebra Gradient', subtitle: '-curve' },
@@ -127,14 +133,15 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
 
             </div>
 
+            {/* <View style={{ width: 390 * 0.6, height: 844 * 0.6, userSelect: 'none', pointerEvents: 'none' }} className='absolute md:scale-125 top-5 left-9' id='shaderView'>
+                {shaders[currentShader]}
+            </View> */}
 
-            {/* <div className='w-full flex flex-col items-center justify-center'>
-                <div className='w-screen h-screen flex items-center justify-center absolute top-0 left-0'>
-                    <View style={{ width: 390 * 0.6, height: 844 * 0.6, userSelect: 'none', pointerEvents: 'none' }} className='absolute md:scale-125' id='shaderView'>
-                        {shaders[currentShader]}
-                    </View>
 
-                </div>
+            {/* <div className='w-full flex flex-col items-center justify-center' id="shader-container">
+                <View style={{ width: 390 * 0.6, height: 844 * 0.6, userSelect: 'none', pointerEvents: 'none' }} className='absolute md:scale-125' id='shaderView'>
+                    {shaders[currentShader]}
+                </View>
             </div> */}
 
             {/* <div className='w-screen h-screen flex items-center justify-center absolute top-0 left-0'>

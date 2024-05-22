@@ -113,8 +113,13 @@ void main() {
 
     //color *= alpha;
 
-    color -= alpha1 * 0.4;
-    color -= alpha2 * 0.4;
+    if(!uIsPolar) {
+        color -= alpha1 * 0.4;
+        color -= alpha2 * 0.4;
+    } else {
+        color += alpha1 * 0.4;
+        color += alpha2 * 0.4;
+    }
 
     color = mix(uBgColor, color, r * 4.);
 

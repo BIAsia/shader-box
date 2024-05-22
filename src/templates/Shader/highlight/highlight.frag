@@ -9,6 +9,7 @@ uniform float uSpeed;
 uniform float uScale;
 uniform float uCol;
 uniform float uHue;
+uniform float uTimeStamp;
 //uniform float uHasParticle;
 //uniform float uParticleSize;
 //uniform vec2 uParticlePos;
@@ -329,7 +330,7 @@ void main() {
 
     vec2 coord = vPos.xy / uResolution.xy + vec2(0.5);
     coord = vPos.xy + vec2(0.5);
-    float t = uTime * 0.15 * (uSpeed * 0.3);
+    float t = uTime * 0.15 * (uSpeed * 0.3) + uTimeStamp;
     vec2 uv = coord - vec2(0.5);
     vec2 transUV = vPos.xy / uResolution.xy + 0.5;
 

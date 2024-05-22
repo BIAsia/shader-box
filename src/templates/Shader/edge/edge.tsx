@@ -7,12 +7,12 @@ import { useControls, folder, useCreateStore, button } from 'leva'
 import { EffectComposer, Noise } from "@react-three/postprocessing";
 import { BlendFunction } from 'postprocessing'
 
-import vertex from "./spin.vert";
-import fragment from "./spin.frag";
+import vertex from "./edge.vert";
+import fragment from "./edge.frag";
 
 
 // custom shader material
-const SpinMaterial = shaderMaterial(
+const EdgeMaterial = shaderMaterial(
   {
     uResolution: new THREE.Vector2(0, 0),
     uTime: 0,
@@ -42,9 +42,9 @@ const SpinMaterial = shaderMaterial(
 // This is the 🔑 that HMR will renew if this file is edited
 // It works for THREE.ShaderMaterial as well as for drei/shaderMaterial
 // @ts-ignore
-SpinMaterial.key = THREE.MathUtils.generateUUID();
+EdgeMaterial.key = THREE.MathUtils.generateUUID();
 
-extend({ SpinMaterial });
+extend({ EdgeMaterial });
 
 
 // shader material combined with mesh
@@ -60,9 +60,8 @@ const SharpGradientBg = (props: Mesh) => {
     })
   });
   //const waterBgStore = useCreateStore();
-  const { scaleX, scaleY, position, noisy } = useControls({
-    scaleX: { value: 1.0, min: 0.1, max: 3 },
-    scaleY: { value: 1.0, min: 0.1, max: 3 },
+  const { scale, position, noisy } = useControls({
+    scale: { value: 1.0, min: 0.1, max: 3 },
     position: { value: { x: 0, y: 0 } },
     noisy: false,
   });
@@ -76,14 +75,14 @@ const SharpGradientBg = (props: Mesh) => {
       bgColor: '#000000',
       //hue: { value: 148, min: 0.0, max: 360.0 },
       lightness: { value: 0., min: - 1, max: 1 },
-      isOverlay: { value: false },
+      isPolar: { value: false },
     })
   });
 
   const animation = useControls({
     animation: folder({
       speed: { value: 1, min: 0.1, max: 10 },
-      timeStamp: { value: 1, min: 0.1, max: 100 },
+      timeStamp: { value: 1, min: 0.1, max: 10 },
     }, { collapsed: false })
   });
 
@@ -142,12 +141,12 @@ const SharpGradientBg = (props: Mesh) => {
   return (
     <mesh
       ref={meshRef}
-      scale={[scaleX, scaleY, 1]}
+      scale={scale}
     // {...props}
     >
       <planeBufferGeometry args={[viewport.width, viewport.height, 1, 1]} />
       {/* @ts-ignore */}
-      <spinMaterial key={SpinMaterial.key} ref={materialRef} uColor={[colors.color1, colors.color2, colors.color3, colors.color4].map((color) => new THREE.Color(color))} uResolution={new THREE.Vector2(viewport.width, viewport.height)} uBgColor={colors.bgColor} uLightness={colors.lightness} uSpeed={animation.speed} uPos={new THREE.Vector2(position.x, position.y)} uCol={advanced.columns} uHue={colors.hue} uIsPolar={colors.isOverlay} uColorCol={advanced.centerDark} uTimeStamp={animation.timeStamp} />
+      <edgeMaterial key={EdgeMaterial.key} ref={materialRef} uColor={[colors.color1, colors.color2, colors.color3, colors.color4].map((color) => new THREE.Color(color))} uResolution={new THREE.Vector2(viewport.width, viewport.height)} uBgColor={colors.bgColor} uLightness={colors.lightness} uSpeed={animation.speed} uPos={new THREE.Vector2(position.x, position.y)} uCol={advanced.columns} uHue={colors.hue} uIsPolar={colors.isPolar} uColorCol={advanced.centerDark} uTimeStamp={animation.timeStamp} />
       <EffectComposer disableNormalPass multisampling={0}>
         {noisy && <Noise premultiply blendFunction={BlendFunction.ADD} />}
       </EffectComposer>
