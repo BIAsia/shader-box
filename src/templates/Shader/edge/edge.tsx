@@ -60,8 +60,9 @@ const SharpGradientBg = (props: Mesh) => {
     })
   });
   //const waterBgStore = useCreateStore();
-  const { scale, position, noisy } = useControls({
-    scale: { value: 1.0, min: 0.1, max: 3 },
+  const { scaleX, scaleY, position, noisy } = useControls({
+    scaleX: { value: 1.0, min: 0.1, max: 3 },
+    scaleY: { value: 1.0, min: 0.1, max: 3 },
     position: { value: { x: 0, y: 0 } },
     noisy: false,
   });
@@ -88,8 +89,8 @@ const SharpGradientBg = (props: Mesh) => {
 
   const advanced = useControls({
     advanced: folder({
-      columns: { value: 2, min: 1, max: 10, step: 1 },
-      centerDark: { value: 0.5, min: 0, max: 2, step: 0.01 },
+      //columns: { value: 2, min: 1, max: 10, step: 1 },
+      //centerDark: { value: 0.5, min: 0, max: 2, step: 0.01 },
       //hasParticle: { value: 0., min: 0, max: 1, step: 0.1 },
       //particlePos: { value: { x: 0., y: 0. }, step: 0.1 },
       //particleSize: { value: 1, min: 0, max: 10 },
@@ -141,7 +142,7 @@ const SharpGradientBg = (props: Mesh) => {
   return (
     <mesh
       ref={meshRef}
-      scale={scale}
+      scale={[scaleX, scaleY, 1]}
     // {...props}
     >
       <planeBufferGeometry args={[viewport.width, viewport.height, 1, 1]} />

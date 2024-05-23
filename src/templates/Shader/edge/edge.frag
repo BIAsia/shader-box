@@ -17,6 +17,10 @@ uniform float uColorCol;
 #define PI 3.1415927
 const float dots = 50.; //number of lights
 
+vec3 RAMP(vec3 cols[4], float x) {
+    x *= float(cols.length() - 1);
+    return mix(cols[int(x)], cols[int(x) + 1], smoothstep(0.0, 1.0, fract(x)));
+}
 //convert HSV to RGB
 vec3 hsv2rgb(vec3 c) {
     vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
@@ -110,7 +114,7 @@ float drawLine(float radius, float brightness, vec2 uv, float time) {
     float dist = distance(p, vec2(0));
     //c = c * smoothstep(radius, darkRadius, abs(uv.x+0.25));
     //c = c*smoothstep(radius, darkRadius, uv.x);
-    //c.r += 0.2 * rand(uv, time * 0.01);
+    // c.r += 0.1*rand(uv, time*0.01);
 
     c.r = clamp(c.r, 0., 1.6);
     c.r -= 0.6;
@@ -119,19 +123,26 @@ float drawLine(float radius, float brightness, vec2 uv, float time) {
 }
 
 void main() {
-    vec3 rgb = vec3(0., 1., 1.);
+    vec3 rgb = vec3(0., 1., uTimeStamp);
     vec2 uv = vUV;
     vec2 coord = vec2(vUV.x * uResolution.y / uResolution.x, vUV.y);
+    float time = uTime * 0.001 * uSpeed + uTimeStamp * 10.;
 
     vec3 mainColor = RGBColor(vec3(0., 0., 0.));
-    vec3 assistColor = RGBColor(vec3(46., 191., 145.));
-    vec3 assistColor2 = RGBColor(vec3(46., 191., 145.));
-    vec3 assistColor3 = RGBColor(vec3(46., 191., 145.));
+    vec3 assistColor = RGBColor(vec3(26., 42., 108.));
+    vec3 assistColor2 = RGBColor(vec3(178., 31., 31.));
+    vec3 assistColor3 = RGBColor(vec3(253., 187., 45.));
 
-    float time = uTime * 0.005;
+    vec3[4] colors;
+    colors[0] = uColor[0];
+    colors[1] = uColor[1];
+    colors[2] = uColor[2];
+    colors[3] = uColor[3];
+    vec3 color = RAMP(colors, uv.y * 0.5 * abs(cos(time) - 0.8));
+
     float radius = .25; //radius of light ring
     radius += 0.05 * cos(time * 0.1);
-    float brightness = 0.08;
+    float brightness = 0.08 + uLightness * 0.1;
     brightness += 0.01 * sin(time * 0.01);
 
     float col1 = drawLine(radius, brightness, uv, time);
@@ -140,8 +151,12 @@ void main() {
 
     float col = col1 + col2;
     vec4 fragColor = vec4(vec3(col), 1);
-    fragColor.rgb = mix(mainColor, assistColor, col);
 
+    float col3 = drawLine(radius + 0.1 * sin(time), brightness, uv, time);
+    float col4 = drawLine(radius + 0.1 * sin(time), brightness, uv2, time);
+    vec3 colorOverlay = mix(vec3(0.), uColor[3], col3 + col4);
+
+    fragColor.rgb = color * col + colorOverlay;
     gl_FragColor = vec4(vec3(fragColor.rgb), 1.);
 
 }
