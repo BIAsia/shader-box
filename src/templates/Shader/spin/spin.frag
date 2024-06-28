@@ -1,28 +1,23 @@
 varying vec3 vPos;
 varying vec2 vUV;
+
+uniform vec2 uResolution;
+uniform float uTime;
+
+uniform float uSpeed;
+uniform float uTimeOffset;
+uniform float uLightness;
+uniform vec2 uPosition;
+uniform vec2 uScale;
+uniform float uRotate;
+
 uniform vec3 uColor[4];
 uniform vec3 uBgColor;
-uniform float uLightness;
-uniform vec2 uResolution;
-uniform vec2 uPos;
-uniform float uTime;
-uniform float uSpeed;
-uniform float uTimeStamp;
-uniform float uScale;
-uniform float uCol;
-uniform float uHue;
-uniform bool uIsPolar;
-uniform float uColorCol;
+uniform float uComplex;
+uniform float uMorph;
 
 #define PI 3.1415927
-const float dots = 50.; //number of lights
 
-//convert HSV to RGB
-vec3 hsv2rgb(vec3 c) {
-    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
-    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
-}
 mat2 rotate2d(float angle) {
     return mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
 }
@@ -74,23 +69,27 @@ float rand(vec2 co, float time) {
 
 void main() {
     vec2 uv = vUV;
-    vec2 coord = vec2(vUV.x * uResolution.y / uResolution.x, vUV.y);
+    vec2 scale = uScale * vec2(0.1);
+    uv.x = (uv.x - 0.5) * (1. - scale.x) + 0.5;
+    uv.y = (uv.y - 0.5) * (1. - scale.y) + 0.5;
+    // vec2 uv = vec2(vUV.x * uResolution.y / uResolution.x, vUV.y);
 
     vec3 mainColor = uColor[0];
     vec3 assistColor = uColor[1];
     vec3 assistColor2 = uColor[2];
     vec3 assistColor3 = uColor[3];
 
-    float time = uTime * 0.006 * uSpeed + uTimeStamp;
+    float time = uTime * 0.01 * uSpeed + uTimeOffset;
     vec3 c1 = vec3(mainColor.r, mainColor.g, mainColor.b);
     vec3 c2 = vec3(assistColor.r, assistColor.g, assistColor.b);
     vec3 color = c1;
 
-    vec2 pos = vec2(0.5) - uv + uPos;
-    float r = length(pos) * uColorCol * 3.;
+    vec2 pos = vec2(0.5) - uv + uPosition;
+    float r = length(pos) * 3.;
     float a = atan(pos.y, pos.x);
-    float count = uCol;
-    float shape = abs(0.7 * sin(a * (count * .5) + (time * 0.8 + 0.4))) *
+    float count = uComplex;
+    float morph = 1. - uMorph / 0.7;
+    float shape = abs(morph * sin(a * (count * .5) + (time * 0.8 + 0.4))) *
         sin(a * count - (time * 0.8 + 0.2));
     vec3 alpha1 = shape * assistColor2;
 
@@ -100,7 +99,6 @@ void main() {
     vec3 alpha2 = shape2 * assistColor3;
 
     shape = pow(shape, 1.);
-    //r += 0.2*rand(uv,time*0.01);
     color = mix(color, c2, r);
 
     color *= 1. + 0.5;
@@ -113,13 +111,8 @@ void main() {
 
     //color *= alpha;
 
-    if(!uIsPolar) {
-        color -= alpha1 * 0.4;
-        color -= alpha2 * 0.4;
-    } else {
-        color += alpha1 * 0.4;
-        color += alpha2 * 0.4;
-    }
+    color -= alpha1 * 0.4;
+    color -= alpha2 * 0.4;
 
     color = mix(uBgColor, color, r * 4.);
 
@@ -130,7 +123,4 @@ void main() {
     }
 
     gl_FragColor = vec4(vec3(color), 1.);
-
-    //gl_color = vec4(vec3(color.rgb), 1.);
-
 }

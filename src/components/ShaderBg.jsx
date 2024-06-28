@@ -78,30 +78,30 @@ const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.
 
 const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockVisible }) => {
     const shaders = [
-        <EdgeBg />,
+        // <EdgeBg />,
         <SpinBg />,
-        <HighlightBg />,
-        <ZebraCurveBg />,
-        <SharpGradientBg />,
-        <SharpGradientRBg />,
+        // <HighlightBg />,
+        // <ZebraCurveBg />,
+        // <SharpGradientBg />,
+        // <SharpGradientRBg />,
         <GradientBg />,
-        <TextureBg />,
-        <CircleBg />,
-        <TwoCircleBg />,
+        // <TextureBg />,
+        // <CircleBg />,
+        // <TwoCircleBg />,
         // <ShinyCircleBg />,
 
     ]
     const titles = [
-        { title: 'Edge', subtitle: '-diffuse' },
+        // { title: 'Edge', subtitle: '-diffuse' },
         { title: 'Spin', subtitle: '-diffuse' },
-        { title: 'Highlight', subtitle: '-curve' },
-        { title: 'Zebra Gradient', subtitle: '-curve' },
-        { title: 'Column Gradient', subtitle: '-curve' },
-        { title: 'Column Gradient', subtitle: '-slash' },
+        // { title: 'Highlight', subtitle: '-curve' },
+        // { title: 'Zebra Gradient', subtitle: '-curve' },
+        // { title: 'Column Gradient', subtitle: '-curve' },
+        // { title: 'Column Gradient', subtitle: '-slash' },
         { title: 'Lava Gradient', subtitle: '-Diffuse' },
-        { title: 'Lava Gradient', subtitle: '-Zebra' },
-        { title: 'Circle Gradient', subtitle: '-Hole' },
-        { title: 'Circle Gradient', subtitle: '-Double' },
+        // { title: 'Lava Gradient', subtitle: '-Zebra' },
+        // { title: 'Circle Gradient', subtitle: '-Hole' },
+        // { title: 'Circle Gradient', subtitle: '-Double' },
         // { title: 'Circle Gradient', subtitle: '-OKLAB' },
 
     ]
@@ -128,7 +128,7 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
                 </div>
                 <div className='flex'>
                     {isMockVisible && <FileInput setImageSrc={setOverlay}></FileInput>}
-                    <button className='text-white opacity-70 transition-all hover:opacity-100 text-sm' onClick={setMockVisible}>{isMockVisible ? 'Hide Mock' : 'Show Mock'}</button>
+                    <button className='text-white opacity-70 transition-all hover:opacity-100 text-sm' onClick={setMockVisible}>{isMockVisible ? 'Go full-screen' : 'Show Mock'}</button>
                 </div>
             </div>
 
