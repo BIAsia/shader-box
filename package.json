@@ -48,5 +48,6 @@
     "raw-loader": "^4.0.2",
     "tailwindcss": "^3.3.2",
     "url-loader": "^4.1.1"
-  }
+  },
+  "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447"
 }

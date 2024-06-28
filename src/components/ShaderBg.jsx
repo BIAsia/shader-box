@@ -1,6 +1,7 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
+import { Canvas } from '@react-three/fiber'
 // import CircleBg from '@/templates/Shader/circleBg'
 // import GradientBg from '@/templates/Shader/gradientBg'
 // import TextureBg from '@/templates/Shader/textureFlowBg/textureBg'
@@ -114,7 +115,7 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
 
     return (
         <>
-            <div className='p-8 z-10 flex flex-col justify-between items-start h-full'>
+            <div className='p-8 z-10 flex flex-col justify-between items-start h-full absolute'>
                 <div>
                     <div className='pb-6'>
                         <h2 className='text-white'>{titles[currentShader].title}</h2>
@@ -129,17 +130,30 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
                     {isMockVisible && <FileInput setImageSrc={setOverlay}></FileInput>}
                     <button className='text-white opacity-70 transition-all hover:opacity-100 text-sm' onClick={setMockVisible}>{isMockVisible ? 'Hide Mock' : 'Show Mock'}</button>
                 </div>
-
-
             </div>
+
+            {isMockVisible ? (
+                <div className='absolute flex h-full w-full flex-col items-center justify-center'>
+                    <Canvas style={{ width: 390 * 0.6 * 1.25, height: 844 * 0.6 * 1.25 }} className='absolute -z-10' id='shaderView'>
+                        {shaders[currentShader]}
+                    </Canvas>
+                </div>
+            ) : (
+                <Canvas className='absolute flex h-full w-full flex-col items-center justify-center -z-10' id='shaderView'>
+                    {shaders[currentShader]}
+                </Canvas>
+            )}
+
+
+
 
             {/* <View style={{ width: 390 * 0.6, height: 844 * 0.6, userSelect: 'none', pointerEvents: 'none' }} className='absolute md:scale-125 top-5 left-9' id='shaderView'>
                 {shaders[currentShader]}
             </View> */}
 
 
-            {/* <div className='w-full flex flex-col items-center justify-center' id="shader-container">
-                <View style={{ width: 390 * 0.6, height: 844 * 0.6, userSelect: 'none', pointerEvents: 'none' }} className='absolute md:scale-125' id='shaderView'>
+            {/* <div className='flex flex-col items-center justify-center' id="shader-container">
+                <View style={{ width: 390 * 0.6, height: 844 * 0.6, userSelect: 'none', pointerEvents: 'none' }} className='absolute flex md:scale-125' id='shaderView'>
                     {shaders[currentShader]}
                 </View>
             </div> */}
@@ -152,9 +166,9 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
                 </div>
             </div> */}
 
-            <View className='absolute flex h-full w-full flex-col items-center justify-center -z-10' id='shaderView'>
+            {/* <View className='absolute flex h-full w-full flex-col items-center justify-center -z-10' id='shaderView'>
                 {shaders[currentShader]}
-            </View>
+            </View> */}
         </>
 
     )
