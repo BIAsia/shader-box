@@ -105,17 +105,26 @@ varying float displacement;
 varying vec3 vPos;
 varying float vDistort;
 
+uniform vec2 uResolution;
 uniform float uTime;
 uniform float uSpeed;
-uniform float uNoiseDensity;
-uniform float uNoiseStrength;
-uniform vec2 uPos;
+uniform float uTimeOffset;
+
+uniform vec2 uPosition;
+uniform vec2 uScale;
+uniform float uRotate;
+
+uniform vec3 uColor[4];
+uniform vec3 uBgColor;
+uniform float uComplex;
+uniform float uMorph;
 
 void main() {
-  float t = uTime * uSpeed;
-  float distortion = 0.75 * cnoise(0.43 * position * uNoiseDensity + t);
+  float t = uTime * uSpeed * 0.005 + uTimeOffset;
+  float distortion = 0.75 * cnoise(0.43 * position * (uComplex - 0.3) + t);
 
-  vec3 pos = position + normal * distortion * (6.0 - uNoiseStrength) + vec3(uPos, 0);
+  vec3 pos = position + normal * distortion * (6.0 - uMorph * 3. + 0.4) + vec3(uPosition, 0);
+  pos = vec3(pos.x * uScale.x, pos.y * uScale.y, pos.z);
   vPos = pos;
 
   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.);

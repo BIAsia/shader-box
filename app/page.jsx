@@ -21,7 +21,7 @@ ReactGA.initialize('G-JFF0CZQNDN');
 const CircleBg = dynamic(() => import("@/templates/Shader/circleBg"), {
   ssr: false,
 })
-const GradientBg = dynamic(() => import("@/templates/Shader/gradientBg"), {
+const GradientBg = dynamic(() => import("@/templates/Shader/lava/gradientBg"), {
   ssr: false,
 })
 const Common = dynamic(() => import('@/components/canvas/View').then((mod) => mod.Common), { ssr: false })

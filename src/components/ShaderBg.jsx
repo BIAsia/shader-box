@@ -9,7 +9,7 @@ import { Canvas } from '@react-three/fiber'
 
 import { FileInput } from "@/components/FileInput"
 
-const GradientBg = dynamic(() => import("@/templates/Shader/gradientBg"), {
+const GradientBg = dynamic(() => import("@/templates/Shader/lava/gradientBg"), {
     ssr: true,
 })
 
