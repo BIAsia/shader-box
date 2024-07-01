@@ -16,24 +16,18 @@ const HighlightMaterial = shaderMaterial(
   {
     uResolution: new THREE.Vector2(0, 0),
     uTime: 0,
-    uSpeed: 0.05,
+    uSpeed: 1.,
+    uTimeOffset: 0.0,
+    uLightness: 0.,
+    uPosition: new THREE.Vector2(0.0, 0.0),
+    uScale: new THREE.Vector2(1.0, 1.0),
+    uRotate: 0.,
     uColor: ["#e23a66", "#2287ba", "#f09878", "#000000"].map(
       (color) => new THREE.Color(color)
     ),
     uBgColor: new THREE.Color('#000000'),
-    uLightness: 0.,
-    uPos: new THREE.Vector2(0.0, 0.0),
-    // uEffect: 0.9,
-    // uMorph: 1.54,
-    // uDirection: new THREE.Vector2(1, 1),
-    uCol: 25,
-    uColorCol: 0.5,
-    uHue: 148,
-    uHasParticle: true,
-    uParticleSize: 1,
-    uParticlePos: new THREE.Vector2(0.0, 0.0),
-    uIsPolar: false,
-    uTimeStamp: 0.0,
+    uComplex: 1,
+    uMorph: 0.0,
   },
   vertex,
   fragment
@@ -60,41 +54,33 @@ const SharpGradientBg = (props: Mesh) => {
     })
   });
   //const waterBgStore = useCreateStore();
-  const { scaleX, scaleY, position, noisy } = useControls({
-    scaleX: { value: 1.0, min: 0.1, max: 3 },
-    scaleY: { value: 1.0, min: 0.1, max: 3 },
-    position: { value: { x: 0, y: -1 } },
-    noisy: false,
+  const animation = useControls({
+    animation: folder({
+      speed: { value: 1, min: 0., max: 10 },
+      timeOffset: { value: 0, min: 0., max: 10 },
+    }, { collapsed: false })
   });
 
-  const colors = useControls({
-    colors: folder({
+  const color = useControls({
+    color: folder({
       color1: '#000000',
       color2: '#45a8de',
       color3: '#2b2d42',
       color4: '#000000',
       bgColor: '#000000',
-      //hue: { value: 148, min: 0.0, max: 360.0 },
       lightness: { value: 0., min: - 1, max: 1 },
-      isPolar: { value: false },
     })
   });
 
-  const animation = useControls({
-    animation: folder({
-      speed: { value: 1, min: 0.1, max: 10 },
-      timeStamp: { value: 1, min: 0.1, max: 100 },
-    }, { collapsed: false })
-  });
-
-  const advanced = useControls({
-    advanced: folder({
-      columns: { value: 4, min: 1, max: 10, step: 1 },
-      colorZoom: { value: 0.5, min: 0, max: 2, step: 0.01 },
-      //hasParticle: { value: 0., min: 0, max: 1, step: 0.1 },
-      //particlePos: { value: { x: 0., y: 0. }, step: 0.1 },
-      //particleSize: { value: 1, min: 0, max: 10 },
-    }, { collapsed: false })
+  const shape = useControls({
+    shape: folder({
+      position: { value: { x: 0, y: 0 }, step: 0.01 },
+      scaleX: { value: 1.0, min: 0.1, max: 10 },
+      scaleY: { value: 1.0, min: 0.1, max: 10 },
+      // rotate: { value: 0, min: 0, max: 360 },
+      complex: { value: 1, min: 1, max: 20, step: 1 },
+      morph: { value: 0., min: -1, max: 1 },
+    })
   });
 
 
@@ -121,8 +107,8 @@ const SharpGradientBg = (props: Mesh) => {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
 
   // set palettes
-  const paletteLight = ["#0888B8", "#0870A8", "#f09878"].map((color) => new THREE.Color(color))
-  const paletteDark = [colors.color1, colors.color2, colors.color3].map((color) => new THREE.Color(color))
+  // const paletteLight = ["#0888B8", "#0870A8", "#f09878"].map((color) => new THREE.Color(color))
+  // const paletteDark = [colors.color1, colors.color2, colors.color3].map((color) => new THREE.Color(color))
 
   // animation
   useFrame(({ clock }) => {
@@ -142,15 +128,29 @@ const SharpGradientBg = (props: Mesh) => {
   return (
     <mesh
       ref={meshRef}
-      scale={[scaleX, scaleY, 1]}
+    // scale={[scaleX, scaleY, 1]}
     // {...props}
     >
       <planeBufferGeometry args={[viewport.width, viewport.height, 1, 1]} />
       {/* @ts-ignore */}
-      <highlightMaterial key={HighlightMaterial.key} ref={materialRef} uColor={[colors.color1, colors.color2, colors.color3, colors.color4].map((color) => new THREE.Color(color))} uResolution={new THREE.Vector2(viewport.width, viewport.height)} uBgColor={colors.bgColor} uLightness={colors.lightness} uSpeed={animation.speed} uPos={new THREE.Vector2(position.x, position.y)} uCol={advanced.columns} uHue={colors.hue} uIsPolar={colors.isPolar} uColorCol={advanced.colorZoom} uTimeStamp={animation.timeStamp} />
-      <EffectComposer disableNormalPass multisampling={0}>
+      <highlightMaterial
+        key={HighlightMaterial.key}
+        ref={materialRef}
+        uSpeed={animation.speed}
+        uTimeOffset={animation.timeOffset}
+        uLightness={color.lightness}
+        uPosition={new THREE.Vector2(shape.position.x, shape.position.y)}
+        uScale={new THREE.Vector2(shape.scaleX, shape.scaleY)}
+        uRotate={shape.rotate}
+        uColor={[color.color1, color.color2, color.color3, color.color4].map((color) => new THREE.Color(color))}
+        uBgColor={color.bgColor}
+        uComplex={shape.complex}
+        uMorph={shape.morph}
+        uResolution={new THREE.Vector2(viewport.width, viewport.height)}
+      />
+      {/* <EffectComposer disableNormalPass multisampling={0}>
         {noisy && <Noise premultiply blendFunction={BlendFunction.ADD} />}
-      </EffectComposer>
+      </EffectComposer> */}
     </mesh>
   );
 };
