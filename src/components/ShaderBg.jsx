@@ -2,10 +2,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { Canvas } from '@react-three/fiber'
-// import CircleBg from '@/templates/Shader/circleBg'
-// import GradientBg from '@/templates/Shader/gradientBg'
-// import TextureBg from '@/templates/Shader/textureFlowBg/textureBg'
-// import TwoCircleBg from '@/templates/Shader/twoCirlceBg/twoCirlceBg'
 
 import { FileInput } from "@/components/FileInput"
 
@@ -80,7 +76,7 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
     const shaders = [
         // <EdgeBg />,
         <SpinBg />,
-        // <HighlightBg />,
+        <HighlightBg />,
         // <ZebraCurveBg />,
         // <SharpGradientBg />,
         // <SharpGradientRBg />,
@@ -94,7 +90,7 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
     const titles = [
         // { title: 'Edge', subtitle: '-diffuse' },
         { title: 'Spin', subtitle: '-diffuse' },
-        // { title: 'Highlight', subtitle: '-curve' },
+        { title: 'Highlight', subtitle: '-curve' },
         // { title: 'Zebra Gradient', subtitle: '-curve' },
         // { title: 'Column Gradient', subtitle: '-curve' },
         // { title: 'Column Gradient', subtitle: '-slash' },

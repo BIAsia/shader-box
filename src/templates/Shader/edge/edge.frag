@@ -1,18 +1,20 @@
 varying vec3 vPos;
 varying vec2 vUV;
+
+uniform vec2 uResolution;
+uniform float uTime;
+
+uniform float uSpeed;
+uniform float uTimeOffset;
+uniform float uLightness;
+uniform vec2 uPosition;
+uniform vec2 uScale;
+uniform float uRotate;
+
 uniform vec3 uColor[4];
 uniform vec3 uBgColor;
-uniform float uLightness;
-uniform vec2 uResolution;
-uniform vec2 uPos;
-uniform float uTime;
-uniform float uSpeed;
-uniform float uTimeStamp;
-uniform float uScale;
-uniform float uCol;
-uniform float uHue;
-uniform bool uIsPolar;
-uniform float uColorCol;
+uniform float uComplex;
+uniform float uMorph;
 
 #define PI 3.1415927
 const float dots = 50.; //number of lights
@@ -123,21 +125,16 @@ float drawLine(float radius, float brightness, vec2 uv, float time) {
 }
 
 void main() {
-    vec3 rgb = vec3(0., 1., uTimeStamp);
+    vec3 rgb = vec3(0., 1., uTimeOffset);
     vec2 uv = vUV;
     vec2 coord = vec2(vUV.x * uResolution.y / uResolution.x, vUV.y);
-    float time = uTime * 0.001 * uSpeed + uTimeStamp * 10.;
-
-    vec3 mainColor = RGBColor(vec3(0., 0., 0.));
-    vec3 assistColor = RGBColor(vec3(26., 42., 108.));
-    vec3 assistColor2 = RGBColor(vec3(178., 31., 31.));
-    vec3 assistColor3 = RGBColor(vec3(253., 187., 45.));
+    float time = uTime * 0.05 * uSpeed + uTimeOffset * 10.;
 
     vec3[4] colors;
-    colors[0] = uColor[0];
+    colors[0] = uColor[1];
     colors[1] = uColor[1];
-    colors[2] = uColor[2];
-    colors[3] = uColor[3];
+    colors[2] = uColor[1];
+    colors[3] = uColor[1];
     vec3 color = RAMP(colors, uv.y * 0.5 * abs(cos(time) - 0.8));
 
     float radius = .25; //radius of light ring
@@ -156,7 +153,7 @@ void main() {
     float col4 = drawLine(radius + 0.1 * sin(time), brightness, uv2, time);
     vec3 colorOverlay = mix(vec3(0.), uColor[3], col3 + col4);
 
-    fragColor.rgb = color * col + colorOverlay;
+    fragColor.rgb = color * col + colorOverlay + uBgColor;
     gl_FragColor = vec4(vec3(fragColor.rgb), 1.);
 
 }
