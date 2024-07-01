@@ -1,16 +1,19 @@
 varying vec3 vPos;
-uniform vec3 uColor[4];
-uniform float uLightness;
+
 uniform vec2 uResolution;
-uniform vec2 uPosEffect;
-uniform float uEffect;
 uniform float uTime;
+
 uniform float uSpeed;
-uniform float uScale;
-uniform float uDensity;
+uniform float uTimeOffset;
+uniform float uLightness;
+uniform vec2 uPosition;
+uniform vec2 uScale;
+uniform float uRotate;
+
+uniform vec3 uColor[4];
+uniform vec3 uBgColor;
+uniform float uComplex;
 uniform float uMorph;
-uniform float uCol;
-uniform vec2 uDirection;
 
 vec3 mul3(in mat3 m, in vec3 v) {
     return vec3(dot(v, m[0]), dot(v, m[1]), dot(v, m[2]));
@@ -41,7 +44,8 @@ vec3 oklab2srgb(vec3 c) {
 
 void main() {
     // vec2 coord = vec2(2.0,-2.0)*vPos.xy/uResolution.xy;
-    vec2 coord = vPos.xy / uResolution.xy + vec2(0.5);
+    vec2 position = vec2(vPos.x * 1. / (uScale.x) + uPosition.x, vPos.y * 1. / uScale.y + uPosition.y);
+    vec2 coord = position.xy / uResolution.xy + vec2(0.5);
     vec3 oklab1 = uColor[0];
     vec3 oklab2 = uColor[1];
     vec3 oklab3 = uColor[2];
@@ -52,15 +56,22 @@ void main() {
 
     vec4 black = vec4(0., 0., 0., 1.);
 
-    float speed = uTime * 0.5 * uSpeed;
-    float col = 2. + abs(25. - uCol);
+    float speed = uTime * 0.5 * uSpeed + uTimeOffset * 100.;
+    float col = 2. + abs(25. - uComplex);
 
+    // coord *= (7. - 7. * uMorph);
     coord *= 7.;
-    for(float i = 0., v; i++ < 70.;) {
+    for(float i = 0., v; i++ < 70. * (1. - uMorph);) {
         v = 9. - i / 6. + 2. * cos(coord.x + sin(i / 6. + speed * 0.01)) - coord.y, black = mix(black, vec4(int(mod(i, col))), smoothstep(0., 0.2 / uResolution.y, v));
     }
     black.rgb += oklab3;
     fragColor += 0.2 * oklab4;
 
-    gl_FragColor = vec4(fragColor * black.rgb + uLightness, 1.);
+    if(uLightness >= 0.) {
+        fragColor = mix(fragColor, vec3(1, 1, 1), uLightness);
+    } else {
+        fragColor = mix(fragColor, vec3(0, 0, 0), -uLightness);
+    }
+
+    gl_FragColor = vec4(fragColor * black.rgb, 1.);
 }
