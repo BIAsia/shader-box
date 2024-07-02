@@ -19,7 +19,7 @@ const SharpGradientRMaterial = shaderMaterial(
     uSpeed: 0.05,
     uNoiseDensity: 1.2,
     uNoiseStrength: 1.4,
-    uColor: ["#e23a66", "#2287ba", "#f09878", "#000000"].map(
+    uColor: ["#ef233c", "#8d99ae", "#2b2d42", "#000000"].map(
       (color) => new THREE.Color(color)
     ),
     uLightness: 0.2,

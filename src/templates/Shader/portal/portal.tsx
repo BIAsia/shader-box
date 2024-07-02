@@ -19,7 +19,7 @@ const PortalMaterial = shaderMaterial(
     uSpeed: 0.05,
     uNoiseDensity: 1.2,
     uNoiseStrength: 1.4,
-    uColor: ["#e23a66", "#2287ba", "#f09878", "#000000"].map(
+    uColor: ["#ef233c", "#8d99ae", "#2b2d42", "#000000"].map(
       (color) => new THREE.Color(color)
     ),
     uLightness: 0.,
@@ -64,8 +64,8 @@ const SharpGradientBg = (props: Mesh) => {
 
   const colors = useControls({
     colors: folder({
-      color1: '#000000',
-      color2: '#45a8de',
+      color1: '#ef233c',
+      color2: '#8d99ae',
       color3: '#2b2d42',
       color4: '#000000',
     })

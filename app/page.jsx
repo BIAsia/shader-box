@@ -18,7 +18,7 @@ ReactGA.initialize('G-JFF0CZQNDN');
 
 
 // const WaterGradientDream = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Logo), { ssr: false })
-const CircleBg = dynamic(() => import("@/templates/Shader/circleBg"), {
+const CircleBg = dynamic(() => import("@/templates/Shader/hole/circleBg"), {
   ssr: false,
 })
 const GradientBg = dynamic(() => import("@/templates/Shader/lava/gradientBg"), {

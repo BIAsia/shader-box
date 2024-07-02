@@ -22,7 +22,7 @@ const SpinMaterial = shaderMaterial(
     uPosition: new THREE.Vector2(0.0, 0.0),
     uScale: new THREE.Vector2(1.0, 1.0),
     uRotate: 0.,
-    uColor: ["#e23a66", "#2287ba", "#f09878", "#000000"].map(
+    uColor: ["#ef233c", "#8d99ae", "#2b2d42", "#000000"].map(
       (color) => new THREE.Color(color)
     ),
     uBgColor: new THREE.Color('#000000'),
@@ -63,8 +63,8 @@ const SharpGradientBg = (props: Mesh) => {
 
   const color = useControls({
     color: folder({
-      color1: '#000000',
-      color2: '#45a8de',
+      color1: '#ef233c',
+      color2: '#8d99ae',
       color3: '#2b2d42',
       color4: '#000000',
       bgColor: '#000000',

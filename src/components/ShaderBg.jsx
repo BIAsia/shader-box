@@ -13,7 +13,7 @@ const TextureBg = dynamic(() => import("@/templates/Shader/textureFlowBg/texture
     ssr: false,
 })
 
-const CircleBg = dynamic(() => import("@/templates/Shader/circleBg"), {
+const CircleBg = dynamic(() => import("@/templates/Shader/hole/circleBg"), {
     ssr: false,
 })
 
@@ -82,7 +82,7 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
         // <SharpGradientRBg />,
         <GradientBg />,
         // <TextureBg />,
-        // <CircleBg />,
+        <CircleBg />,
         // <TwoCircleBg />,
         // <ShinyCircleBg />,
 
@@ -96,7 +96,7 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
         // { title: 'Column Gradient', subtitle: '-slash' },
         { title: 'Lava Gradient', subtitle: '-Diffuse' },
         // { title: 'Lava Gradient', subtitle: '-Zebra' },
-        // { title: 'Circle Gradient', subtitle: '-Hole' },
+        { title: 'Circle Gradient', subtitle: '-Hole' },
         // { title: 'Circle Gradient', subtitle: '-Double' },
         // { title: 'Circle Gradient', subtitle: '-OKLAB' },
 
