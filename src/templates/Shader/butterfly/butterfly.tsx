@@ -19,7 +19,7 @@ const ButterflyMaterial = shaderMaterial(
     uSpeed: 0.05,
     uNoiseDensity: 1.2,
     uNoiseStrength: 1.4,
-    uColor: ["#ef233c", "#8d99ae", "#2b2d42", "#000000"].map(
+    uColor: ["#404a70", "#8d99ae", "#2b2d42", "#000000"].map(
       (color) => new THREE.Color(color)
     ),
     uLightness: 0.,

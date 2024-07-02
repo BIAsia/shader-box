@@ -44,7 +44,7 @@ vec3 oklab2srgb(vec3 c) {
 
 void main() {
     // vec2 coord = vec2(2.0,-2.0)*vPos.xy/uResolution.xy;
-    vec2 position = vec2(vPos.x * 1. / (uScale.x) + uPosition.x, vPos.y * 1. / uScale.y + uPosition.y);
+    vec2 position = vec2(vPos.x * 1. / (uScale.x + 2.) + uPosition.x, vPos.y * 1. / uScale.y + uPosition.y);
     vec2 coord = position.xy / uResolution.xy + vec2(0.5);
     vec3 oklab1 = uColor[0];
     vec3 oklab2 = uColor[1];
@@ -53,19 +53,22 @@ void main() {
 
     // vec3 fragColor = mix(oklab1, oklab2, (coord.x * coord.y + 0.5 * sin(uTime * 0.01)));
     vec3 fragColor = mix(oklab1, oklab2, (coord.x * coord.y));
+    // vec3 fragColor = uColor[0];
 
-    vec4 black = vec4(0., 0., 0., 1.);
+    vec4 black = vec4(uBgColor, 1.);
 
     float speed = uTime * 0.5 * uSpeed + uTimeOffset * 100.;
-    float col = 2. + abs(25. - uComplex);
+    float col = 1. + abs(5. - uComplex);
 
     // coord *= (7. - 7. * uMorph);
     coord *= 7.;
     for(float i = 0., v; i++ < 70. * (1. - uMorph);) {
-        v = 9. - i / 6. + 2. * cos(coord.x + sin(i / 6. + speed * 0.01)) - coord.y, black = mix(black, vec4(int(mod(i, col))), smoothstep(0., 0.2 / uResolution.y, v));
+        v = 9. - i / 6. + 2. * cos(coord.x + sin(i / 6. + speed * 0.01)) - coord.y;
+        black = mix(black, vec4(int(mod(i, col))), smoothstep(0., 0.2 / uResolution.y, v));
     }
-    black.rgb += oklab3;
-    fragColor += 0.2 * oklab4;
+    black.rgb *= 0.5;
+    black.rgb += uBgColor;
+    fragColor += 0.2 * oklab3;
 
     if(uLightness >= 0.) {
         fragColor = mix(fragColor, vec3(1, 1, 1), uLightness);
@@ -73,5 +76,5 @@ void main() {
         fragColor = mix(fragColor, vec3(0, 0, 0), -uLightness);
     }
 
-    gl_FragColor = vec4(fragColor * black.rgb, 1.);
+    gl_FragColor = vec4(fragColor.rgb * black.rgb, 1.);
 }

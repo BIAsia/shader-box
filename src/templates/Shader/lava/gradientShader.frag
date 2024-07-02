@@ -46,7 +46,7 @@ vec3 rgb2hsl(in vec3 c) {
 void main() {
     vec3 adjustment = vec3(0, uChroma, uLightness);
 
-    vec4 diffuseColor = vec4(mix(mix(uColor[0], uColor[1], smoothstep(-3.0, 3.0, vPos.x)), uColor[2], vPos.z), 1);
+    vec4 diffuseColor = vec4(mix(mix(uColor[1], uColor[0], smoothstep(-3.0, 3.0, vPos.x)), uColor[2], vPos.z * 0.2), 1);
     if(uLightness >= 0.) {
         diffuseColor = mix(diffuseColor, vec4(1, 1, 1, 1), uLightness);
     } else {

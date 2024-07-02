@@ -68,53 +68,52 @@ float rand(vec2 co, float time) {
 }
 
 void main() {
+    vec2 position = vec2(vPos.x * 1. / (uScale.x) - uPosition.x, vPos.y * 1. / uScale.y + uPosition.y);
+    position *= 0.1;
     vec2 uv = vUV;
-    vec2 scale = uScale * vec2(0.1);
+    vec2 scale = uScale;
     uv.x = (uv.x - 0.5) * (1. - scale.x) + 0.5;
     uv.y = (uv.y - 0.5) * (1. - scale.y) + 0.5;
     // vec2 uv = vec2(vUV.x * uResolution.y / uResolution.x, vUV.y);
 
-    vec3 mainColor = uColor[0];
-    vec3 assistColor = uColor[1];
-    vec3 assistColor2 = uColor[2];
-    vec3 assistColor3 = uColor[3];
-
     float time = uTime * 0.01 * uSpeed + uTimeOffset;
-    vec3 c1 = vec3(mainColor.r, mainColor.g, mainColor.b);
-    vec3 c2 = vec3(assistColor.r, assistColor.g, assistColor.b);
-    vec3 color = c1;
+    vec3 color = uColor[0];
 
-    vec2 pos = vec2(0.5) - uv + uPosition;
-    float r = length(pos) * 3.;
-    float a = atan(pos.y, pos.x);
+    //vec2 position = vec2(0.5) - uv + uPosition;
+    float r = length(position) * 3.;
+    float a = atan(position.y, position.x);
     float count = uComplex;
     float morph = 1. - uMorph / 0.7;
     float shape = abs(morph * sin(a * (count * .5) + (time * 0.8 + 0.4))) *
         sin(a * count - (time * 0.8 + 0.2));
-    vec3 alpha1 = shape * assistColor2;
+    vec3 alpha1 = shape * uColor[2];
 
     float shape2 = abs(0.2 * sin(a * (count * .5) + (time * 0.8 + 0.5))) *
         cos(a * count * 2. - (time * 0.8 + 0.5));
     shape += shape2;
-    vec3 alpha2 = shape2 * assistColor3;
+    vec3 alpha2 = shape2 * uColor[3];
 
     shape = pow(shape, 1.);
-    color = mix(color, c2, r);
 
-    color *= 1. + 0.5;
+    // color = uBgColor;
+    color = mix(color, uColor[1], r);
+
+    // color *= 1. + 0.5;
 
     float alpha = (1. - smoothstep(shape, shape + 0.8, r)) + (1. - smoothstep(shape, shape + 1.5, r)) * 0.2;
     alpha = clamp(alpha, 0., 1.0);
-    alpha -= 0.1;
+    // alpha -= 0.1;
 
     color = mix(uBgColor, color, alpha);
 
-    //color *= alpha;
+    // color *= alpha;
 
-    color -= alpha1 * 0.4;
-    color -= alpha2 * 0.4;
+    // color -= alpha1 * 0.4;
+    // color -= alpha2 * 0.4;
 
-    color = mix(uBgColor, color, r * 4.);
+    color = mix(uBgColor, color, r * 1.);
+
+    // color -= vec3(0.2);
 
     if(uLightness >= 0.) {
         color = mix(color, vec3(1, 1, 1), uLightness);

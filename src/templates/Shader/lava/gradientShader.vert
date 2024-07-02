@@ -120,10 +120,10 @@ uniform float uComplex;
 uniform float uMorph;
 
 void main() {
-  float t = uTime * uSpeed * 0.005 + uTimeOffset;
+  float t = uTime * uSpeed * 0.005 + uTimeOffset + 2.;
   float distortion = 0.75 * cnoise(0.43 * position * (uComplex - 0.3) + t);
 
-  vec3 pos = position + normal * distortion * (6.0 - uMorph * 3. + 0.4) + vec3(uPosition, 0);
+  vec3 pos = position + normal * distortion * (8.0 - uMorph * 3. + 0.4) + vec3(uPosition, 0);
   pos = vec3(pos.x * uScale.x, pos.y * uScale.y, pos.z);
   vPos = pos;
 
