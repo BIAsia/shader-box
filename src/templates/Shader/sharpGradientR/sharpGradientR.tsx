@@ -45,14 +45,65 @@ extend({ SharpGradientRMaterial });
 const SharpGradientRBg = (props: Mesh) => {
   const { viewport, size } = useThree()
   const gl = useThree((state) => state.gl)
+  // const [controls, setControls] = useState({});
+
+  const testStore = useCreateStore()
+
   const exportActions = useControls({
     'Capture Image': button(() => {
       const link = document.createElement('a')
       link.setAttribute('download', 'canvas.png')
       link.setAttribute('href', gl.domElement.toDataURL('image/png').replace('image/png', 'image/octet-stream'))
       link.click()
-    })
+    }),
   });
+
+  const exportConfig = button(() => {
+    const config = {
+      animation,
+      color,
+      shape
+    };
+    const configBlob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+    const configUrl = URL.createObjectURL(configBlob);
+    const link = document.createElement('a');
+    link.setAttribute('download', 'config.json');
+    link.setAttribute('href', configUrl);
+    link.click();
+  });
+
+
+
+
+  const importConfig = button(() => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+
+    input.onchange = async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      const text = await file.text();
+      const importedConfig = JSON.parse(text);
+      updateConfig(importedConfig);
+    };
+
+    input.click();
+  });
+
+  const updateConfig = (config) => {
+    Object.keys(config).forEach(key => {
+      window[key] = config[key]; // 把配置更新到全局变量上
+      animation.speed = 4.0;
+      console.log(animation.speed)
+    });
+  };
+
+  const exportButton = useControls({
+    'Export Config': exportConfig,
+    'Import Config': importConfig
+  });
+
   //const waterBgStore = useCreateStore();
   const animation = useControls({
     animation: folder({
@@ -81,7 +132,7 @@ const SharpGradientRBg = (props: Mesh) => {
       complex: { value: 1, min: 1, max: 20, step: 1 },
       morph: { value: 0., min: -1, max: 1 },
     })
-  });
+  }, { store: testStore });
 
 
 

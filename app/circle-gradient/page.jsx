@@ -9,10 +9,10 @@ import dynamic from 'next/dynamic'
 import { Suspense } from 'react'
 
 // const WaterGradientDream = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Logo), { ssr: false })
-const CircleBg = dynamic(() => import("@/templates/Shader/circleBg"), {
+const CircleBg = dynamic(() => import("@/templates/Shader/hole/circleBg"), {
     ssr: false,
 })
-const GradientBg = dynamic(() => import("@/templates/Shader/gradientBg"), {
+const GradientBg = dynamic(() => import("@/templates/Shader/lava/gradientBg"), {
     ssr: false,
 })
 const Common = dynamic(() => import('@/components/canvas/View').then((mod) => mod.Common), { ssr: false })

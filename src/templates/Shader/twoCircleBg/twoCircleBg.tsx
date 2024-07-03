@@ -4,7 +4,7 @@ import { useRef, useState, useEffect } from "react";
 import { shaderMaterial } from "@react-three/drei";
 import { Mesh } from "three";
 import { easing } from 'maath'
-import { useControls, folder, useCreateStore, button } from 'leva'
+import { useControls, folder, useCreateStore, button, get, set } from 'leva'
 import { EffectComposer, Noise } from "@react-three/postprocessing";
 import { BlendFunction } from 'postprocessing'
 
