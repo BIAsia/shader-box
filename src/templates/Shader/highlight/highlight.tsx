@@ -53,6 +53,49 @@ const SharpGradientBg = (props: Mesh) => {
       link.click()
     })
   });
+
+  const exportConfig = button(() => {
+    const config = {
+      animation,
+      color,
+      shape
+    };
+    const configBlob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+    const configUrl = URL.createObjectURL(configBlob);
+    const link = document.createElement('a');
+    link.setAttribute('download', 'config.json');
+    link.setAttribute('href', configUrl);
+    link.click();
+  });
+
+  const importConfig = button(() => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+
+    input.onchange = async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      const text = await file.text();
+      const importedConfig = JSON.parse(text);
+      updateConfig(importedConfig);
+    };
+
+    input.click();
+  });
+
+  const updateConfig = (config) => {
+    Object.keys(config).forEach(key => {
+      window[key] = config[key]; // 把配置更新到全局变量上
+      animation.speed = 4.0;
+      console.log(animation.speed)
+    });
+  };
+
+  const exportButton = useControls({
+    'Export Config': exportConfig,
+    // 'Import Config': importConfig
+  });
   //const waterBgStore = useCreateStore();
   const animation = useControls({
     animation: folder({

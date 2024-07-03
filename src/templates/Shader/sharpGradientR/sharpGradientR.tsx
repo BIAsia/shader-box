@@ -72,9 +72,6 @@ const SharpGradientRBg = (props: Mesh) => {
     link.click();
   });
 
-
-
-
   const importConfig = button(() => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -101,7 +98,7 @@ const SharpGradientRBg = (props: Mesh) => {
 
   const exportButton = useControls({
     'Export Config': exportConfig,
-    'Import Config': importConfig
+    // 'Import Config': importConfig
   });
 
   //const waterBgStore = useCreateStore();
