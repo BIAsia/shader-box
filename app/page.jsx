@@ -86,7 +86,7 @@ export default function Page() {
   return (
     <>
       <div className='h-screen w-screen flex flex-col justify-between items-start absolute z-10'>
-        <ShaderBg className="absolute -z-10 flex item-center justify-center" shader={<GradientBg />} title={'Lava Gradient'} subtitle={'-Default'} setOverlay={setImageSrc} setMockVisible={handleButtonClick} isMockVisible={isMockVisible}></ShaderBg>
+        <ShaderBg className="absolute -z-10 flex item-center justify-center w-screen" shader={<GradientBg />} title={'Lava Gradient'} subtitle={'-Default'} setOverlay={setImageSrc} setMockVisible={handleButtonClick} isMockVisible={isMockVisible}></ShaderBg>
         {isMockVisible && <Mock overlay={imageSrc} setOverlay={setImageSrc}></Mock>}
 
         {/* <PageFooter title={'Shader Box'}>

@@ -89,14 +89,14 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
     ]
     const titles = [
         // { title: 'Edge', subtitle: '-diffuse' },
-        { title: 'Spin', subtitle: '-diffuse' },
-        { title: 'Highlight', subtitle: '-curve' },
-        { title: 'Zebra Gradient', subtitle: '-curve' },
-        { title: 'Column Gradient', subtitle: '-curve' },
-        { title: 'Column Gradient', subtitle: '-slash' },
-        { title: 'Lava Gradient', subtitle: '-Diffuse' },
+        { title: 'Spin', subtitle: '-diffuse', iOS: true, Android: true, Lynx: true },
+        { title: 'Highlight', subtitle: '-curve', iOS: false, Android: false, Lynx: true },
+        { title: 'Zebra Gradient', subtitle: '-curve', iOS: true, Android: false, Lynx: true },
+        { title: 'Column Gradient', subtitle: '-curve', iOS: false, Android: false, Lynx: true },
+        { title: 'Column Gradient', subtitle: '-slash', iOS: false, Android: false, Lynx: true },
+        { title: 'Lava Gradient', subtitle: '-Diffuse', iOS: true, Android: true, Lynx: true },
         // { title: 'Lava Gradient', subtitle: '-Zebra' },
-        { title: 'Circle Gradient', subtitle: '-Hole' },
+        { title: 'Circle Gradient', subtitle: '-Hole', iOS: false, Android: false, Lynx: true },
         // { title: 'Circle Gradient', subtitle: '-Double' },
         // { title: 'Circle Gradient', subtitle: '-OKLAB' },
 
@@ -111,17 +111,33 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
 
     return (
         <>
-            <div className='p-8 z-10 flex flex-col justify-between items-start h-full absolute'>
-                <div>
-                    <div className='pb-6'>
-                        <h2 className='text-white'>{titles[currentShader].title}</h2>
-                        <h2 className='text-white'>{titles[currentShader].subtitle}</h2>
-                    </div>
+            <div className='p-8 z-10 flex flex-col justify-between items-start h-full absolute w-full'>
+                <div className='flex flex-row justify-between items-start w-full'>
                     <div>
-                        <button className='mr-4 text-white linkn link--mneme' onClick={handleClickPrev}>Prev</button>
-                        <button className='mr-4 text-white linkn link--mneme' onClick={handleClickNext}>Next</button>
+                        <div className='pb-3'>
+                            <h2 className='text-white'>{titles[currentShader].title}</h2>
+                            <h2 className='text-white'>{titles[currentShader].subtitle}</h2>
+                        </div>
+                        {titles[currentShader].iOS ?
+                            <p className='text-white text-xs py-2 px-3 bg-white bg-opacity-20 text-opacity-70 font-medium inline rounded-full mr-2 cursor-default'>iOS</p>
+                            : null}
+                        {titles[currentShader].Android ?
+                            <p className='text-white text-xs py-2 px-3 bg-white bg-opacity-20 text-opacity-70 font-medium inline rounded-full mr-2 cursor-default'>Android</p>
+                            : null}
+                        {titles[currentShader].Lynx ?
+                            <p className='text-white text-xs py-2 px-3 bg-white bg-opacity-20 text-opacity-70 font-medium inline rounded-full cursor-default'>Lynx</p>
+                            : null}
+                        {/* <div className='pb-6'>
+                        <p className='text-white text-sm opacity-70'>{titles[currentShader].available}</p>
+                    </div> */}
+                    </div>
+                    <div className='flex flex-col'>
+                        <button className='mr-4 text-white linkn link--mneme' onClick={handleClickPrev}>← Prev Shader</button>
+                        <button className='mr-4 text-white linkn link--mneme' onClick={handleClickNext}>Next Shader→</button>
                     </div>
                 </div>
+
+
                 <div className='flex'>
                     {isMockVisible && <FileInput setImageSrc={setOverlay}></FileInput>}
                     <button className='text-white opacity-70 transition-all hover:opacity-100 text-sm' onClick={setMockVisible}>{isMockVisible ? 'Go full-screen' : 'Show Mock'}</button>
