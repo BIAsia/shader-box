@@ -124,22 +124,21 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
                             <h2 className='text-white'>{titles[currentShader].title}</h2>
                             <h2 className='text-white'>{titles[currentShader].subtitle}</h2>
                         </div>
-                        {titles[currentShader].New ?
-                            <p className='text-black text-xs py-2 px-3 bg-white text-opacity-70 font-medium inline rounded-full cursor-default mr-2'>New</p>
-                            : null}
-                        {titles[currentShader].iOS ?
-                            <p className='text-white text-xs py-2 px-3 bg-white bg-opacity-20 text-opacity-70 font-medium inline rounded-full mr-2 cursor-default'>iOS</p>
-                            : null}
-                        {titles[currentShader].Android ?
-                            <p className='text-white text-xs py-2 px-3 bg-white bg-opacity-20 text-opacity-70 font-medium inline rounded-full mr-2 cursor-default'>Android</p>
-                            : null}
-                        {titles[currentShader].Lynx ?
-                            <p className='text-white text-xs py-2 px-3 bg-white bg-opacity-20 text-opacity-70 font-medium inline rounded-full cursor-default'>Lynx</p>
-                            : null}
+                        <a href="https://bytedance.larkoffice.com/wiki/YugMwzAaQiC2V8khsFdc974onQh" target="_blank" rel="noopener noreferrer" className="block">
+                            {titles[currentShader].New ?
+                                <p className='text-black text-xs py-2 px-3 bg-white text-opacity-70 font-medium inline rounded-full mr-2'>New</p>
+                                : null}
+                            {titles[currentShader].iOS ?
+                                <p className='text-white text-xs py-2 px-3 bg-white bg-opacity-20 text-opacity-70 font-medium inline rounded-full mr-2'>iOS</p>
+                                : null}
+                            {titles[currentShader].Android ?
+                                <p className='text-white text-xs py-2 px-3 bg-white bg-opacity-20 text-opacity-70 font-medium inline rounded-full mr-2'>Android</p>
+                                : null}
+                            {titles[currentShader].Lynx ?
+                                <p className='text-white text-xs py-2 px-3 bg-white bg-opacity-20 text-opacity-70 font-medium inline rounded-full'>Lynx</p>
+                                : null}
+                        </a>
 
-                        {/* <div className='pb-6'>
-                        <p className='text-white text-sm opacity-70'>{titles[currentShader].available}</p>
-                    </div> */}
                     </div>
                     <div className='flex flex-wrap'>
                         <button className='mr-4 text-white linkn link--mneme' onClick={handleClickPrev}>← Prev Shader</button>
