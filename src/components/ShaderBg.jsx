@@ -51,6 +51,9 @@ const SpinBg = dynamic(() => import("@/templates/Shader/spin/spin"), {
 const EdgeBg = dynamic(() => import("@/templates/Shader/edge/edge"), {
     ssr: false,
 })
+const SilkBg = dynamic(() => import("@/templates/Shader/silk/silk"), {
+    ssr: false,
+})
 
 // export const metadata = {
 
@@ -76,6 +79,7 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
     const shaders = [
         // <EdgeBg />,
         <SpinBg />,
+        // <SilkBg />,
         <HighlightBg />,
         <ZebraCurveBg />,
         <SharpGradientBg />,
@@ -89,14 +93,16 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
     ]
     const titles = [
         // { title: 'Edge', subtitle: '-diffuse' },
-        { title: 'Spin', subtitle: '-diffuse', iOS: true, Android: true, Lynx: true },
-        { title: 'Highlight', subtitle: '-curve', iOS: false, Android: false, Lynx: true },
-        { title: 'Zebra Gradient', subtitle: '-curve', iOS: true, Android: false, Lynx: true },
-        { title: 'Column Gradient', subtitle: '-curve', iOS: false, Android: false, Lynx: true },
-        { title: 'Column Gradient', subtitle: '-slash', iOS: false, Android: false, Lynx: true },
-        { title: 'Lava Gradient', subtitle: '-Diffuse', iOS: true, Android: true, Lynx: true },
+
+        { title: 'Spin', subtitle: '-diffuse', iOS: true, Android: true, Lynx: true, New: false },
+        // { title: 'Silk', subtitle: '-material', iOS: false, Android: false, Lynx: false, New: true },
+        { title: 'Highlight', subtitle: '-curve', iOS: false, Android: false, Lynx: true, New: false },
+        { title: 'Zebra Gradient', subtitle: '-curve', iOS: true, Android: false, Lynx: true, New: false },
+        { title: 'Column Gradient', subtitle: '-curve', iOS: false, Android: false, Lynx: true, New: false },
+        { title: 'Column Gradient', subtitle: '-slash', iOS: false, Android: false, Lynx: true, New: false },
+        { title: 'Lava Gradient', subtitle: '-Diffuse', iOS: true, Android: true, Lynx: true, New: false },
         // { title: 'Lava Gradient', subtitle: '-Zebra' },
-        { title: 'Circle Gradient', subtitle: '-Hole', iOS: false, Android: false, Lynx: true },
+        { title: 'Circle Gradient', subtitle: '-Hole', iOS: false, Android: false, Lynx: true, New: false },
         // { title: 'Circle Gradient', subtitle: '-Double' },
         // { title: 'Circle Gradient', subtitle: '-OKLAB' },
 
@@ -118,6 +124,9 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
                             <h2 className='text-white'>{titles[currentShader].title}</h2>
                             <h2 className='text-white'>{titles[currentShader].subtitle}</h2>
                         </div>
+                        {titles[currentShader].New ?
+                            <p className='text-black text-xs py-2 px-3 bg-white text-opacity-70 font-medium inline rounded-full cursor-default mr-2'>New</p>
+                            : null}
                         {titles[currentShader].iOS ?
                             <p className='text-white text-xs py-2 px-3 bg-white bg-opacity-20 text-opacity-70 font-medium inline rounded-full mr-2 cursor-default'>iOS</p>
                             : null}
@@ -127,13 +136,14 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
                         {titles[currentShader].Lynx ?
                             <p className='text-white text-xs py-2 px-3 bg-white bg-opacity-20 text-opacity-70 font-medium inline rounded-full cursor-default'>Lynx</p>
                             : null}
+
                         {/* <div className='pb-6'>
                         <p className='text-white text-sm opacity-70'>{titles[currentShader].available}</p>
                     </div> */}
                     </div>
-                    <div className='flex flex-col'>
+                    <div className='flex flex-wrap'>
                         <button className='mr-4 text-white linkn link--mneme' onClick={handleClickPrev}>← Prev Shader</button>
-                        <button className='mr-4 text-white linkn link--mneme' onClick={handleClickNext}>Next Shader→</button>
+                        <button className='mr-4 text-white linkn link--mneme link--mnemeR' onClick={handleClickNext}>Next Shader→</button>
                     </div>
                 </div>
 
