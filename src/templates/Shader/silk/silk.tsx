@@ -109,7 +109,7 @@ const SharpGradientBg = (props: Mesh) => {
       color1: '#404a70',
       color2: '#8d99ae',
       color3: '#2b2d42',
-      color4: '#000000',
+      color4: '#2b2d42',
       bgColor: '#000000',
       lightness: { value: 0., min: - 1, max: 1 },
     })
@@ -166,7 +166,7 @@ const SharpGradientBg = (props: Mesh) => {
       ref={meshRef}
     // {...props}
     >
-      <planeBufferGeometry args={[viewport.width, viewport.height, 1, 1]} />
+      <planeBufferGeometry args={[viewport.width * 2, viewport.height * 2, 100, 100]} />
       {/* @ts-ignore */}
       <silkMaterial
         key={SilkMaterial.key}
