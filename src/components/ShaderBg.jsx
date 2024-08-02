@@ -79,7 +79,7 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
     const shaders = [
         // <EdgeBg />,
         <SpinBg />,
-        <SilkBg />,
+        // <SilkBg />,
         <HighlightBg />,
         <ZebraCurveBg />,
         <SharpGradientBg />,
@@ -95,7 +95,7 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
         // { title: 'Edge', subtitle: '-diffuse' },
 
         { title: 'Spin', subtitle: '-diffuse', iOS: true, Android: true, Lynx: true, New: false },
-        { title: 'Silk', subtitle: '-material', iOS: false, Android: false, Lynx: false, New: true },
+        // { title: 'Silk', subtitle: '-material', iOS: false, Android: false, Lynx: false, New: true },
         { title: 'Highlight', subtitle: '-curve', iOS: false, Android: false, Lynx: true, New: false },
         { title: 'Zebra Gradient', subtitle: '-curve', iOS: true, Android: false, Lynx: true, New: false },
         { title: 'Column Gradient', subtitle: '-curve', iOS: false, Android: false, Lynx: true, New: false },
