@@ -100,7 +100,7 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
         { title: 'Zebra Gradient', subtitle: '-curve', iOS: true, Android: false, Lynx: true, New: false },
         { title: 'Column Gradient', subtitle: '-curve', iOS: false, Android: false, Lynx: true, New: false },
         { title: 'Column Gradient', subtitle: '-slash', iOS: false, Android: false, Lynx: true, New: false },
-        { title: 'Lava Gradient', subtitle: '-Diffuse', iOS: true, Android: true, Lynx: true, New: false },
+        { title: 'Lava Gradient', subtitle: '-Diffuse', iOS: true, Android: false, Lynx: true, New: false },
         // { title: 'Lava Gradient', subtitle: '-Zebra' },
         { title: 'Circle Gradient', subtitle: '-Hole', iOS: false, Android: false, Lynx: true, New: false },
         // { title: 'Circle Gradient', subtitle: '-Double' },
