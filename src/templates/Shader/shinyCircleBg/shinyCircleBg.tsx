@@ -47,11 +47,15 @@ const ShinyCircleBg = (props: Mesh) => {
   const gl = useThree((state) => state.gl)
   const exportActions = useControls({
     'Capture Image': button(() => {
-      const link = document.createElement('a')
-      link.setAttribute('download', 'canvas.png')
-      link.setAttribute('href', gl.domElement.toDataURL('image/png').replace('image/png', 'image/octet-stream'))
-      link.click()
-    })
+      // 请求在下一帧执行截图
+      requestAnimationFrame(() => {
+        gl.render(scene, camera);
+        const link = document.createElement('a');
+        link.setAttribute('download', 'canvas.png');
+        link.setAttribute('href', gl.domElement.toDataURL('image/png').replace('image/png', 'image/octet-stream'));
+        link.click();
+      });
+    }),
   });
   const { scale, morph, position, noisy } = useControls({
     scale: { value: 0.65, min: 0.1, max: 3 },
@@ -84,7 +88,7 @@ const ShinyCircleBg = (props: Mesh) => {
 
 
 
-  const { viewport, size } = useThree()
+  const { viewport, size, scene, camera } = useThree()
   //设置状态
   const [isDarkMode, setIsDarkMode] = useState(true)
   // 监听与设置

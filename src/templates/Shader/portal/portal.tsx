@@ -44,15 +44,19 @@ extend({ PortalMaterial });
 
 // shader material combined with mesh
 const SharpGradientBg = (props: Mesh) => {
-  const { viewport, size } = useThree()
+  const { viewport, size, scene, camera } = useThree()
   const gl = useThree((state) => state.gl)
   const exportActions = useControls({
     'Capture Image': button(() => {
-      const link = document.createElement('a')
-      link.setAttribute('download', 'canvas.png')
-      link.setAttribute('href', gl.domElement.toDataURL('image/png').replace('image/png', 'image/octet-stream'))
-      link.click()
-    })
+      // 请求在下一帧执行截图
+      requestAnimationFrame(() => {
+        gl.render(scene, camera);
+        const link = document.createElement('a');
+        link.setAttribute('download', 'canvas.png');
+        link.setAttribute('href', gl.domElement.toDataURL('image/png').replace('image/png', 'image/octet-stream'));
+        link.click();
+      });
+    }),
   });
   //const waterBgStore = useCreateStore();
   const { scale, morph, effect, noisy } = useControls({

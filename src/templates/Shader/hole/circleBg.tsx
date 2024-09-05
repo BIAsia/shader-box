@@ -52,19 +52,19 @@ const CircleBg = (props: Mesh) => {
   const gl = useThree((state) => state.gl)
   const exportActions = useControls({
     'Capture Image': button(() => {
-      const link = document.createElement('a')
-      link.setAttribute('download', 'canvas.png')
-      link.setAttribute('href', gl.domElement.toDataURL('image/png').replace('image/png', 'image/octet-stream'))
-      link.click()
-    })
+      // 请求在下一帧执行截图
+      requestAnimationFrame(() => {
+        gl.render(scene, camera);
+        const link = document.createElement('a');
+        link.setAttribute('download', 'canvas.png');
+        link.setAttribute('href', gl.domElement.toDataURL('image/png').replace('image/png', 'image/octet-stream'));
+        link.click();
+      });
+    }),
   });
 
   const exportConfig = button(() => {
-    const config = {
-      animation,
-      color,
-      shape
-    };
+    console.log(config);
     const configBlob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
     const configUrl = URL.createObjectURL(configBlob);
     const link = document.createElement('a');
@@ -104,37 +104,60 @@ const CircleBg = (props: Mesh) => {
   //const waterBgStore = useCreateStore();
   const animation = useControls({
     animation: folder({
-      speed: { value: 1, min: 0., max: 10 },
-      timeOffset: { value: 0, min: 0., max: 10 },
+      speed: { value: 1, min: 0., max: 10, onChange: (v) => { config.animation.speed = v }, transient: false },
+      timeOffset: { value: 0, min: 0., max: 10, onChange: (v) => { config.animation.timeOffset = v }, transient: false }
     }, { collapsed: false })
   });
 
   const color = useControls({
     color: folder({
-      color1: '#404a70',
-      color2: '#8d99ae',
-      color3: '#2b2d42',
-      color4: '#2b2d42',
-      bgColor: '#000000',
-      lightness: { value: 0., min: - 1, max: 1 },
+      color1: { value: '#404a70', onChange: (v) => { config.color.color1 = v }, transient: false },
+      color2: { value: '#8d99ae', onChange: (v) => { config.color.color2 = v }, transient: false },
+      color3: { value: '#2b2d42', onChange: (v) => { config.color.color3 = v }, transient: false },
+      color4: { value: '#2b2d42', onChange: (v) => { config.color.color4 = v }, transient: false },
+      bgColor: { value: '#000000', onChange: (v) => { config.color.bgColor = v }, transient: false },
+      lightness: { value: 0., min: - 1, max: 1, onChange: (v) => { config.color.lightness = v }, transient: false }
     })
   });
 
   const shape = useControls({
     shape: folder({
-      position: { value: { x: 0, y: 0 }, step: 0.01 },
-      scaleX: { value: 1.0, min: 0.1, max: 10 },
-      scaleY: { value: 1.0, min: 0.1, max: 10 },
-      // rotate: { value: 0, min: 0, max: 360 },
-      complex: { value: 1, min: 1, max: 20, step: 1 },
-      morph: { value: 0., min: -1, max: 1 },
+      position: { value: { x: 0, y: 0 }, step: 0.01, onChange: (v) => { config.shape.position = v }, transient: false },
+      scaleX: { value: 1.0, min: 0.1, max: 10, onChange: (v) => { config.shape.scaleX = v }, transient: false },
+      scaleY: { value: 1.0, min: 0.1, max: 10, onChange: (v) => { config.shape.scaleY = v }, transient: false },
+      // rotate: { value: 0, min: 0, max: 360, onChange: (v) => { config.shape.rotate = v }, transient: false },
+      complex: { value: 1, min: 1, max: 20, step: 1, onChange: (v) => { config.shape.complex = v }, transient: false },
+      morph: { value: 0., min: -1, max: 1, onChange: (v) => { config.shape.morph = v }, transient: false },
     })
   });
 
+  let config = {
+    animation: {
+      speed: animation.speed,
+      timeOffset: animation.timeOffset
+    },
+    color: {
+      color1: color.color1,
+      color2: color.color2,
+      color3: color.color3,
+      color4: color.color4,
+      bgColor: color.bgColor,
+      lightness: color.lightness
+    },
+    shape: {
+      position: shape.position,
+      scaleX: shape.scaleX,
+      scaleY: shape.scaleY,
+      // rotate: shape.rotate,
+      complex: shape.complex,
+      morph: shape.morph
+    }
+  }
 
 
 
-  const { viewport, size } = useThree()
+
+  const { viewport, size, scene, camera } = useThree()
   //设置状态
   const [isDarkMode, setIsDarkMode] = useState(true)
   // 监听与设置
