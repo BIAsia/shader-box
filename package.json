@@ -24,7 +24,7 @@
     "@vercel/analytics": "^1.0.1",
     "canvas-to-video": "^1.0.1",
     "glsl-random": "^0.0.5",
-    "leva": "^0.9.35",
+    "leva": "^0.10.0",
     "next": "^13.4.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
