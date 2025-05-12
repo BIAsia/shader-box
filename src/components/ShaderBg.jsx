@@ -1,119 +1,41 @@
 'use client'
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { Canvas } from '@react-three/fiber'
-
 import { FileInput } from "@/components/FileInput"
+import { getShaderById, getAllShaders, getNextShaderId, getPrevShaderId } from "@/templates/Shader/shaderConfig"
+import ShaderSidebar from "@/components/ShaderSidebar"
 
-const GradientBg = dynamic(() => import("@/templates/Shader/lava/gradientBg"), {
-    ssr: true,
-})
+// Helper function for dynamic imports
+const importShader = (shaderId) => {
+    const shader = getShaderById(shaderId);
+    if (!shader) return null;
 
-const TextureBg = dynamic(() => import("@/templates/Shader/textureFlowBg/textureBg"), {
-    ssr: false,
-})
+    return dynamic(() => import(`@/templates/Shader/${shader.path}`), {
+        ssr: false,
+    });
+};
 
-const CircleBg = dynamic(() => import("@/templates/Shader/hole/circleBg"), {
-    ssr: false,
-})
+const ShaderBg = ({ initialShaderId = 'spin', setOverlay, setMockVisible, isMockVisible }) => {
+    const [currentShaderId, setCurrentShaderId] = useState(initialShaderId);
+    const [ShaderComponent, setShaderComponent] = useState(null);
+    const [backgroundImage, setBackgroundImage] = useState('/img/Background.png');
 
-const TwoCircleBg = dynamic(() => import("@/templates/Shader/twoCircleBg/twoCircleBg"), {
-    ssr: false,
-})
+    useEffect(() => {
+        const Component = importShader(currentShaderId);
+        setShaderComponent(() => Component);
+    }, [currentShaderId]);
 
-const ShinyCircleBg = dynamic(() => import("@/templates/Shader/shinyCircleBg/shinyCircleBg"), {
-    ssr: false,
-})
-
-const SharpGradientBg = dynamic(() => import("@/templates/Shader/sharpGradient/sharpGradient"), {
-    ssr: false,
-})
-const SharpGradientRBg = dynamic(() => import("@/templates/Shader/sharpGradientR/sharpGradientR"), {
-    ssr: false,
-})
-
-const ZebraCurveBg = dynamic(() => import("@/templates/Shader/zebraCurve/zebraCurve"), {
-    ssr: false,
-})
-
-const PortalBg = dynamic(() => import("@/templates/Shader/portal/portal"), {
-    ssr: false,
-})
-
-const HighlightBg = dynamic(() => import("@/templates/Shader/highlight/highlight"), {
-    ssr: false,
-})
-
-const SpinBg = dynamic(() => import("@/templates/Shader/spin/spin"), {
-    ssr: false,
-})
-
-const EdgeBg = dynamic(() => import("@/templates/Shader/edge/edge"), {
-    ssr: false,
-})
-const SilkBg = dynamic(() => import("@/templates/Shader/silk/silk"), {
-    ssr: false,
-})
-
-// export const metadata = {
-
-// }
-
-const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.View), {
-    ssr: false,
-    loading: () => (
-        <div className='absolute flex h-96 w-full flex-col items-center justify-center'>
-            <svg className='-ml-1 mr-3 h-5 w-5 animate-spin text-black' fill='none' viewBox='0 0 24 24'>
-                <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
-                <path
-                    className='opacity-75'
-                    fill='currentColor'
-                    d='M4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 0 1 4 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
-                />
-            </svg>
-        </div>
-    ),
-})
-
-const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockVisible }) => {
-    const shaders = [
-        // <EdgeBg />,
-        <SpinBg />,
-        // <SilkBg />,
-        <HighlightBg />,
-        <ZebraCurveBg />,
-        <SharpGradientBg />,
-        <SharpGradientRBg />,
-        <GradientBg />,
-        // <TextureBg />,
-        <CircleBg />,
-        // <TwoCircleBg />,
-        // <ShinyCircleBg />,
-
-    ]
-    const titles = [
-        // { title: 'Edge', subtitle: '-diffuse' },
-
-        { title: 'Spin', subtitle: '-diffuse', iOS: true, Android: true, Lynx: true, New: false },
-        // { title: 'Silk', subtitle: '-material', iOS: false, Android: false, Lynx: false, New: true },
-        { title: 'Highlight', subtitle: '-curve', iOS: false, Android: false, Lynx: true, New: false },
-        { title: 'Zebra Gradient', subtitle: '-curve', iOS: true, Android: false, Lynx: true, New: false },
-        { title: 'Column Gradient', subtitle: '-curve', iOS: false, Android: false, Lynx: true, New: false },
-        { title: 'Column Gradient', subtitle: '-slash', iOS: false, Android: false, Lynx: true, New: false },
-        { title: 'Lava Gradient', subtitle: '-Diffuse', iOS: true, Android: false, Lynx: true, New: false },
-        // { title: 'Lava Gradient', subtitle: '-Zebra' },
-        { title: 'Circle Gradient', subtitle: '-Hole', iOS: false, Android: false, Lynx: true, New: false },
-        // { title: 'Circle Gradient', subtitle: '-Double' },
-        // { title: 'Circle Gradient', subtitle: '-OKLAB' },
-
-    ]
-    const [currentShader, setCurrentShader] = useState(0)
     const handleClickNext = () => {
-        setCurrentShader((oldShader) => (oldShader + 1) % shaders.length);
-    }
-    const handleClickPrev = () => {
-        setCurrentShader((oldShader) => (oldShader - 1 + shaders.length) % shaders.length);
+        setCurrentShaderId(getNextShaderId(currentShaderId));
     };
+
+    const handleClickPrev = () => {
+        setCurrentShaderId(getPrevShaderId(currentShaderId));
+    };
+
+    const currentShader = getShaderById(currentShaderId);
+    const isEffectShader = currentShader?.category === 'effect';
 
     return (
         <>
@@ -121,77 +43,64 @@ const ShaderBg = ({ shader, title, subtitle, setOverlay, setMockVisible, isMockV
                 <div className='flex flex-row justify-between items-start w-full'>
                     <div>
                         <div className='pb-3'>
-                            <h2 className='text-white'>{titles[currentShader].title}</h2>
-                            <h2 className='text-white'>{titles[currentShader].subtitle}</h2>
+                            <h2 className='text-white'>{currentShader?.title}</h2>
+                            <h2 className='text-white'>{currentShader?.subtitle}</h2>
                         </div>
                         <a href="https://bytedance.larkoffice.com/wiki/YugMwzAaQiC2V8khsFdc974onQh" target="_blank" rel="noopener noreferrer" className="block">
-                            {titles[currentShader].New ?
+                            {currentShader?.New ?
                                 <p className='text-black text-xs py-2 px-3 bg-white text-opacity-70 font-medium inline rounded-full mr-2'>New</p>
                                 : null}
-                            {titles[currentShader].iOS ?
+                            {currentShader?.iOS ?
                                 <p className='text-white text-xs py-2 px-3 bg-white bg-opacity-20 text-opacity-70 font-medium inline rounded-full mr-2'>iOS</p>
                                 : null}
-                            {titles[currentShader].Android ?
+                            {currentShader?.Android ?
                                 <p className='text-white text-xs py-2 px-3 bg-white bg-opacity-20 text-opacity-70 font-medium inline rounded-full mr-2'>Android</p>
                                 : null}
-                            {titles[currentShader].Lynx ?
+                            {currentShader?.Lynx ?
                                 <p className='text-white text-xs py-2 px-3 bg-white bg-opacity-20 text-opacity-70 font-medium inline rounded-full'>Lynx</p>
                                 : null}
                         </a>
-
+                        <ShaderSidebar
+                            onSelectShader={setCurrentShaderId}
+                            currentShaderId={currentShaderId}
+                        />
                     </div>
                     <div className='flex flex-wrap'>
-                        <button className='mr-4 text-white linkn link--mneme' onClick={handleClickPrev}>← Prev Shader</button>
-                        <button className='mr-4 text-white linkn link--mneme link--mnemeR' onClick={handleClickNext}>Next Shader→</button>
+                        <button className='mr-4 text-white linkn link--mneme' onClick={handleClickPrev}>← Prev</button>
+                        <button className='mr-4 text-white linkn link--mneme link--mnemeR' onClick={handleClickNext}>Next →</button>
                     </div>
                 </div>
 
-
                 <div className='flex'>
-                    {isMockVisible && <FileInput setImageSrc={setOverlay}></FileInput>}
-                    <button className='text-white opacity-70 transition-all hover:opacity-100 text-sm' onClick={setMockVisible}>{isMockVisible ? 'Go full-screen' : 'Show Mock'}</button>
+                    {isMockVisible && <FileInput
+                        setImageSrc={setOverlay}
+                        setBackgroundImage={setBackgroundImage}
+                        isEffectShader={isEffectShader}
+                    />}
+                    <button className='text-white opacity-70 transition-all hover:opacity-100 text-sm' onClick={setMockVisible}>
+                        {isMockVisible ? 'Full Screen' : 'Show Mock'}
+                    </button>
                 </div>
             </div>
 
             {isMockVisible ? (
                 <div className='absolute flex h-full w-full flex-col items-center justify-center'>
                     <Canvas style={{ width: 390 * 0.6 * 1.25, height: 844 * 0.6 * 1.25 }} className='absolute -z-10' id='shaderView'>
-                        {shaders[currentShader]}
+                        {ShaderComponent && (isEffectShader ?
+                            <ShaderComponent imageUrl={backgroundImage} /> :
+                            <ShaderComponent />
+                        )}
                     </Canvas>
                 </div>
             ) : (
                 <Canvas className='absolute flex h-full w-full flex-col items-center justify-center -z-10' id='shaderView'>
-                    {shaders[currentShader]}
+                    {ShaderComponent && (isEffectShader ?
+                        <ShaderComponent imageUrl={backgroundImage} /> :
+                        <ShaderComponent />
+                    )}
                 </Canvas>
             )}
-
-
-
-
-            {/* <View style={{ width: 390 * 0.6, height: 844 * 0.6, userSelect: 'none', pointerEvents: 'none' }} className='absolute md:scale-125 top-5 left-9' id='shaderView'>
-                {shaders[currentShader]}
-            </View> */}
-
-
-            {/* <div className='flex flex-col items-center justify-center' id="shader-container">
-                <View style={{ width: 390 * 0.6, height: 844 * 0.6, userSelect: 'none', pointerEvents: 'none' }} className='absolute flex md:scale-125' id='shaderView'>
-                    {shaders[currentShader]}
-                </View>
-            </div> */}
-
-            {/* <div className='w-screen h-screen flex items-center justify-center absolute top-0 left-0'>
-                <div className='absolute md:scale-125 h-full w-full flex-col items-top justify-top' style={{ width: 456 * 0.6, height: 844 * 0.6 }} >
-                    <View className='h-full w-full -z-10' id='shaderView'>
-                        {shaders[currentShader]}
-                    </View>
-                </div>
-            </div> */}
-
-            {/* <View className='absolute flex h-full w-full flex-col items-center justify-center -z-10' id='shaderView'>
-                {shaders[currentShader]}
-            </View> */}
         </>
-
     )
 }
 

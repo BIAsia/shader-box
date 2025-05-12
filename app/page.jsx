@@ -83,10 +83,16 @@ export default function Page() {
   const handleButtonClick = () => {
     setMockVisible(!isMockVisible);
   };
+
+  const [currentShaderId, setCurrentShaderId] = useState('spin');
+
+  const handleShaderChange = (shaderId) => {
+    setCurrentShaderId(shaderId);
+  };
   return (
     <>
       <div className='h-screen w-screen flex flex-col justify-between items-start absolute z-10'>
-        <ShaderBg className="absolute -z-10 flex item-center justify-center w-screen" shader={<GradientBg />} title={'Lava Gradient'} subtitle={'-Default'} setOverlay={setImageSrc} setMockVisible={handleButtonClick} isMockVisible={isMockVisible}></ShaderBg>
+        <ShaderBg initialShaderId={currentShaderId} onShaderChange={handleShaderChange} className="absolute -z-10 flex item-center justify-center w-screen" setOverlay={setImageSrc} setMockVisible={handleButtonClick} isMockVisible={isMockVisible}></ShaderBg>
         {isMockVisible && <Mock overlay={imageSrc} setOverlay={setImageSrc}></Mock>}
 
         {/* <PageFooter title={'Shader Box'}>
