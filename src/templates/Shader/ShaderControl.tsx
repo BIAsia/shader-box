@@ -66,9 +66,9 @@ const defaultShapeConfig: ShapeConfig = {
 };
 
 const defaultBlurConfig: BlurConfig = {
-    direction: 'down',
-    startPoint: 0.,
-    endPoint: 0.4,
+    direction: 'vertical',
+    startPoint: 1.,
+    endPoint: 0.6,
     amount: 60,
     quality: 30
 };
@@ -222,13 +222,13 @@ export const createShaderControls = (configTypes: string[], initialConfig?: Part
                     amount: {
                         value: config.blur.amount,
                         min: 1,
-                        max: 100,
+                        max: 200,
                         onChange: (v) => { config.blur.amount = v },
                         transient: false
                     },
                     direction: {
                         value: config.blur.direction,
-                        options: ['up', 'down', 'left', 'right'],
+                        options: ['horizontal', 'vertical'],
                         onChange: (v) => { config.blur.direction = v },
                         transient: false
                     },

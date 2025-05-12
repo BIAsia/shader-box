@@ -46,11 +46,9 @@ export const useProgressiveBlurControls = createShaderControls(['blur']);
 // 方向映射函数
 const getDirectionVector = (direction: string): THREE.Vector2 => {
   switch (direction) {
-    case 'up': return new THREE.Vector2(0, 1);
-    case 'down': return new THREE.Vector2(0, -1);
-    case 'left': return new THREE.Vector2(-1, 0);
-    case 'right': return new THREE.Vector2(1, 0);
-    default: return new THREE.Vector2(0, -1);
+    case 'horizontal': return new THREE.Vector2(1, 0);
+    case 'vertical': return new THREE.Vector2(0, 1);
+    default: return new THREE.Vector2(0, 1); // 默认为垂直方向
   }
 };
 
