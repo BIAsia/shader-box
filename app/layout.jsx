@@ -19,6 +19,11 @@ export default function RootLayout({ children }) {
         {/* To avoid FOUT with styled-components wrap Layout with StyledComponentsRegistry https://beta.nextjs.org/docs/styling/css-in-js#styled-components */}
         <Layout>{children}</Layout>
         <Analytics />
+        <script
+          src="https://app.rybbit.io/api/script.js"
+          data-site-id="521"
+          defer
+        ></script>
       </body>
     </html>
   )
