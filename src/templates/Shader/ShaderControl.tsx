@@ -84,13 +84,14 @@ export const createShaderControls = (configTypes: string[], initialConfig?: Part
 
         // 动画控制
         let animationControls: AnimationConfig = { ...defaultAnimationConfig };
+        let setAnimation: (values: Partial<AnimationConfig>) => void = () => {};
         if (configTypes.includes('animation')) {
             config.animation = {
                 ...defaultAnimationConfig,
                 ...initialConfig?.animation
             };
 
-            const [{ speed, timeOffset }, setAnimation] = useControls('animation', () => ({
+            const [{ speed, timeOffset }, setAnimationValues] = useControls('animation', () => ({
                 animation: folder({
                     speed: {
                         value: config.animation.speed,
@@ -110,17 +111,19 @@ export const createShaderControls = (configTypes: string[], initialConfig?: Part
             }));
 
             animationControls = { speed, timeOffset };
+            setAnimation = setAnimationValues;
         }
 
         // 颜色控制
         let colorControls: ColorConfig = { ...defaultColorConfig };
+        let setColor: (values: Partial<ColorConfig>) => void = () => {};
         if (configTypes.includes('color')) {
             config.color = {
                 ...defaultColorConfig,
                 ...initialConfig?.color
             };
 
-            const [{ color1, color2, color3, color4, bgColor, lightness }, setColor] = useControls('color', () => ({
+            const [{ color1, color2, color3, color4, bgColor, lightness }, setColorValues] = useControls('color', () => ({
                 color: folder({
                     color1: {
                         value: config.color.color1,
@@ -158,17 +161,19 @@ export const createShaderControls = (configTypes: string[], initialConfig?: Part
             }));
 
             colorControls = { color1, color2, color3, color4, bgColor, lightness };
+            setColor = setColorValues;
         }
 
         // 形状控制
         let shapeControls: ShapeConfig = { ...defaultShapeConfig };
+        let setShape: (values: Partial<ShapeConfig>) => void = () => {};
         if (configTypes.includes('shape')) {
             config.shape = {
                 ...defaultShapeConfig,
                 ...initialConfig?.shape
             };
 
-            const [{ position, scaleX, scaleY, complex, morph }, setShape] = useControls('shape', () => ({
+            const [{ position, scaleX, scaleY, complex, morph }, setShapeValues] = useControls('shape', () => ({
                 shape: folder({
                     position: {
                         value: config.shape.position,
@@ -207,17 +212,19 @@ export const createShaderControls = (configTypes: string[], initialConfig?: Part
             }));
 
             shapeControls = { position, scaleX, scaleY, complex, morph };
+            setShape = setShapeValues;
         }
 
         // 模糊控制
         let blurControls: BlurConfig = { ...defaultBlurConfig };
+        let setBlur: (values: Partial<BlurConfig>) => void = () => {};
         if (configTypes.includes('blur')) {
             config.blur = {
                 ...defaultBlurConfig,
                 ...initialConfig?.blur
             };
 
-            const [{ amount, direction, startPoint, endPoint, quality }, setBlur] = useControls('blur', () => ({
+            const [{ amount, direction, startPoint, endPoint, quality }, setBlurValues] = useControls('blur', () => ({
                 blur: folder({
                     amount: {
                         value: config.blur.amount,
@@ -258,28 +265,68 @@ export const createShaderControls = (configTypes: string[], initialConfig?: Part
             }));
 
             blurControls = { direction, startPoint, endPoint, amount, quality };
+            setBlur = setBlurValues;
         }
+
+        // 添加截图、导入导出配置功能
+        useControls('utilities', () => ({
+            'Capture Image': button(() => {
+                requestAnimationFrame(() => {
+                    gl.render(scene, camera);
+                    const link = document.createElement('a');
+                    link.setAttribute('download', 'canvas.png');
+                    link.setAttribute('href', gl.domElement.toDataURL('image/png').replace('image/png', 'image/octet-stream'));
+                    link.click();
+                });
+            }),
+            'Export Config': button(() => {
+                console.log(config);
+                const configBlob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+                const configUrl = URL.createObjectURL(configBlob);
+                const link = document.createElement('a');
+                link.setAttribute('download', 'config.json');
+                link.setAttribute('href', configUrl);
+                link.click();
+            }),
+            'Import Config': button(() => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'application/json';
+                input.onchange = async (event) => {
+                    const file = (event.target as HTMLInputElement).files?.[0];
+                    if (!file) return;
+                    const text = await file.text();
+                    const importedConfig = JSON.parse(text);
+                    updateConfig(importedConfig);
+                };
+                input.click();
+            })
+        }));
 
         // 更新配置的函数
         const updateConfig = (importedConfig: Partial<ShaderConfig>) => {
             if (importedConfig.animation && config.animation) {
+                const animationUpdate = { ...importedConfig.animation };
                 Object.assign(config.animation, importedConfig.animation);
-                // 更新控制面板
+                setAnimation(animationUpdate);
             }
 
             if (importedConfig.color && config.color) {
+                const colorUpdate = { ...importedConfig.color };
                 Object.assign(config.color, importedConfig.color);
-                // 更新控制面板
+                setColor(colorUpdate);
             }
 
             if (importedConfig.shape && config.shape) {
+                const shapeUpdate = { ...importedConfig.shape };
                 Object.assign(config.shape, importedConfig.shape);
-                // 更新控制面板
+                setShape(shapeUpdate);
             }
 
             if (importedConfig.blur && config.blur) {
+                const blurUpdate = { ...importedConfig.blur };
                 Object.assign(config.blur, importedConfig.blur);
-                // 更新控制面板
+                setBlur(blurUpdate);
             }
 
             console.log('Config updated:', config);
@@ -317,7 +364,10 @@ export const createShaderControls = (configTypes: string[], initialConfig?: Part
             animation: animationControls,
             color: colorControls,
             shape: shapeControls,
-            blur: blurControls
+            blur: blurControls,
+            
+            // 添加更新配置函数，以便外部调用
+            updateConfig
         };
     };
 };
