@@ -84,7 +84,7 @@ export const createShaderControls = (configTypes: string[], initialConfig?: Part
 
         // 动画控制
         let animationControls: AnimationConfig = { ...defaultAnimationConfig };
-        let setAnimation: (values: Partial<AnimationConfig>) => void = () => {};
+        let setAnimation: (values: Partial<AnimationConfig>) => void = () => { };
         if (configTypes.includes('animation')) {
             config.animation = {
                 ...defaultAnimationConfig,
@@ -92,22 +92,22 @@ export const createShaderControls = (configTypes: string[], initialConfig?: Part
             };
 
             const [{ speed, timeOffset }, setAnimationValues] = useControls('animation', () => ({
-                animation: folder({
-                    speed: {
-                        value: config.animation.speed,
-                        min: 0,
-                        max: 5,
-                        onChange: (v) => { config.animation.speed = v },
-                        transient: false
-                    },
-                    timeOffset: {
-                        value: config.animation.timeOffset,
-                        min: 0,
-                        max: 10,
-                        onChange: (v) => { config.animation.timeOffset = v },
-                        transient: false
-                    }
-                })
+
+                speed: {
+                    value: config.animation.speed,
+                    min: 0,
+                    max: 5,
+                    onChange: (v) => { config.animation.speed = v },
+                    transient: false
+                },
+                timeOffset: {
+                    value: config.animation.timeOffset,
+                    min: 0,
+                    max: 10,
+                    onChange: (v) => { config.animation.timeOffset = v },
+                    transient: false
+                }
+
             }));
 
             animationControls = { speed, timeOffset };
@@ -116,7 +116,7 @@ export const createShaderControls = (configTypes: string[], initialConfig?: Part
 
         // 颜色控制
         let colorControls: ColorConfig = { ...defaultColorConfig };
-        let setColor: (values: Partial<ColorConfig>) => void = () => {};
+        let setColor: (values: Partial<ColorConfig>) => void = () => { };
         if (configTypes.includes('color')) {
             config.color = {
                 ...defaultColorConfig,
@@ -124,40 +124,40 @@ export const createShaderControls = (configTypes: string[], initialConfig?: Part
             };
 
             const [{ color1, color2, color3, color4, bgColor, lightness }, setColorValues] = useControls('color', () => ({
-                color: folder({
-                    color1: {
-                        value: config.color.color1,
-                        onChange: (v) => { config.color.color1 = v },
-                        transient: false
-                    },
-                    color2: {
-                        value: config.color.color2,
-                        onChange: (v) => { config.color.color2 = v },
-                        transient: false
-                    },
-                    color3: {
-                        value: config.color.color3,
-                        onChange: (v) => { config.color.color3 = v },
-                        transient: false
-                    },
-                    color4: {
-                        value: config.color.color4,
-                        onChange: (v) => { config.color.color4 = v },
-                        transient: false
-                    },
-                    bgColor: {
-                        value: config.color.bgColor,
-                        onChange: (v) => { config.color.bgColor = v },
-                        transient: false
-                    },
-                    lightness: {
-                        value: config.color.lightness,
-                        min: 0,
-                        max: 1,
-                        onChange: (v) => { config.color.lightness = v },
-                        transient: false
-                    }
-                })
+
+                color1: {
+                    value: config.color.color1,
+                    onChange: (v) => { config.color.color1 = v },
+                    transient: false
+                },
+                color2: {
+                    value: config.color.color2,
+                    onChange: (v) => { config.color.color2 = v },
+                    transient: false
+                },
+                color3: {
+                    value: config.color.color3,
+                    onChange: (v) => { config.color.color3 = v },
+                    transient: false
+                },
+                color4: {
+                    value: config.color.color4,
+                    onChange: (v) => { config.color.color4 = v },
+                    transient: false
+                },
+                bgColor: {
+                    value: config.color.bgColor,
+                    onChange: (v) => { config.color.bgColor = v },
+                    transient: false
+                },
+                lightness: {
+                    value: config.color.lightness,
+                    min: 0,
+                    max: 1,
+                    onChange: (v) => { config.color.lightness = v },
+                    transient: false
+                }
+
             }));
 
             colorControls = { color1, color2, color3, color4, bgColor, lightness };
@@ -166,7 +166,7 @@ export const createShaderControls = (configTypes: string[], initialConfig?: Part
 
         // 形状控制
         let shapeControls: ShapeConfig = { ...defaultShapeConfig };
-        let setShape: (values: Partial<ShapeConfig>) => void = () => {};
+        let setShape: (values: Partial<ShapeConfig>) => void = () => { };
         if (configTypes.includes('shape')) {
             config.shape = {
                 ...defaultShapeConfig,
@@ -174,41 +174,41 @@ export const createShaderControls = (configTypes: string[], initialConfig?: Part
             };
 
             const [{ position, scaleX, scaleY, complex, morph }, setShapeValues] = useControls('shape', () => ({
-                shape: folder({
-                    position: {
-                        value: config.shape.position,
-                        onChange: (v) => { config.shape.position = v },
-                        transient: false
-                    },
-                    scaleX: {
-                        value: config.shape.scaleX,
-                        min: 0.1,
-                        max: 2,
-                        onChange: (v) => { config.shape.scaleX = v },
-                        transient: false
-                    },
-                    scaleY: {
-                        value: config.shape.scaleY,
-                        min: 0.1,
-                        max: 2,
-                        onChange: (v) => { config.shape.scaleY = v },
-                        transient: false
-                    },
-                    complex: {
-                        value: config.shape.complex,
-                        min: 0,
-                        max: 10,
-                        onChange: (v) => { config.shape.complex = v },
-                        transient: false
-                    },
-                    morph: {
-                        value: config.shape.morph,
-                        min: 0,
-                        max: 1,
-                        onChange: (v) => { config.shape.morph = v },
-                        transient: false
-                    }
-                })
+
+                position: {
+                    value: config.shape.position,
+                    onChange: (v) => { config.shape.position = v },
+                    transient: false
+                },
+                scaleX: {
+                    value: config.shape.scaleX,
+                    min: 0.1,
+                    max: 2,
+                    onChange: (v) => { config.shape.scaleX = v },
+                    transient: false
+                },
+                scaleY: {
+                    value: config.shape.scaleY,
+                    min: 0.1,
+                    max: 2,
+                    onChange: (v) => { config.shape.scaleY = v },
+                    transient: false
+                },
+                complex: {
+                    value: config.shape.complex,
+                    min: 0,
+                    max: 10,
+                    onChange: (v) => { config.shape.complex = v },
+                    transient: false
+                },
+                morph: {
+                    value: config.shape.morph,
+                    min: 0,
+                    max: 1,
+                    onChange: (v) => { config.shape.morph = v },
+                    transient: false
+                }
+
             }));
 
             shapeControls = { position, scaleX, scaleY, complex, morph };
@@ -217,7 +217,7 @@ export const createShaderControls = (configTypes: string[], initialConfig?: Part
 
         // 模糊控制
         let blurControls: BlurConfig = { ...defaultBlurConfig };
-        let setBlur: (values: Partial<BlurConfig>) => void = () => {};
+        let setBlur: (values: Partial<BlurConfig>) => void = () => { };
         if (configTypes.includes('blur')) {
             config.blur = {
                 ...defaultBlurConfig,
@@ -225,43 +225,43 @@ export const createShaderControls = (configTypes: string[], initialConfig?: Part
             };
 
             const [{ amount, direction, startPoint, endPoint, quality }, setBlurValues] = useControls('blur', () => ({
-                blur: folder({
-                    amount: {
-                        value: config.blur.amount,
-                        min: 1,
-                        max: 200,
-                        onChange: (v) => { config.blur.amount = v },
-                        transient: false
-                    },
-                    direction: {
-                        value: config.blur.direction,
-                        options: ['horizontal', 'vertical'],
-                        onChange: (v) => { config.blur.direction = v },
-                        transient: false
-                    },
-                    startPoint: {
-                        value: config.blur.startPoint,
-                        min: 0,
-                        max: 1,
-                        onChange: (v) => { config.blur.startPoint = v },
-                        transient: false
-                    },
-                    endPoint: {
-                        value: config.blur.endPoint,
-                        min: 0,
-                        max: 1,
-                        onChange: (v) => { config.blur.endPoint = v },
-                        transient: false
-                    },
-                    quality: {
-                        value: config.blur.quality,
-                        min: 4,
-                        max: 56,
-                        step: 1,
-                        onChange: (v) => { config.blur.quality = v },
-                        transient: false
-                    }
-                })
+
+                amount: {
+                    value: config.blur.amount,
+                    min: 1,
+                    max: 200,
+                    onChange: (v) => { config.blur.amount = v },
+                    transient: false
+                },
+                direction: {
+                    value: config.blur.direction,
+                    options: ['horizontal', 'vertical'],
+                    onChange: (v) => { config.blur.direction = v },
+                    transient: false
+                },
+                startPoint: {
+                    value: config.blur.startPoint,
+                    min: 0,
+                    max: 1,
+                    onChange: (v) => { config.blur.startPoint = v },
+                    transient: false
+                },
+                endPoint: {
+                    value: config.blur.endPoint,
+                    min: 0,
+                    max: 1,
+                    onChange: (v) => { config.blur.endPoint = v },
+                    transient: false
+                },
+                quality: {
+                    value: config.blur.quality,
+                    min: 4,
+                    max: 56,
+                    step: 1,
+                    onChange: (v) => { config.blur.quality = v },
+                    transient: false
+                }
+
             }));
 
             blurControls = { direction, startPoint, endPoint, amount, quality };
@@ -365,7 +365,7 @@ export const createShaderControls = (configTypes: string[], initialConfig?: Part
             color: colorControls,
             shape: shapeControls,
             blur: blurControls,
-            
+
             // 添加更新配置函数，以便外部调用
             updateConfig
         };
