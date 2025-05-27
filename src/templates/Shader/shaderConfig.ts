@@ -23,6 +23,17 @@ const shaderConfig = {
         path: 'progressiveBlur/progressiveBlur',
         category: 'effect',
     },
+    advancedGradientBlur: {
+        id: 'advancedGradientBlur',
+        title: 'Advanced Gradient Blur',
+        subtitle: '-effect',
+        iOS: false,
+        Android: false,
+        Lynx: false,
+        New: false,
+        path: 'advancedGradientBlur/advancedGradientBlur',
+        category: 'effect',
+    },
     highlight: {
         id: 'highlight',
         title: 'Highlight',
@@ -96,6 +107,7 @@ const shaderConfig = {
 const shaderOrder = [
     'spin',
     'progressiveBlur',
+    'advancedGradientBlur',
     'highlight',
     'zebraCurve',
     'sharpGradient',
