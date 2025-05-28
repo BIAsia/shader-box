@@ -26,6 +26,11 @@ export interface ShapeConfig {
     morph: number;
 }
 
+export interface GradientConfig {
+    hasGradient: boolean;
+    gradientColor: string;
+}
+
 export interface BlurConfig {
     amount: number;
     direction: string;
@@ -40,6 +45,7 @@ export interface ShaderConfig {
     color?: ColorConfig;
     shape?: ShapeConfig;
     blur?: BlurConfig;
+    gradient?: GradientConfig;
 }
 
 // 默认配置值
@@ -63,6 +69,11 @@ const defaultShapeConfig: ShapeConfig = {
     scaleY: 1.0,
     complex: 1,
     morph: 0
+};
+
+const defaultGradientConfig: GradientConfig = {
+    hasGradient: false,
+    gradientColor: '#000000'
 };
 
 const defaultBlurConfig: BlurConfig = {
@@ -215,6 +226,34 @@ export const createShaderControls = (configTypes: string[], initialConfig?: Part
             setShape = setShapeValues;
         }
 
+        // 渐变控制
+        let gradientControls: GradientConfig = { ...defaultGradientConfig };
+        let setGradient: (values: Partial<GradientConfig>) => void = () => { };
+        if (configTypes.includes('gradient')) {
+            config.gradient = {
+                ...defaultGradientConfig,
+                ...initialConfig?.gradient
+            };
+
+            const [{ hasGradient, gradientColor }, setGradientValues] = useControls('gradient', () => ({
+
+                hasGradient: {
+                    value: config.gradient.hasGradient,
+                    onChange: (v) => { config.gradient.hasGradient = v },
+                    transient: false
+                },
+                gradientColor: {
+                    value: config.gradient.gradientColor,
+                    onChange: (v) => { config.gradient.gradientColor = v },
+                    transient: false
+                }
+
+            }));
+
+            gradientControls = { hasGradient, gradientColor };
+            setGradient = setGradientValues;
+        }
+
         // 模糊控制
         let blurControls: BlurConfig = { ...defaultBlurConfig };
         let setBlur: (values: Partial<BlurConfig>) => void = () => { };
@@ -323,6 +362,12 @@ export const createShaderControls = (configTypes: string[], initialConfig?: Part
                 setShape(shapeUpdate);
             }
 
+            if (importedConfig.gradient && config.gradient) {
+                const gradientUpdate = { ...importedConfig.gradient };
+                Object.assign(config.gradient, importedConfig.gradient);
+                setGradient(gradientUpdate);
+            }
+
             if (importedConfig.blur && config.blur) {
                 const blurUpdate = { ...importedConfig.blur };
                 Object.assign(config.blur, importedConfig.blur);
@@ -353,6 +398,10 @@ export const createShaderControls = (configTypes: string[], initialConfig?: Part
             complex: shapeControls.complex,
             morph: shapeControls.morph,
 
+            // 渐变控制参数
+            hasGradient: gradientControls.hasGradient,
+            gradientColor: gradientControls.gradientColor,
+
             // 模糊控制参数
             direction: blurControls.direction,
             startPoint: blurControls.startPoint,
@@ -364,6 +413,7 @@ export const createShaderControls = (configTypes: string[], initialConfig?: Part
             animation: animationControls,
             color: colorControls,
             shape: shapeControls,
+            gradient: gradientControls,
             blur: blurControls,
 
             // 添加更新配置函数，以便外部调用

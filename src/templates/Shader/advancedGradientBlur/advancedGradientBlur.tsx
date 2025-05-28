@@ -22,6 +22,7 @@ const BlurMaterial = shaderMaterial(
     uEndPoint: 1.,
     uAmount: 30,
     uRepeats: 30,
+    uGradientColor: new THREE.Color(0x000000),
   },
   vertex,
   fragment
@@ -40,8 +41,7 @@ declare module '@react-three/fiber' {
   }
 }
 
-// 创建专用的控制钩子，只保留 blur 控制
-export const useAdvancedGradientBlurControls = createShaderControls(['blur']);
+export const useAdvancedGradientBlurControls = createShaderControls(['blur', 'gradient']);
 
 // 方向映射函数
 const getDirectionVector = (direction: string): THREE.Vector2 => {
@@ -57,15 +57,14 @@ const AdvancedGradientBlurImage = ({
   imageUrl = '/img/Background.png', // Default image path
   position = [0, 0],
   size = [1, 1],
-  colors = ['#000000', '#000000', '#000000']
 }) => {
   const { viewport } = useThree();
   const meshRef = useRef<THREE.Mesh>(null);
   const materialRef = useRef<THREE.ShaderMaterial>(null);
 
-  // 使用控制钩子，只保留 blur 相关控制
   const {
-    blur: { direction, startPoint, endPoint, amount, quality }
+    blur: { direction, startPoint, endPoint, amount, quality },
+    gradient: { hasGradient, gradientColor }
   } = useAdvancedGradientBlurControls();
 
   // Load the texture using drei's useTexture hook
@@ -90,14 +89,6 @@ const AdvancedGradientBlurImage = ({
         size[0],
         size[1]
       );
-
-      // 更新 blur 相关参数
-      materialRef.current.uniforms.uDirection.value = getDirectionVector(direction);
-      materialRef.current.uniforms.uStartPoint.value = startPoint;
-      materialRef.current.uniforms.uEndPoint.value = endPoint;
-      materialRef.current.uniforms.uAmount.value = amount;
-      materialRef.current.uniforms.uRepeats.value = quality;
-
       materialRef.current.uniforms.uTexture.value = texture;
     }
   });
@@ -105,11 +96,19 @@ const AdvancedGradientBlurImage = ({
   return (
     <mesh ref={meshRef}>
       <planeGeometry args={[viewport.width, viewport.height, 100, 100]} />
-      {/* @ts-ignore */}
+
       <blurMaterial
         key={BlurMaterial.key}
         ref={materialRef}
         transparent={true}
+        // {/* @ts-ignore */}
+        uDirection={getDirectionVector(direction)}
+        uStartPoint={startPoint}
+        uEndPoint={endPoint}
+        uAmount={amount}
+        uRepeats={quality}
+        uGradientColor={new THREE.Color(gradientColor)}
+      // uTexture={texture}
       />
     </mesh>
   );

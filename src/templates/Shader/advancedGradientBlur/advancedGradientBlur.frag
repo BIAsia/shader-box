@@ -3,6 +3,7 @@ uniform vec2 uResolution;
 uniform float uTime;
 uniform vec2 uImgPosition;
 uniform vec2 uImgSize;
+uniform vec3 uGradientColor;
 
 // 贴图
 uniform sampler2D uTexture;
@@ -53,6 +54,27 @@ mat2 rotate2d(float _angle) {
   return mat2(cos(_angle), -sin(_angle), sin(_angle), cos(_angle));
 }
 
+float getGradient(float projectedPos, float uStartPoint, float uEndPoint) {
+  float t = (projectedPos - uStartPoint) / (uEndPoint - uStartPoint);
+  t = clamp(t, 0.0, 1.0);
+
+  // 组合线性插值和smoothstep以获得更均匀的渐变
+  float smoothT = smoothstep(0.0, 1.0, t);
+  float gradient = mix(t, smoothT, 0.7); // 0.7是线性和平滑之间的混合因子，可以调整
+
+  // 反转渐变方向
+  if(gradient - 0. > 0.001)
+    gradient = 1.0 - gradient;
+  return gradient;
+}
+
+float gradientSmooth(float y, float startPoint, float endPoint) {
+  if(startPoint > endPoint) {
+    return 0.0;
+  }
+  return smoothstep(startPoint, endPoint, y);
+}
+
 void main() {
   // 坐标转换
   vec2 uv = vec2((vPos.x / uResolution.x) + 0.5, -(vPos.y / uResolution.y) + 0.5);
@@ -63,9 +85,6 @@ void main() {
   // 图片卡片边界
   vec2 imgBoundary = step(uImgPosition, uv) * step(vec2(1.0) - uImgPosition - uImgSize, vec2(1.0) - uv);
   vec3 box = vec3(imgBoundary.x * imgBoundary.y);
-
-  // 计算渐变因子 - 使用更均匀的渐变方式
-  float gradient;
 
   // 归一化方向向量
   vec2 normDirection = normalize(uDirection);
@@ -81,25 +100,20 @@ void main() {
     projectedPos = 1.0 - projectedPos;
   }
 
-  // 使用改进的平滑过渡
-  float t = (projectedPos - uStartPoint) / (uEndPoint - uStartPoint);
-  t = clamp(t, 0.0, 1.0);
+  float gradient = getGradient(projectedPos, uStartPoint, uImgSize.y * 0.6);
+  float blurGradient = gradientSmooth(uv.y, uImgSize.y * 0.7, uImgSize.y * 1.5);
+  float overlayGradient = gradientSmooth(uv.y, uImgSize.y * 0.6, uImgSize.y * 1.5);
 
-  // 组合线性插值和smoothstep以获得更均匀的渐变
-  float smoothT = smoothstep(0.0, 1.0, t);
-  gradient = mix(t, smoothT, 0.7); // 0.7是线性和平滑之间的混合因子，可以调整
-
-  // 反转渐变方向
-  gradient = 1.0 - gradient;
-
-  float amount = 0.0008 * uAmount;
+  float amount = 0.0008 * 200.;
   // 应用模糊效果 - blur逻辑保持不变，但texture采样会自动扩展边缘像素
-  vec4 final = vec4(blur(adjustedUV, uTexture, amount, gradient), 1.);
+  vec4 final = vec4(blur(adjustedUV, uTexture, amount, blurGradient), 1.);
 
   // 输出
-  gl_FragColor = vec4(box * final.rgb, box);
+  // gl_FragColor = vec4(box * final.rgb, box);
 
   // 调试用 - 显示渐变
-  // vec3 temp = vec3(gradient);
+  vec3 temp = vec3(overlayGradient) * uGradientColor;
+  final = mix(final, vec4(uGradientColor, 1.), overlayGradient);
   gl_FragColor = vec4(final);
+  // gl_FragColor = vec4(temp, 1.);
 }
