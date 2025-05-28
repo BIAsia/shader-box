@@ -18,8 +18,7 @@ const nextConfig = {
   // },
   reactStrictMode: true, // Recommended for the `pages` directory, default in `app`.
   experimental: {
-    reactRoot: 'concurrent',
-    appDir: true,
+    // App router is enabled by default now
   },
   images: {},
   webpack(config, { isServer }) {
