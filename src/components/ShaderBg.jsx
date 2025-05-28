@@ -24,7 +24,22 @@ const ShaderBg = ({ initialShaderId = 'spin', setOverlay, setMockVisible, isMock
     useEffect(() => {
         const Component = importShader(currentShaderId);
         setShaderComponent(() => Component);
-    }, [currentShaderId]);
+
+        // Update background image based on shader ID
+        if (currentShaderId === 'advancedGradientBlur') {
+            setBackgroundImage('/img/Background2.png');
+        } else if (currentShaderId === 'progressiveBlur') {
+            setBackgroundImage('/img/Background.png');
+        }
+
+        // Update overlay image based on shader category
+        const currentShader = getShaderById(currentShaderId);
+        if (currentShader?.category === 'effect') {
+            setOverlay?.('/img/EffectOverlay.png');
+        } else {
+            setOverlay?.('/img/Overlay.png');
+        }
+    }, [currentShaderId, setOverlay]);
 
     const handleClickNext = () => {
         setCurrentShaderId(getNextShaderId(currentShaderId));

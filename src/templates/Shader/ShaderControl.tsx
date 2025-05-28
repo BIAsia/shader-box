@@ -73,14 +73,14 @@ const defaultShapeConfig: ShapeConfig = {
 
 const defaultGradientConfig: GradientConfig = {
     hasGradient: false,
-    gradientColor: '#000000'
+    gradientColor: '#B8E0F8'
 };
 
 const defaultBlurConfig: BlurConfig = {
     direction: 'vertical',
     startPoint: 1.,
-    endPoint: 0.6,
-    amount: 60,
+    endPoint: 0.4,
+    amount: 200,
     quality: 30
 };
 

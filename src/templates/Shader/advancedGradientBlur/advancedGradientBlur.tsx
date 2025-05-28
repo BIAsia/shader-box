@@ -22,7 +22,7 @@ const BlurMaterial = shaderMaterial(
     uEndPoint: 1.,
     uAmount: 30,
     uRepeats: 30,
-    uGradientColor: new THREE.Color(0x000000),
+    uGradientColor: new THREE.Color(0xB8E0F8),
   },
   vertex,
   fragment
@@ -118,7 +118,7 @@ const AdvancedGradientBlurImage = ({
   const { viewport } = useThree();
   const meshRef = useRef<THREE.Mesh>(null);
   const materialRef = useRef<THREE.ShaderMaterial>(null);
-  const [extractedColor, setExtractedColor] = useState<string>('#000000');
+  const [extractedColor, setExtractedColor] = useState<string>('#B8E0F8');
   const previousImageUrlRef = useRef<string>(imageUrl);
   const colorRef = useRef<string>(extractedColor);
   const [isLoading, setIsLoading] = useState(false);
