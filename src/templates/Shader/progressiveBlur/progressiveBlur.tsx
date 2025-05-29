@@ -41,7 +41,7 @@ declare module '@react-three/fiber' {
 }
 
 // 创建专用的控制钩子，只保留 blur 控制
-export const useProgressiveBlurControls = createShaderControls(['blur']);
+export const useProgressiveBlurControls = createShaderControls(['blur'], {}, { showAIGenerate: false });
 
 // 方向映射函数
 const getDirectionVector = (direction: string): THREE.Vector2 => {

@@ -1,9 +1,10 @@
 // LevaControls.tsx
 import { useControls, folder, button } from 'leva';
+import type { ButtonInput, FolderInput } from 'leva/dist/declarations/src/types';
 import * as THREE from "three";
 import { useThree } from "@react-three/fiber";
 import { LoadingOverlay } from '@/components/LoadingOverlay';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { getShaderById } from './shaderConfig';
 
 // 添加 shader 类型定义
@@ -62,8 +63,8 @@ export interface AIGenerateConfig {
 
 // 组合配置类型
 export interface ShaderConfig {
-    shaderId?: string;
-    aiGenerate?: AIGenerateConfig;
+    shaderId: string;
+    aiGenerate: AIGenerateConfig;
     animation?: AnimationConfig;
     color?: ColorConfig;
     shape?: ShapeConfig;
@@ -111,23 +112,64 @@ const defaultAIGenerateConfig: AIGenerateConfig = {
     customText: ''
 };
 
+interface AIGenerateSchema {
+    'Random': ButtonInput;
+    'Style': { value: string };
+}
+
+export interface ShaderControlsConfig {
+    showAIGenerate?: boolean;
+}
+
 // 创建一个工厂函数来生成特定的控制钩子
-export const createShaderControls = (configTypes: string[], initialConfig?: Partial<ShaderConfig>) => {
+export const createShaderControls = (
+    configTypes: string[],
+    initialConfig?: Partial<ShaderConfig>,
+    controlsConfig: ShaderControlsConfig = { showAIGenerate: true }
+) => {
     return () => {
         const { scene, camera } = useThree();
         const gl = useThree((state) => state.gl);
         const [isLoading, setIsLoading] = useState(false);
         const [error, setError] = useState<string | null>(null);
+        const styleRef = useRef('');
 
-        // 初始化配置，只包含需要的部分
+        // 初始化配置
         const config: ShaderConfig = {
             shaderId: initialConfig?.shaderId || 'spin',
-            ...initialConfig
+            aiGenerate: {
+                ...defaultAIGenerateConfig,
+                ...initialConfig?.aiGenerate
+            }
         };
 
         // AI Generate 控制
-        let aiGenerateControls: AIGenerateConfig = { ...defaultAIGenerateConfig };
-        let setAIGenerate: (values: Partial<AIGenerateConfig>) => void = () => { };
+        if (controlsConfig.showAIGenerate !== false) {
+            useControls('AI Generate', () => ({
+                'Random': button(() => {
+                    const randomPrompt = generateRandomPrompt(config.shaderId);
+                    const finalPrompt = styleRef.current.trim()
+                        ? `${randomPrompt}. Style preference: ${styleRef.current.trim()}`
+                        : randomPrompt;
+                    generateShaderParams(finalPrompt);
+                }),
+                'Style': {
+                    value: '',
+                    onChange: (v: string) => {
+                        styleRef.current = v;
+                    }
+                }
+            }));
+        }
+
+        const aiGenerateControls: AIGenerateConfig = {
+            customText: styleRef.current
+        };
+        const setAIGenerate = (newValues: Partial<AIGenerateConfig>) => {
+            if (newValues.customText !== undefined) {
+                styleRef.current = newValues.customText;
+            }
+        };
 
         const generateShaderParams = async (prompt: string) => {
             try {
@@ -265,29 +307,6 @@ export const createShaderControls = (configTypes: string[], initialConfig?: Part
 
             return `${basePrompt} with a ${adjective} style that feels ${theme}`;
         };
-
-        const [{ customText }, setAIGenerateValues] = useControls('AI Generate', () => ({
-            'Random': button(() => {
-                const randomPrompt = generateRandomPrompt(config.shaderId);
-                generateShaderParams(randomPrompt);
-            }, {
-                disabled: isLoading
-            }),
-            customText: {
-                value: '',
-                label: 'Custom'
-            },
-            'Generate': button(() => {
-                if (customText.trim()) {
-                    generateShaderParams(customText.trim());
-                }
-            }, {
-                disabled: isLoading
-            })
-        }), [isLoading]);
-
-        aiGenerateControls = { customText };
-        setAIGenerate = setAIGenerateValues;
 
         // 动画控制
         let animationControls: AnimationConfig = { ...defaultAnimationConfig };
@@ -624,5 +643,9 @@ export const createShaderControls = (configTypes: string[], initialConfig?: Part
     };
 };
 
-// 为了向后兼容，保留原来的 useShaderControls
-export const useShaderControls = createShaderControls(['animation', 'color', 'shape'], {});
+// 为了向后兼容，保留原来的 useShaderControls，默认显示 AI Generate
+export const useShaderControls = createShaderControls(
+    ['animation', 'color', 'shape'],
+    {},
+    { showAIGenerate: true }
+);

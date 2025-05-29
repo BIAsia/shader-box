@@ -41,7 +41,7 @@ declare module '@react-three/fiber' {
   }
 }
 
-export const useAdvancedGradientBlurControls = createShaderControls(['blur', 'gradient']);
+export const useAdvancedGradientBlurControls = createShaderControls([], {}, { showAIGenerate: false });
 
 // 方向映射函数
 const getDirectionVector = (direction: string): THREE.Vector2 => {
