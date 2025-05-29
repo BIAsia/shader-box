@@ -150,13 +150,14 @@ export const createShaderControls = (
                 'Generate': button(() => {
                     console.log('Generate button clicked, current isLoading:', isLoading);
                     const randomPrompt = generateRandomPrompt(config.shaderId);
-                    const finalPrompt = styleRef.current.trim()
-                        ? `${randomPrompt}. Style preference: ${styleRef.current.trim()}`
+                    const style = styleRef.current.trim();
+                    const finalPrompt = style && style !== 'random'
+                        ? `${randomPrompt}. Style preference: ${style}`
                         : randomPrompt;
                     generateShaderParams(finalPrompt);
                 }, { disabled: isLoading }),
                 'Style': {
-                    value: '',
+                    value: 'random',
                     onChange: (v: string) => {
                         styleRef.current = v;
                     }

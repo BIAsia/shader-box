@@ -228,20 +228,21 @@ const AdvancedGradientBlurImage = ({
           {/* Black overlay */}
           <mesh position={[0, 0, 1]}>
             <planeGeometry args={[viewport.width, viewport.height]} />
-            <meshBasicMaterial color="black" transparent opacity={0.5} />
+            <meshBasicMaterial color="black" transparent opacity={0.8} />
           </mesh>
 
           {/* Loading text */}
-          <Html center position={[0, 0, 2]}>
+          <Html center position={[0, 0.4, 2]}>
             <div style={{
               color: 'white',
-              fontSize: '14px',
-              fontFamily: 'Arial, sans-serif',
+              fontSize: '13px',
+              fontFamily: 'inherit',
+              fontWeight: '500',
               textAlign: 'center',
               userSelect: 'none',
               pointerEvents: 'none'
             }}>
-              Analyzing image colors...
+              Analyzing color...
             </div>
           </Html>
         </>
