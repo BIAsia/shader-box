@@ -11,6 +11,8 @@ const withPWA = require('@ducanh2912/next-pwa').default({
   disable: process.env.NODE_ENV === 'development',
 })
 
+const path = require('path')
+
 const nextConfig = {
   // uncomment the following snippet if using styled components
   // compiler: {
@@ -22,6 +24,12 @@ const nextConfig = {
   },
   images: {},
   webpack(config, { isServer }) {
+    // Add path aliases
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': path.join(__dirname, 'src'),
+    }
+
     if (!isServer) {
       // We're in the browser build, so we can safely exclude the sharp module
       config.externals.push('sharp')
