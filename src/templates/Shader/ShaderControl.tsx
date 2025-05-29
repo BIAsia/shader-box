@@ -2,6 +2,23 @@
 import { useControls, folder, button } from 'leva';
 import * as THREE from "three";
 import { useThree } from "@react-three/fiber";
+import { LoadingOverlay } from '@/components/LoadingOverlay';
+import { useState, useEffect } from 'react';
+import { getShaderById } from './shaderConfig';
+
+// 添加 shader 类型定义
+interface ShaderMetadata {
+    id: string;
+    title: string;
+    subtitle: string;
+    category: string;
+    type?: string;
+    iOS?: boolean;
+    Android?: boolean;
+    Lynx?: boolean;
+    New?: boolean;
+    path: string;
+}
 
 // 将每种控制类型定义为独立的接口
 export interface AnimationConfig {
@@ -39,8 +56,14 @@ export interface BlurConfig {
     quality: number;
 }
 
+export interface AIGenerateConfig {
+    customText: string;
+}
+
 // 组合配置类型
 export interface ShaderConfig {
+    shaderId?: string;
+    aiGenerate?: AIGenerateConfig;
     animation?: AnimationConfig;
     color?: ColorConfig;
     shape?: ShapeConfig;
@@ -84,14 +107,187 @@ const defaultBlurConfig: BlurConfig = {
     quality: 30
 };
 
+const defaultAIGenerateConfig: AIGenerateConfig = {
+    customText: ''
+};
+
 // 创建一个工厂函数来生成特定的控制钩子
 export const createShaderControls = (configTypes: string[], initialConfig?: Partial<ShaderConfig>) => {
     return () => {
         const { scene, camera } = useThree();
         const gl = useThree((state) => state.gl);
+        const [isLoading, setIsLoading] = useState(false);
+        const [error, setError] = useState<string | null>(null);
 
         // 初始化配置，只包含需要的部分
-        const config: ShaderConfig = {};
+        const config: ShaderConfig = {
+            shaderId: initialConfig?.shaderId || 'spin',
+            ...initialConfig
+        };
+
+        // AI Generate 控制
+        let aiGenerateControls: AIGenerateConfig = { ...defaultAIGenerateConfig };
+        let setAIGenerate: (values: Partial<AIGenerateConfig>) => void = () => { };
+
+        const generateShaderParams = async (prompt: string) => {
+            try {
+                setIsLoading(true);
+                setError(null);
+
+                // 获取当前着色器信息
+                const currentShader = getShaderById(config.shaderId || 'spin') as ShaderMetadata;
+                if (!currentShader) {
+                    throw new Error('Invalid shader configuration');
+                }
+
+                // 确定着色器类型
+                let shaderType = currentShader.type;
+                if (!shaderType) {
+                    // 根据着色器特征推断类型
+                    if (currentShader.subtitle?.includes('-diffuse') ||
+                        currentShader.subtitle?.includes('-Diffuse')) {
+                        shaderType = 'dynamic';
+                    } else if (currentShader.subtitle?.includes('-effect')) {
+                        shaderType = 'effect';
+                    } else if (currentShader.subtitle?.includes('-curve')) {
+                        shaderType = 'curve';
+                    }
+                }
+
+                const response = await fetch('/api/generate-params', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        prompt,
+                        shaderId: currentShader.id,
+                        shaderCategory: currentShader.category,
+                        shaderType,
+                        currentParams: {
+                            color: config.color,
+                            shape: config.shape
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to generate parameters');
+                }
+
+                const data = await response.json();
+
+                // 更新颜色和形状参数
+                if (config.color && data.color) {
+                    setColor({
+                        color1: data.color.color1,
+                        color2: data.color.color2,
+                        color3: data.color.color3,
+                        color4: data.color.color4,
+                        bgColor: data.color.bgColor,
+                        lightness: data.color.lightness
+                    });
+                }
+
+                if (config.shape && data.shape) {
+                    setShape({
+                        position: data.shape.position,
+                        scaleX: data.shape.scaleX,
+                        scaleY: data.shape.scaleY,
+                        complex: data.shape.complex,
+                        morph: data.shape.morph
+                    });
+                }
+            } catch (error) {
+                console.error('Error generating parameters:', error);
+                setError(error instanceof Error ? error.message : 'Failed to generate parameters');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        const generateRandomPrompt = (shaderId: string) => {
+            const shader = getShaderById(shaderId) as ShaderMetadata;
+            if (!shader) return 'Generate artistic shader parameters';
+
+            const basePrompts = {
+                background: {
+                    dynamic: [
+                        'Create a subtle and elegant background pattern',
+                        'Design a professional background with muted colors',
+                        'Generate a sophisticated low-contrast pattern',
+                        'Create a refined background suitable for text overlay'
+                    ],
+                    default: [
+                        'Create a mesmerizing background pattern',
+                        'Design an elegant abstract background',
+                        'Generate a dynamic flowing background',
+                        'Create a subtle geometric pattern'
+                    ]
+                },
+                effect: [
+                    'Design a stunning visual effect',
+                    'Create an eye-catching blur effect',
+                    'Generate a smooth transition effect',
+                    'Design a professional visual filter'
+                ]
+            };
+
+            const styleAdjectives = shader.type === 'dynamic' ?
+                ['subtle', 'refined', 'professional', 'sophisticated', 'elegant', 'muted'] :
+                ['modern', 'elegant', 'vibrant', 'subtle', 'dynamic', 'minimalist', 'bold', 'sophisticated'];
+
+            const colorThemes = shader.type === 'dynamic' ?
+                [
+                    'professional and understated',
+                    'subtle and sophisticated',
+                    'deep and muted',
+                    'refined and balanced',
+                    'elegant and subdued'
+                ] :
+                [
+                    'warm and inviting',
+                    'cool and calming',
+                    'bright and energetic',
+                    'soft and soothing',
+                    'rich and deep',
+                    'light and airy'
+                ];
+
+            const prompts = shader.category === 'background' ?
+                (shader.type === 'dynamic' ? basePrompts.background.dynamic : basePrompts.background.default) :
+                basePrompts.effect;
+
+            const basePrompt = prompts[Math.floor(Math.random() * prompts.length)];
+            const adjective = styleAdjectives[Math.floor(Math.random() * styleAdjectives.length)];
+            const theme = colorThemes[Math.floor(Math.random() * colorThemes.length)];
+
+            return `${basePrompt} with a ${adjective} style that feels ${theme}`;
+        };
+
+        const [{ customText }, setAIGenerateValues] = useControls('AI Generate', () => ({
+            'Random': button(() => {
+                const randomPrompt = generateRandomPrompt(config.shaderId);
+                generateShaderParams(randomPrompt);
+            }, {
+                disabled: isLoading
+            }),
+            customText: {
+                value: '',
+                label: 'Custom'
+            },
+            'Generate': button(() => {
+                if (customText.trim()) {
+                    generateShaderParams(customText.trim());
+                }
+            }, {
+                disabled: isLoading
+            })
+        }), [isLoading]);
+
+        aiGenerateControls = { customText };
+        setAIGenerate = setAIGenerateValues;
 
         // 动画控制
         let animationControls: AnimationConfig = { ...defaultAnimationConfig };
@@ -379,6 +575,11 @@ export const createShaderControls = (configTypes: string[], initialConfig?: Part
 
         // 返回值和配置
         return {
+            // AI Generate 参数
+            customText: aiGenerateControls.customText,
+            isLoading,
+            error,
+
             // 动画控制参数
             speed: animationControls.speed,
             timeOffset: animationControls.timeOffset,
@@ -410,6 +611,7 @@ export const createShaderControls = (configTypes: string[], initialConfig?: Part
             quality: blurControls.quality,
 
             // 同时保留原有的分组结构，以便向后兼容
+            aiGenerate: aiGenerateControls,
             animation: animationControls,
             color: colorControls,
             shape: shapeControls,
