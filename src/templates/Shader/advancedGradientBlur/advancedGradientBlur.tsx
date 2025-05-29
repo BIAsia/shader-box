@@ -184,9 +184,20 @@ const AdvancedGradientBlurImage = ({
 
       // Ensure color is always in sync
       const finalColor = useExtractedColor ? extractedColor : gradientColor;
-      if (materialRef.current.uniforms.uGradientColor.value.getHexString() !== finalColor.replace('#', '')) {
-        console.log('Syncing shader color in animation frame:', finalColor);
-        materialRef.current.uniforms.uGradientColor.value = new THREE.Color(finalColor);
+      const currentGradientColor = materialRef.current.uniforms.uGradientColor?.value;
+
+      // Only update if we have a valid current color and the new color is different
+      if (currentGradientColor && typeof finalColor === 'string') {
+        try {
+          const currentHex = currentGradientColor.getHexString();
+          const newHex = finalColor.replace('#', '');
+          if (currentHex !== newHex) {
+            console.log('Syncing shader color in animation frame:', finalColor);
+            materialRef.current.uniforms.uGradientColor.value = new THREE.Color(finalColor);
+          }
+        } catch (error) {
+          console.error('Error comparing colors:', error);
+        }
       }
     }
   });
