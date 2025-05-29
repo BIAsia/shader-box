@@ -145,21 +145,23 @@ export const createShaderControls = (
 
         // AI Generate 控制
         if (controlsConfig.showAIGenerate !== false) {
+            console.log('Setting up AI Generate controls, isLoading:', isLoading);
             useControls('AI Generate', () => ({
-                'Random': button(() => {
+                'Generate': button(() => {
+                    console.log('Generate button clicked, current isLoading:', isLoading);
                     const randomPrompt = generateRandomPrompt(config.shaderId);
                     const finalPrompt = styleRef.current.trim()
                         ? `${randomPrompt}. Style preference: ${styleRef.current.trim()}`
                         : randomPrompt;
                     generateShaderParams(finalPrompt);
-                }),
+                }, { disabled: isLoading }),
                 'Style': {
                     value: '',
                     onChange: (v: string) => {
                         styleRef.current = v;
                     }
                 }
-            }));
+            }), [isLoading]);
         }
 
         const aiGenerateControls: AIGenerateConfig = {
@@ -173,6 +175,7 @@ export const createShaderControls = (
 
         const generateShaderParams = async (prompt: string) => {
             try {
+                console.log('Loading started, isLoading:', true);
                 setIsLoading(true);
                 setError(null);
 
@@ -219,6 +222,7 @@ export const createShaderControls = (
                 }
 
                 const data = await response.json();
+                console.log('API response data:', data);
 
                 // 更新颜色和形状参数
                 if (config.color && data.color) {
@@ -245,6 +249,7 @@ export const createShaderControls = (
                 console.error('Error generating parameters:', error);
                 setError(error instanceof Error ? error.message : 'Failed to generate parameters');
             } finally {
+                console.log('Loading finished, isLoading:', false);
                 setIsLoading(false);
             }
         };
