@@ -51,7 +51,7 @@ export async function POST(request: Request) {
                         content: [
                             {
                                 type: 'text',
-                                text: 'Analyze this image and extract its main color along with 4 complementary colors that would work well together. Return ONLY a JSON object with exactly this structure, no markdown or explanation: {"mainColor": "#HEXCODE", "derivativeColors": ["#HEXCODE1", "#HEXCODE2", "#HEXCODE3", "#HEXCODE4"]}. All colors must be valid hex codes starting with #.'
+                                text: 'Analyze this image and extract its main color(Avoid excessive saturation) along with 4 complementary colors that would work well together. Return ONLY a JSON object with exactly this structure, no markdown or explanation: {"mainColor": "#HEXCODE", "derivativeColors": ["#HEXCODE1", "#HEXCODE2", "#HEXCODE3", "#HEXCODE4"]}. All colors must be valid hex codes starting with #.'
                             },
                             {
                                 type: 'image_url',

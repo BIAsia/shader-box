@@ -134,15 +134,14 @@ ${shapeUsageGuide}
 ${colorConstraints}
 
 IMPORTANT PARAMETER CONSTRAINTS:
-1. Keep these parameters close to their default values unless specifically requested:
-   - lightness: prefer values around 0
-   - position: prefer values close to {x: 0, y: 0}
-   - scaleX and scaleY: prefer values close to 1.0
-   - complex: prefer values close to 1.0~2.0
+1. Keep these parameters equal to their default values unless specifically requested:
+   - lightness: equal to 0
+   - position: equal to {x: 0, y: 0}
+   - scaleX and scaleY: equal to 1.0
 2. Focus variations mainly on:
    - colors (color1, color2, color3, color4, bgColor)
-   - complex (pattern complexity)
    - morph (pattern transformation)
+   - complex (pattern complexity, around 1.0~5.0)
 
 Return ONLY a JSON object with this exact structure:
 {

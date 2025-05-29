@@ -72,9 +72,9 @@ const SharpGradientBg = (props: Mesh) => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'application/json';
-
     input.onchange = async (event) => {
-      const file = event.target.files[0];
+      const target = event.target as HTMLInputElement;
+      const file = target.files?.[0];
       if (!file) return;
       const text = await file.text();
       const importedConfig = JSON.parse(text);
@@ -207,7 +207,7 @@ const SharpGradientBg = (props: Mesh) => {
         uLightness={color.lightness}
         uPosition={new THREE.Vector2(shape.position.x, shape.position.y)}
         uScale={new THREE.Vector2(shape.scaleX, shape.scaleY)}
-        uRotate={shape.rotate}
+        // uRotate={shape.rotate}
         uColor={[color.color1, color.color2, color.color3, color.color4].map((color) => new THREE.Color(color))}
         uBgColor={color.bgColor}
         uComplex={shape.complex}
