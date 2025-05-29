@@ -37,7 +37,7 @@ const ShaderBg = ({ initialShaderId = 'spin', setOverlay, setMockVisible, isMock
         }
 
         // 再更新覆盖图片
-        if (currentShader?.category === 'effect') {
+        if (currentShaderId === 'advancedGradientBlur') {
             setOverlay?.('/img/EffectOverlay.png');
         } else {
             setOverlay?.('/img/Overlay.png');
