@@ -522,7 +522,8 @@ export const createShaderControls = (
                     transient: false
                 }
 
-            }));
+            }),// 添加依赖项，确保当 shader 切换时重新初始化
+                [config.shaderId]);
 
             blurControls = { direction, startPoint, endPoint, amount, quality };
             setBlur = setBlurValues;

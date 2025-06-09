@@ -9,7 +9,7 @@ import vertex from "./advancedGradientBlur.vert";
 import fragment from "./advancedGradientBlur.frag";
 
 // Define the blur material with your shader parameters
-const BlurMaterial = shaderMaterial(
+const AdvancedBlurMaterial = shaderMaterial(
   {
     uResolution: new THREE.Vector2(0, 0),
     uTime: 0,
@@ -29,19 +29,19 @@ const BlurMaterial = shaderMaterial(
 );
 
 // Generate a unique key for HMR
-BlurMaterial.key = THREE.MathUtils.generateUUID();
+AdvancedBlurMaterial.key = THREE.MathUtils.generateUUID();
 
 // Extend for use with react-three-fiber
-extend({ BlurMaterial });
+extend({ AdvancedBlurMaterial });
 
 // Type declaration for TypeScript
 declare module '@react-three/fiber' {
   interface ThreeElements {
-    blurMaterial: JSX.IntrinsicElements['shaderMaterial'] & { key: string }
+    advancedBlurMaterial: JSX.IntrinsicElements['shaderMaterial'] & { key: string }
   }
 }
 
-export const useAdvancedGradientBlurControls = createShaderControls([], {}, { showAIGenerate: false });
+export const useAdvancedGradientBlurControls = createShaderControls([], { shaderId: 'advancedGradientBlur' }, { showAIGenerate: false });
 
 // 方向映射函数
 const getDirectionVector = (direction: string): THREE.Vector2 => {
@@ -192,7 +192,6 @@ const AdvancedGradientBlurImage = ({
           const currentHex = currentGradientColor.getHexString();
           const newHex = finalColor.replace('#', '');
           if (currentHex !== newHex) {
-            console.log('Syncing shader color in animation frame:', finalColor);
             materialRef.current.uniforms.uGradientColor.value = new THREE.Color(finalColor);
           }
         } catch (error) {
@@ -209,8 +208,8 @@ const AdvancedGradientBlurImage = ({
     <>
       <mesh ref={meshRef}>
         <planeGeometry args={[viewport.width, viewport.height, 100, 100]} />
-        <blurMaterial
-          key={BlurMaterial.key}
+        <advancedBlurMaterial
+          key={AdvancedBlurMaterial.key}
           ref={materialRef}
           transparent={true}
           /* @ts-ignore */

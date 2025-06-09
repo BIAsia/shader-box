@@ -27,8 +27,6 @@ const ShaderBg = ({ initialShaderId = 'spin', setOverlay, setMockVisible, isMock
 
     // 处理背景图片和覆盖图片的更新
     useEffect(() => {
-        const currentShader = getShaderById(currentShaderId);
-
         // 先更新背景图片
         if (currentShaderId === 'advancedGradientBlur') {
             setBackgroundImage('/img/Background2.png');
@@ -42,6 +40,8 @@ const ShaderBg = ({ initialShaderId = 'spin', setOverlay, setMockVisible, isMock
         } else {
             setOverlay?.('/img/Overlay.png');
         }
+
+        const currentShader = getShaderById(currentShaderId);
     }, [currentShaderId, setOverlay]);
 
     // 处理着色器组件的动态加载
@@ -74,18 +74,31 @@ const ShaderBg = ({ initialShaderId = 'spin', setOverlay, setMockVisible, isMock
     const renderShaderComponent = () => {
         if (!ShaderComponent || isComponentLoading) return null;
 
-        const commonProps = {
+        const shaderProps = {
             shaderId: currentShaderId,
             setLoading: setIsLoading,
-            key: currentShaderId // 强制在切换时重新创建组件
         };
 
-        return isEffectShader ? (
-            <ShaderComponent {...commonProps} imageUrl={backgroundImage} />
-        ) : (
-            <ShaderComponent {...commonProps} />
+        console.log(currentShaderId)
+
+        if (isEffectShader) {
+            return (
+                <ShaderComponent
+                    key={currentShaderId}
+                    {...shaderProps}
+                    imageUrl={backgroundImage}
+                />
+            );
+        }
+
+        return (
+            <ShaderComponent
+                key={currentShaderId}
+                {...shaderProps}
+            />
         );
     };
+
 
     return (
         <>
