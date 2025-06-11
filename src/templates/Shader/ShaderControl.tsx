@@ -45,8 +45,8 @@ export interface ShapeConfig {
 }
 
 export interface GradientConfig {
-    hasGradient: boolean;
-    gradientColor: string;
+    isBottom: boolean;
+    edgeRatio: number;
 }
 
 export interface BlurConfig {
@@ -96,8 +96,8 @@ const defaultShapeConfig: ShapeConfig = {
 };
 
 const defaultGradientConfig: GradientConfig = {
-    hasGradient: false,
-    gradientColor: '#B8E0F8'
+    isBottom: false,
+    edgeRatio: 0.6
 };
 
 const defaultBlurConfig: BlurConfig = {
@@ -456,22 +456,22 @@ export const createShaderControls = (
                 ...initialConfig?.gradient
             };
 
-            const [{ hasGradient, gradientColor }, setGradientValues] = useControls('gradient', () => ({
+            const [{ isBottom, edgeRatio }, setGradientValues] = useControls('gradient', () => ({
 
-                hasGradient: {
-                    value: config.gradient.hasGradient,
-                    onChange: (v) => { config.gradient.hasGradient = v },
+                isBottom: {
+                    value: config.gradient.isBottom,
+                    onChange: (v) => { config.gradient.isBottom = v },
                     transient: false
                 },
-                gradientColor: {
-                    value: config.gradient.gradientColor,
-                    onChange: (v) => { config.gradient.gradientColor = v },
+                edgeRatio: {
+                    value: config.gradient.edgeRatio,
+                    onChange: (v) => { config.gradient.edgeRatio = v },
                     transient: false
                 }
 
             }));
 
-            gradientControls = { hasGradient, gradientColor };
+            gradientControls = { isBottom, edgeRatio };
             setGradient = setGradientValues;
         }
 
@@ -626,8 +626,8 @@ export const createShaderControls = (
             morph: shapeControls.morph,
 
             // 渐变控制参数
-            hasGradient: gradientControls.hasGradient,
-            gradientColor: gradientControls.gradientColor,
+            isBottom: gradientControls.isBottom,
+            edgeRatio: gradientControls.edgeRatio,
 
             // 模糊控制参数
             direction: blurControls.direction,

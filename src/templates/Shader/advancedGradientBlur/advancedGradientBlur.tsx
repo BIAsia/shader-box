@@ -17,12 +17,10 @@ const AdvancedBlurMaterial = shaderMaterial(
     uImgSize: new THREE.Vector2(0, 0),
     uTexture: new THREE.Texture(),
     // Blur 相关参数
-    uDirection: new THREE.Vector2(0, 1), // 默认向上模糊
-    uStartPoint: 0.,
-    uEndPoint: 1.,
-    uAmount: 30,
     uRepeats: 30,
     uGradientColor: new THREE.Color(0xB8E0F8),
+    uIsBottom: true,
+    uEdgeRatio: 0.6,
   },
   vertex,
   fragment
@@ -41,7 +39,7 @@ declare module '@react-three/fiber' {
   }
 }
 
-export const useAdvancedGradientBlurControls = createShaderControls([], { shaderId: 'advancedGradientBlur' }, { showAIGenerate: false });
+export const useAdvancedGradientBlurControls = createShaderControls(['gradient'], { shaderId: 'advancedGradientBlur' }, { showAIGenerate: false });
 
 // 方向映射函数
 const getDirectionVector = (direction: string): THREE.Vector2 => {
@@ -124,8 +122,7 @@ const AdvancedGradientBlurImage = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const {
-    blur: { direction, startPoint, endPoint, amount, quality },
-    gradient: { hasGradient, gradientColor }
+    gradient: { isBottom, edgeRatio }
   } = useAdvancedGradientBlurControls();
 
   // Load the texture using drei's useTexture hook
@@ -183,7 +180,7 @@ const AdvancedGradientBlurImage = ({
       materialRef.current.uniforms.uTexture.value = texture;
 
       // Ensure color is always in sync
-      const finalColor = useExtractedColor ? extractedColor : gradientColor;
+      const finalColor = useExtractedColor ? extractedColor : '#B8E0F8';
       const currentGradientColor = materialRef.current.uniforms.uGradientColor?.value;
 
       // Only update if we have a valid current color and the new color is different
@@ -202,7 +199,7 @@ const AdvancedGradientBlurImage = ({
   });
 
   // Use extracted color if available and enabled, otherwise use the gradient color from controls
-  const finalGradientColor = useExtractedColor ? extractedColor : gradientColor;
+  const finalGradientColor = useExtractedColor ? extractedColor : '#B8E0F8';
 
   return (
     <>
@@ -213,12 +210,10 @@ const AdvancedGradientBlurImage = ({
           ref={materialRef}
           transparent={true}
           /* @ts-ignore */
-          uDirection={getDirectionVector(direction)}
-          uStartPoint={startPoint}
-          uEndPoint={endPoint}
-          uAmount={amount}
-          uRepeats={quality}
+          uRepeats={30}
           uGradientColor={new THREE.Color(finalGradientColor)}
+          uIsBottom={isBottom}
+          uEdgeRatio={edgeRatio}
         />
       </mesh>
 

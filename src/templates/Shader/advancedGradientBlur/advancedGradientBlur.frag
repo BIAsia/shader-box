@@ -9,11 +9,10 @@ uniform vec3 uGradientColor;
 uniform sampler2D uTexture;
 
 // Blur 相关参数 - 按照 tsx 接口调整
-uniform vec2 uDirection;    // 模糊方向向量
-uniform float uStartPoint;  // 起始点
-uniform float uEndPoint;    // 结束点
-uniform float uAmount;      // 模糊量
 uniform float uRepeats;     // 重复次数
+
+uniform float uEdgeRatio;
+uniform bool uIsBottom;     // 新增：控制图片是否放在底部
 
 float rand(vec2 co) {
   return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
@@ -54,8 +53,8 @@ mat2 rotate2d(float _angle) {
   return mat2(cos(_angle), -sin(_angle), sin(_angle), cos(_angle));
 }
 
-float getGradient(float projectedPos, float uStartPoint, float uEndPoint) {
-  float t = (projectedPos - uStartPoint) / (uEndPoint - uStartPoint);
+float getGradient(float projectedPos, float startPoint, float endPoint) {
+  float t = (projectedPos - startPoint) / (endPoint - startPoint);
   t = clamp(t, 0.0, 1.0);
 
   // 组合线性插值和smoothstep以获得更均匀的渐变
@@ -78,31 +77,49 @@ float gradientSmooth(float y, float startPoint, float endPoint) {
 void main() {
   // 坐标转换
   vec2 uv = vec2((vPos.x / uResolution.x) + 0.5, -(vPos.y / uResolution.y) + 0.5);
+  vec2 adjustedUV, imgBoundary;
+  vec3 box;
+  float blurGradient, overlayGradient;
 
-  // 图片叠加 - 直接使用原始坐标
-  vec2 adjustedUV = vec2((uv.x - uImgPosition.x) / uImgSize.x, (uImgPosition.y - uv.y + uImgSize.y) / uImgSize.y);
-
-  // 图片卡片边界
-  vec2 imgBoundary = step(uImgPosition, uv) * step(vec2(1.0) - uImgPosition - uImgSize, vec2(1.0) - uv);
-  vec3 box = vec3(imgBoundary.x * imgBoundary.y);
-
-  // 归一化方向向量
-  vec2 normDirection = normalize(uDirection);
-
-  // 计算归一化坐标 (0-1范围)
-  vec2 normalizedCoord = vec2((vPos.x / uResolution.x) + 0.5, (-vPos.y / uResolution.y) + 0.5);
-
-  // 计算投影位置 - 将坐标投影到方向向量上
-  float projectedPos = dot(normalizedCoord - vec2(0.5), normDirection) + 0.5;
-
-  // 根据方向向量的符号调整投影方向
-  if(dot(normDirection, vec2(1.0, 1.0)) < 0.0) {
-    projectedPos = 1.0 - projectedPos;
+  if(!uIsBottom) {
+    adjustedUV = vec2((uv.x - uImgPosition.x) / uImgSize.x, (uImgPosition.y - uv.y + uImgSize.y) / uImgSize.y);
+    imgBoundary = step(uImgPosition, uv) * step(vec2(1.0) - uImgPosition - uImgSize, vec2(1.0) - uv);
+    box = vec3(imgBoundary.x * imgBoundary.y);
+    blurGradient = gradientSmooth(uv.y, uImgSize.y * (uEdgeRatio + 0.1), uImgSize.y * 1.5);
+    overlayGradient = gradientSmooth(uv.y, uImgSize.y * uEdgeRatio, uImgSize.y * 1.5);
+    // uv.y = 1.0 - uv.y;
+  } else {
+    uv.y = 1.0 - uv.y;
+    adjustedUV = vec2((uv.x - uImgPosition.x) / uImgSize.x, (uv.y - uImgPosition.y) / uImgSize.y);
+    imgBoundary = step(uImgPosition, uv) * step(vec2(1.0) - uImgPosition - uImgSize, vec2(1.0) - uv);
+    box = vec3(imgBoundary.x * imgBoundary.y);
+    blurGradient = gradientSmooth(uv.y, uImgSize.y * (uEdgeRatio + 0.1), uImgSize.y * 1.5);
+    overlayGradient = gradientSmooth(uv.y, uImgSize.y * uEdgeRatio, uImgSize.y * 1.5);
   }
 
-  float gradient = getGradient(projectedPos, uStartPoint, uImgSize.y * 0.6);
-  float blurGradient = gradientSmooth(uv.y, uImgSize.y * 0.7, uImgSize.y * 1.5);
-  float overlayGradient = gradientSmooth(uv.y, uImgSize.y * 0.6, uImgSize.y * 1.5);
+  // // 图片叠加 - 直接使用原始坐标
+  // vec2 adjustedUV = vec2((uv.x - uImgPosition.x) / uImgSize.x, (uImgPosition.y - uv.y + uImgSize.y) / uImgSize.y);
+
+  // 根据位置调整UV坐标计算
+
+  // if(uIsBottom) {
+  // // 底部放置：图片在底部，延伸顶部区域
+  //   adjustedUV = vec2((uv.x - uImgPosition.x) / uImgSize.x, (uv.y - uImgPosition.y) / uImgSize.y);
+  // } else {
+  // // 顶部放置：图片在顶部，延伸底部区域（原逻辑）
+
+  // }
+
+  // if(uIsBottom) {
+  // // 底部放置：从图片顶部边缘开始向上渐变
+  //   float imgTop = uImgPosition.y + uImgSize.y;
+  //   blurGradient = gradientSmooth(uv.y, imgTop - uImgSize.y * 0.1, imgTop + uImgSize.y * 0.9);
+  //   overlayGradient = gradientSmooth(uv.y, imgTop - uImgSize.y * uEdgeRatio, imgTop + uImgSize.y * 0.9);
+  // } else {
+  // // 顶部放置：从图片底部边缘开始向下渐变（原逻辑）
+  //   blurGradient = gradientSmooth(uv.y, uImgSize.y * (uEdgeRatio + 0.1), uImgSize.y * 1.5);
+  //   overlayGradient = gradientSmooth(uv.y, uImgSize.y * uEdgeRatio, uImgSize.y * 1.5);
+  // }
 
   float amount = 0.0008 * 200.;
   // 应用模糊效果 - blur逻辑保持不变，但texture采样会自动扩展边缘像素
@@ -112,7 +129,7 @@ void main() {
   // gl_FragColor = vec4(box * final.rgb, box);
 
   // 调试用 - 显示渐变
-  vec3 temp = vec3(overlayGradient) * uGradientColor;
+  // vec3 temp = vec3(overlayGradient) * uGradientColor;
   final = mix(final, vec4(uGradientColor, 1.), overlayGradient);
   gl_FragColor = vec4(final);
   // gl_FragColor = vec4(temp, 1.);
