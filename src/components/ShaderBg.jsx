@@ -162,4 +162,14 @@ const ShaderBg = ({ initialShaderId = 'spin', setOverlay, setMockVisible, isMock
     )
 }
 
+export const getShaderParams = (shaderId) => {
+    // Get controls from Leva configuration
+    const shader = getShaderById(shaderId);
+    if (!shader || !shader.controls) return {};
+    return shader.controls.reduce((acc, control) => {
+        acc[control.name] = control.defaultValue;
+        return acc;
+    }, {});
+}
+
 export { ShaderBg }

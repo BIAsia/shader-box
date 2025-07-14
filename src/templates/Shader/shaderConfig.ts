@@ -11,6 +11,10 @@ const shaderConfig = {
         New: false,
         path: 'spin/spin',
         category: 'background',
+        controls: [
+            { name: 'speed', defaultValue: 1.0 },
+            { name: 'intensity', defaultValue: 0.5 }
+        ],
     },
     progressiveBlur: {
         id: 'progressiveBlur',

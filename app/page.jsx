@@ -6,6 +6,7 @@ import { Mock } from "@/components/Mock"
 import { ShaderHeader } from "@/components/ShaderHeader"
 import { ShaderBg } from "@/components/ShaderBg"
 import { Leva, button, useControls, folder } from 'leva'
+import Link from 'next/link'
 
 import dynamic from 'next/dynamic'
 import record from 'canvas-to-video'
@@ -95,21 +96,17 @@ export default function Page() {
         <ShaderBg initialShaderId={currentShaderId} onShaderChange={handleShaderChange} className="absolute -z-10 flex item-center justify-center w-screen" setOverlay={setImageSrc} setMockVisible={handleButtonClick} isMockVisible={isMockVisible}></ShaderBg>
         {isMockVisible && <Mock overlay={imageSrc} setOverlay={setImageSrc}></Mock>}
 
-        {/* <PageFooter title={'Shader Box'}>
-          <div className="h-4 flex items-center flex-grow">
-            <a href="https://tux-ds.cn.goofy.app/toolbox?auth=admin" className="header-text text-opacity-70 text-white link link--leda link--leda--bottom">TUX Toolbox ↗</a>
-          </div>
-          <div className="h-4 flex items-center flex-grow">
-            <a href="https://tux-ds.cn.goofy.app/" className="header-text text-opacity-70 text-white link link--leda link--leda--bottom">TUX Website ↗</a>
-          </div>
-        </PageFooter> */}
+        <Link
+          href="/gallery"
+          className="absolute top-4 right-4 px-4 py-2 bg-white bg-opacity-20 rounded-md text-white hover:bg-opacity-30 transition-all"
+        >
+          Gallery
+        </Link>
+
         <div className="top-32 right-8 absolute w-60">
           <Leva theme={theme} flat={true} fill />
         </div>
-
       </div>
-
-
     </>
   )
 }
