@@ -96,12 +96,12 @@ export default function Page() {
         <ShaderBg initialShaderId={currentShaderId} onShaderChange={handleShaderChange} className="absolute -z-10 flex item-center justify-center w-screen" setOverlay={setImageSrc} setMockVisible={handleButtonClick} isMockVisible={isMockVisible}></ShaderBg>
         {isMockVisible && <Mock overlay={imageSrc} setOverlay={setImageSrc}></Mock>}
 
-        <Link
+        {/* <Link
           href="/gallery"
           className="absolute top-4 right-4 px-4 py-2 bg-white bg-opacity-20 rounded-md text-white hover:bg-opacity-30 transition-all"
         >
           Gallery
-        </Link>
+        </Link> */}
 
         <div className="top-32 right-8 absolute w-60">
           <Leva theme={theme} flat={true} fill />
