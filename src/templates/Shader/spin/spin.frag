@@ -18,10 +18,6 @@ uniform float uMorph;
 
 #define PI 3.1415927
 
-mat2 rotate2d(float angle) {
-    return mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
-}
-
 vec3 RGBColor(vec3 rgb) {
     return vec3(rgb.r / 255., rgb.g / 255., rgb.b / 255.);
 }
@@ -68,22 +64,24 @@ float rand(vec2 co, float time) {
 }
 
 void main() {
+    // position
     vec2 position = vec2(vPos.x * 1. / (uScale.x) - uPosition.x, vPos.y * 1. / uScale.y + uPosition.y);
     position *= 0.1;
     vec2 uv = vUV;
     vec2 scale = uScale;
     uv.x = (uv.x - 0.5) * (1. - scale.x) + 0.5;
     uv.y = (uv.y - 0.5) * (1. - scale.y) + 0.5;
-    // vec2 uv = vec2(vUV.x * uResolution.y / uResolution.x, vUV.y);
 
+    // time
     float time = uTime * 0.01 * uSpeed + uTimeOffset;
     vec3 color = uColor[0];
 
-    //vec2 position = vec2(0.5) - uv + uPosition;
+    // shape
     float r = length(position) * 3.;
     float a = atan(position.y, position.x);
     float count = uComplex;
     float morph = 1. - uMorph / 0.7;
+
     float shape = abs(morph * sin(a * (count * .5) + (time * 0.8 + 0.4))) *
         sin(a * count - (time * 0.8 + 0.2));
     vec3 alpha1 = shape * uColor[2];
@@ -95,25 +93,14 @@ void main() {
 
     shape = pow(shape, 1.);
 
-    // color = uBgColor;
     color = mix(color, uColor[1], r);
-
-    // color *= 1. + 0.5;
 
     float alpha = (1. - smoothstep(shape, shape + 0.8, r)) + (1. - smoothstep(shape, shape + 1.5, r)) * 0.2;
     alpha = clamp(alpha, 0., 1.0);
-    // alpha -= 0.1;
 
     color = mix(uBgColor, color, alpha);
 
-    // color *= alpha;
-
-    // color -= alpha1 * 0.4;
-    // color -= alpha2 * 0.4;
-
     color = mix(uBgColor, color, r * 1.);
-
-    // color -= vec3(0.2);
 
     if(uLightness >= 0.) {
         color = mix(color, vec3(1, 1, 1), uLightness);

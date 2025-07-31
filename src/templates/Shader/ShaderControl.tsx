@@ -541,8 +541,16 @@ export const createShaderControls = (
                 });
             }),
             'Export Config': button(() => {
-                console.log(config);
-                const configBlob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+                // Create a new config object without shaderId and aiGenerate
+                const exportConfig = {
+                    animation: config.animation,
+                    color: config.color,
+                    shape: config.shape,
+                    blur: config.blur,
+                    gradient: config.gradient
+                };
+                console.log('Exporting config:', exportConfig);
+                const configBlob = new Blob([JSON.stringify(exportConfig, null, 2)], { type: 'application/json' });
                 const configUrl = URL.createObjectURL(configBlob);
                 const link = document.createElement('a');
                 link.setAttribute('download', 'config.json');
@@ -558,7 +566,17 @@ export const createShaderControls = (
                     if (!file) return;
                     const text = await file.text();
                     const importedConfig = JSON.parse(text);
-                    updateConfig(importedConfig);
+
+                    // Filter out shaderId and aiGenerate from imported config
+                    const filteredConfig = {
+                        animation: importedConfig.animation,
+                        color: importedConfig.color,
+                        shape: importedConfig.shape,
+                        blur: importedConfig.blur,
+                        gradient: importedConfig.gradient
+                    };
+
+                    updateConfig(filteredConfig);
                 };
                 input.click();
             })
