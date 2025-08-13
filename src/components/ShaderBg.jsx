@@ -6,6 +6,7 @@ import { FileInput } from "@/components/FileInput"
 import { getShaderById, getAllShaders, getNextShaderId, getPrevShaderId } from "@/templates/Shader/shaderConfig"
 import ShaderSidebar from "@/components/ShaderSidebar"
 import { LoadingOverlay } from "@/components/LoadingOverlay"
+import { setCurrentShaderTitle } from "@/templates/Shader/ShaderControl"
 
 // Helper function for dynamic imports
 const importShader = (shaderId) => {
@@ -21,6 +22,14 @@ const importShader = (shaderId) => {
 const ShaderBg = ({ initialShaderId = 'spin', setOverlay, setMockVisible, isMockVisible }) => {
     const [currentShaderId, setCurrentShaderId] = useState(initialShaderId);
     const [ShaderComponent, setShaderComponent] = useState(null);
+
+    // 初始化时设置当前着色器标题
+    useEffect(() => {
+        const currentShader = getShaderById(initialShaderId);
+        if (currentShader) {
+            setCurrentShaderTitle(currentShader.title);
+        }
+    }, [initialShaderId]);
     const [backgroundImage, setBackgroundImage] = useState('/img/Background.png');
     const [isLoading, setIsLoading] = useState(false);
     const [isComponentLoading, setIsComponentLoading] = useState(false);
@@ -60,11 +69,21 @@ const ShaderBg = ({ initialShaderId = 'spin', setOverlay, setMockVisible, isMock
     }, [currentShaderId]);
 
     const handleClickNext = () => {
-        setCurrentShaderId(getNextShaderId(currentShaderId));
+        const nextShaderId = getNextShaderId(currentShaderId);
+        const nextShader = getShaderById(nextShaderId);
+        setCurrentShaderId(nextShaderId);
+        if (nextShader) {
+            setCurrentShaderTitle(nextShader.title);
+        }
     };
 
     const handleClickPrev = () => {
-        setCurrentShaderId(getPrevShaderId(currentShaderId));
+        const prevShaderId = getPrevShaderId(currentShaderId);
+        const prevShader = getShaderById(prevShaderId);
+        setCurrentShaderId(prevShaderId);
+        if (prevShader) {
+            setCurrentShaderTitle(prevShader.title);
+        }
     };
 
     const currentShader = getShaderById(currentShaderId);
@@ -125,7 +144,12 @@ const ShaderBg = ({ initialShaderId = 'spin', setOverlay, setMockVisible, isMock
                                 : null}
                         </a>
                         <ShaderSidebar
-                            onSelectShader={setCurrentShaderId}
+                            onSelectShader={(shaderId, shaderTitle) => {
+                                setCurrentShaderId(shaderId);
+                                // 导入 setCurrentShaderTitle
+                                const { setCurrentShaderTitle } = require('@/templates/Shader/ShaderControl');
+                                setCurrentShaderTitle(shaderTitle);
+                            }}
                             currentShaderId={currentShaderId}
                         />
                     </div>

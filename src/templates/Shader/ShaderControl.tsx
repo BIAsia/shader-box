@@ -21,6 +21,12 @@ interface ShaderMetadata {
     path: string;
 }
 
+// 用于保存当前选中的着色器标题
+let currentShaderTitle = '';
+export const setCurrentShaderTitle = (title: string) => {
+    currentShaderTitle = title;
+};
+
 // 将每种控制类型定义为独立的接口
 export interface AnimationConfig {
     speed: number;
@@ -119,6 +125,7 @@ interface AIGenerateSchema {
 
 export interface ShaderControlsConfig {
     showAIGenerate?: boolean;
+    currentTitle?: string;  // 添加当前着色器标题
 }
 
 // 创建一个工厂函数来生成特定的控制钩子
@@ -127,6 +134,10 @@ export const createShaderControls = (
     initialConfig?: Partial<ShaderConfig>,
     controlsConfig: ShaderControlsConfig = { showAIGenerate: true }
 ) => {
+    // 更新当前着色器标题
+    if (controlsConfig.currentTitle) {
+        currentShaderTitle = controlsConfig.currentTitle;
+    }
     return () => {
         const { scene, camera } = useThree();
         const gl = useThree((state) => state.gl);
@@ -550,10 +561,16 @@ export const createShaderControls = (
                     gradient: config.gradient
                 };
                 console.log('Exporting config:', exportConfig);
+                console.log('Current shader title:', currentShaderTitle); // 添加日志以便调试
                 const configBlob = new Blob([JSON.stringify(exportConfig, null, 2)], { type: 'application/json' });
                 const configUrl = URL.createObjectURL(configBlob);
                 const link = document.createElement('a');
-                link.setAttribute('download', 'config.json');
+                // 使用当前着色器的标题作为文件名，如果没有则使用默认值
+                const fileName = currentShaderTitle ?
+                    `${currentShaderTitle.toLowerCase().replace(/\s+/g, '-')}.json` :
+                    'config.json';
+                console.log('Using filename:', fileName); // 添加日志以便调试
+                link.setAttribute('download', fileName);
                 link.setAttribute('href', configUrl);
                 link.click();
             }),
@@ -668,9 +685,22 @@ export const createShaderControls = (
     };
 };
 
+// 导出 ShaderMetadata 类型
+export type { ShaderMetadata };
+
 // 为了向后兼容，保留原来的 useShaderControls，默认显示 AI Generate
+let defaultShaderTitle = '';  // 添加默认标题存储
+
+export const updateShaderTitle = (title: string) => {
+    defaultShaderTitle = title;
+    currentShaderTitle = title;  // 同时更新 currentShaderTitle
+};
+
 export const useShaderControls = createShaderControls(
     ['animation', 'color', 'shape'],
     {},
-    { showAIGenerate: true }
+    {
+        showAIGenerate: true,
+        currentTitle: defaultShaderTitle
+    }
 );

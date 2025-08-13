@@ -2,7 +2,7 @@ import React from 'react';
 import { getBackgroundShaders, getEffectShaders } from '../templates/Shader/shaderConfig';
 
 interface ShaderSidebarProps {
-    onSelectShader: (shaderId: string) => void;
+    onSelectShader: (shaderId: string, shaderTitle: string) => void;
     currentShaderId?: string;
 }
 
@@ -18,7 +18,7 @@ const ShaderSidebar: React.FC<ShaderSidebarProps> = ({ onSelectShader, currentSh
                     {backgroundShaders.map((shader) => (
                         <li key={shader.id}>
                             <button
-                                onClick={() => onSelectShader(shader.id)}
+                                onClick={() => onSelectShader(shader.id, shader.title)}
                                 className={`mr-4 text-white linkn link--mneme link--mnemeR ${currentShaderId === shader.id ? 'bg-white/20' : ''
                                     }`}
                             >
@@ -35,7 +35,7 @@ const ShaderSidebar: React.FC<ShaderSidebarProps> = ({ onSelectShader, currentSh
                     {effectShaders.map((shader) => (
                         <li key={shader.id}>
                             <button
-                                onClick={() => onSelectShader(shader.id)}
+                                onClick={() => onSelectShader(shader.id, shader.title)}
                                 className={`mr-4 text-white linkn link--mneme link--mnemeR ${currentShaderId === shader.id ? 'bg-white/20' : ''
                                     }`}
                             >
