@@ -16,6 +16,17 @@ const shaderConfig = {
             { name: 'intensity', defaultValue: 0.5 }
         ],
     },
+    noiseGradient: {
+        id: 'noiseGradient',
+        title: 'Noise Gradient',
+        subtitle: '-Perlin',
+        iOS: false,
+        Android: false,
+        Lynx: false,
+        New: true,
+        path: 'noiseGradient/noiseGradient',
+        category: 'background',
+    },
     progressiveBlur: {
         id: 'progressiveBlur',
         title: 'Progressive Blur',
@@ -104,20 +115,22 @@ const shaderConfig = {
         path: 'hole/circleBg',
         category: 'background',
     },
+
     // Add other shaders as needed
 };
 
 // List of shader IDs in the order you want them to appear
 const shaderOrder = [
     'spin',
-    'progressiveBlur',
-    'advancedGradientBlur',
+    'noiseGradient',
     'highlight',
     'zebraCurve',
     'sharpGradient',
     'sharpGradientR',
     'lava',
     'hole',
+    'progressiveBlur',
+    'advancedGradientBlur',
 ];
 
 // Helper functions
