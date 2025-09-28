@@ -115,6 +115,17 @@ const shaderConfig = {
         path: 'hole/circleBg',
         category: 'background',
     },
+    hexagonalGrid: {
+        id: 'hexagonalGrid',
+        title: 'Hexagonal Grid',
+        subtitle: '-honeycomb',
+        iOS: false,
+        Android: false,
+        Lynx: false,
+        New: true,
+        path: 'hexagonalGrid/hexagonalGrid',
+        category: 'background',
+    },
 
     // Add other shaders as needed
 };
@@ -123,6 +134,7 @@ const shaderConfig = {
 const shaderOrder = [
     'spin',
     'noiseGradient',
+    'hexagonalGrid',
     'highlight',
     'zebraCurve',
     'sharpGradient',
