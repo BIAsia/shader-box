@@ -71,26 +71,37 @@ mat2 rotate2D(float angle) {
     return mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
 }
 
-// Abstract function for sparse hexagon grid layer
+// Abstract function for sparse hexagon grid layer with probabilistic brightness
 float getHexagonLayer(vec2 id, float time, float threshold, float seed) {
     // Use static random for threshold, not time-based
     float staticRand = random(id + vec2(seed));
     float staticRand2 = random(id * 1.5 + vec2(seed * 1.6));
 
+    // Add more random seeds for variation within same ID
+    float staticRand3 = random(id * 2.3 + vec2(seed * 2.1));
+    float staticRand4 = random(id * 0.7 + vec2(seed * 3.7));
+
     // Create threshold-based brightness for sparse lighting
     float sparkle = step(threshold, staticRand);
 
-    // Add smooth temporal variation with continuous phase
-    float phase = staticRand2 * 6.28317; // Random phase offset
-    float flicker = 0.5 + 0.4 * sin(phase);
+    // Create probabilistic brightness variation for same ID
+    // Use multiple random values to create different brightness states
+    float brightnessVariation = staticRand3 * 0.4 + staticRand4 * 0.3; // 0.0 to 0.7 range
 
-    // Return brightness for this layer
-    return sparkle * flicker;
+    // Base brightness with variation
+    float baseBrightness = 0.3 + 0.4 * staticRand2; // 0.3 to 0.7 base
+    float finalBrightness = baseBrightness + brightnessVariation; // 0.3 to 1.4 total
+
+    // Clamp to reasonable range
+    finalBrightness = clamp(finalBrightness, 0.2, 1.2);
+
+    // Return probabilistic brightness for this layer
+    return sparkle * finalBrightness;
 }
 
 // Abstract function for gradient color calculation
 vec3 getGradientColor(vec2 spinPos, float time, float timeOffset) {
-    float r = length(spinPos) * 3.0;
+    float r = length(spinPos) * 2.0;
     float a = atan(spinPos.y, spinPos.x);
     float count = uComplex;
     float morph = 1.0 - uMorph / 0.7;
@@ -134,7 +145,7 @@ void main() {
 
     float rand = random(id);
 
-    float time = uTime * 0.1 * uSpeed;
+    float time = uTime * 0.05 * uSpeed;
 
     // Use morph uniform to control hexagon properties
     float hexRadius = 0.39;
@@ -150,9 +161,9 @@ void main() {
     vec3 baseColor = vec3(0.3, 0.3, 0.3);
 
     // Create three layers of sparse hexagon grids
-    float layer1 = getHexagonLayer(id, time, 0.1, .8) * 0.2 * mask;  // Most dense layer
-    float layer2 = getHexagonLayer(id, time, 0.5, 1.0) * 0.3 * mask;  // Medium density layer
-    float layer3 = getHexagonLayer(id, time, 0.75, 4.5) * 0.4 * mask; // Sparse layer
+    float layer1 = getHexagonLayer(id, time, 0.01, .8) * 0.1 * mask;  // Most dense layer
+    float layer2 = getHexagonLayer(id, time, 0.55, 3.0) * 0.2 * mask;  // Medium density layer
+    float layer3 = getHexagonLayer(id, time, 0.95, 17.8) * 0.3 * mask; // Sparse layer
 
     // Combine all three layers - additive blending
     float brightness = layer1 + layer2 + layer3;
@@ -168,8 +179,8 @@ void main() {
     // Use the abstracted gradient color function with timeOffset of 0.0
     vec3 gradientColor = getGradientColor(spinPos, time, 0.0);
     vec3 gradientColor1 = getGradientColor(spinPos, time, 0.0);
-    vec3 gradientColor2 = getGradientColor(spinPos, time, 2.0);
-    vec3 gradientColor3 = getGradientColor(spinPos, time, 4.0);
+    vec3 gradientColor2 = getGradientColor(spinPos, time, 3.0);
+    vec3 gradientColor3 = getGradientColor(spinPos, time, 8.0);
 
     // Combine hexagon brightness pattern with spin gradient
     // Use mask to blend hexagon effect with gradient
