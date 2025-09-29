@@ -67,33 +67,8 @@ float random(vec2 st) {
     return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
 }
 
-#define S(a,b,t) smoothstep(a,b,t)
-
-mat2 Rot(float a) {
-    float s = sin(a);
-    float c = cos(a);
-    return mat2(c, -s, s, c);
-}
-
 mat2 rotate2D(float angle) {
     return mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
-}
-
-// Created by inigo quilez - iq/2014
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-vec2 hash(vec2 p) {
-    p = vec2(dot(p, vec2(2127.1, 81.17)), dot(p, vec2(1269.5, 283.37)));
-    return fract(sin(p) * 43758.5453);
-}
-
-float noise(in vec2 p) {
-    vec2 i = floor(p);
-    vec2 f = fract(p);
-
-    vec2 u = f * f * (3.0 - 2.0 * f);
-
-    float n = mix(mix(dot(-1.0 + 2.0 * hash(i + vec2(0.0, 0.0)), f - vec2(0.0, 0.0)), dot(-1.0 + 2.0 * hash(i + vec2(1.0, 0.0)), f - vec2(1.0, 0.0)), u.x), mix(dot(-1.0 + 2.0 * hash(i + vec2(0.0, 1.0)), f - vec2(0.0, 1.0)), dot(-1.0 + 2.0 * hash(i + vec2(1.0, 1.0)), f - vec2(1.0, 1.0)), u.x), u.y);
-    return 0.5 + 0.5 * n;
 }
 
 // Abstract function for sparse hexagon grid layer with fixed brightness
@@ -116,31 +91,64 @@ float getHexagonLayer(vec2 id, float time, float threshold, float seed) {
 
 // Abstract function for gradient color calculation
 vec3 getGradientColor(vec2 spinPos, float time, float timeOffset) {
-    vec2 tuv = spinPos * 10.;
+    float r = length(spinPos) * 4.0;
+    float a = atan(spinPos.y, spinPos.x);
+    float count = uComplex;
+    float morph = 1.0 - uMorph / 0.7;
 
-    // rotate with Noise
-    float degree = noise(vec2((time + timeOffset) * .1, tuv.x * tuv.y));
+    // Use static shape calculations (no time variation in the shape itself)
+    float shape = abs(morph * sin(a * (count * 0.5) + 0.4)) *
+        sin(a * count - 0.2);
 
-    tuv *= Rot(radians((degree - .5) * 2. + 3.));
+    float shape2 = abs(0.2 * sin(a * (count * 0.5) + 0.5)) *
+        cos(a * count * 2.0 - 0.5);
+    shape += shape2;
+    shape = pow(shape, 1.0);
 
-    // Wave warp with sin
-    float frequency = 2.;
-    float amplitude = 7.;
-    float speed = (time + timeOffset) * 0.1;
-    tuv.x += sin(tuv.y * frequency + speed) / amplitude;
-    tuv.y += sin(tuv.x * frequency * 1.5 + 4.) / (amplitude * .5);
+    // Create circular 4-color gradient using polar coordinates with rotation
+    // Apply rotation: time for animation + timeOffset as direct rotation angle
+    float angle = atan(spinPos.y, spinPos.x) + time * 8.0 + timeOffset;
+    // Normalize angle to 0-1 range
+    float normalizedAngle = (angle + PI) / (2.0 * PI);
+    normalizedAngle = fract(normalizedAngle); // Ensure it wraps around properly
 
-    // Use project's uColor array to create gradient layers
-    // Layer 1: mix between uColor[0] and uColor[1]
-    vec3 layer1 = mix(uColor[0], uColor[1], S(-1.2, 2.5, (tuv * Rot(radians(-5.))).x));
+    // Divide the circle into 4 segments (0-0.25, 0.25-0.5, 0.5-0.75, 0.75-1.0)
+    vec3 gradientColor;
 
-    // Layer 2: mix between uColor[2] and uColor[3]
-    vec3 layer2 = mix(uColor[2], uColor[3], S(-2.2, 2.5, (tuv * Rot(radians(-5.))).x));
+    if(normalizedAngle < 0.25) {
+        // Segment 1: uColor[0] to uColor[1]
+        float t = normalizedAngle * 4.0; // Scale to 0-1
+        gradientColor = mix(uColor[0], uColor[1], t);
+    } else if(normalizedAngle < 0.5) {
+        // Segment 2: uColor[1] to uColor[2]
+        float t = (normalizedAngle - 0.25) * 4.0; // Scale to 0-1
+        gradientColor = mix(uColor[1], uColor[2], t);
+    } else if(normalizedAngle < 0.75) {
+        // Segment 3: uColor[2] to uColor[3]
+        float t = (normalizedAngle - 0.5) * 4.0; // Scale to 0-1
+        gradientColor = mix(uColor[2], uColor[3], t);
+    } else {
+        // Segment 4: uColor[3] to uColor[0]
+        float t = (normalizedAngle - 0.75) * 4.0; // Scale to 0-1
+        gradientColor = mix(uColor[3], uColor[0], t);
+    }
 
-    // Blend the two layers vertically
-    vec3 finalComp = mix(layer1, layer2, S(2.5, -2.0, tuv.y));
+    // Create alpha with larger black center area
+    float alpha = (1.0 - smoothstep(shape, shape + 1., r * 1.)) + (1.0 - smoothstep(shape, shape + 3.5, r)) * 0.1;
 
-    return finalComp;
+    // Add a larger black circular area in the center
+    float centerRadius = 0.6; // Adjust this to control the size of the black center
+    float centerFalloff = 0.6; // Controls the gradient falloff from center
+    float centerMask = 1.0 - smoothstep(centerRadius - centerFalloff, centerRadius + centerFalloff, r);
+
+    // Combine the original alpha with the center mask
+    alpha = alpha * (1.0 - centerMask * 1.0); // 0.8 controls how dark the center gets
+    alpha = clamp(alpha, 0.0, 1.0);
+
+    gradientColor = mix(uBgColor, gradientColor, alpha);
+    gradientColor = mix(uBgColor, gradientColor, r * 2.0);
+
+    return vec3(gradientColor);
 }
 
 void main() {
@@ -177,9 +185,9 @@ void main() {
     vec3 baseColor = vec3(0.3, 0.3, 0.3);
 
     // Create three layers of sparse hexagon grids
-    float layer1 = getHexagonLayer(id, time, 0.001, .9) * 0.1 * mask;  // Most dense layer
-    float layer2 = getHexagonLayer(id, time, 0.5, 17.1) * 0.4 * mask;  // Medium density layer
-    float layer3 = getHexagonLayer(id, time, 0.9, 25.8) * 0.8 * mask; // Sparse layer
+    float layer1 = getHexagonLayer(id, time, 0.2, .39) * 0.15 * mask;  // Most dense layer
+    float layer2 = getHexagonLayer(id, time, 0.8, 10.1) * 0.4 * mask;  // Medium density layer
+    float layer3 = getHexagonLayer(id, time, 0.9, 29.8) * 0.6 * mask; // Sparse layer
 
     // Combine all three layers - additive blending
     float brightness = layer1 + layer2 + layer3;
@@ -188,21 +196,24 @@ void main() {
     // Apply brightness to base color only where hexagon exists
     vec3 hexColor = baseColor * brightness * mask;
 
-    // Use the already transformed position for gradient calculation
-    vec2 gradientPos = position * 0.05; // Adjust scale for gradient effect
+    // Get spin gradient from the position (similar to spin shader)
+    vec2 spinPos = vec2(vPos.x * 1. / (uScale.x) - uPosition.x, vPos.y * 1. / uScale.y + uPosition.y);
+    spinPos *= 0.1;
 
-    // Use the abstracted gradient color function with timeOffset of 0.0
-    vec3 gradientColor = getGradientColor(gradientPos, time, 0.0);
-    vec3 gradientColor1 = getGradientColor(gradientPos, time, 0.0);
-    vec3 gradientColor2 = getGradientColor(gradientPos, time, 3.0);
-    vec3 gradientColor3 = getGradientColor(gradientPos, time, 10.0);
+    // Use the abstracted gradient color function with rotation angles
+    // timeOffset now represents rotation angle: 3.14 = half circle, 6.28 = full circle
+    vec3 gradientColor = getGradientColor(spinPos, time, 0.0);
+    vec3 gradientColor1 = getGradientColor(spinPos, time, 0.0);
+    vec3 gradientColor2 = getGradientColor(spinPos, time, 1.1);  // Half circle rotation
+    vec3 gradientColor3 = getGradientColor(spinPos, time, 3.14);  // Full circle rotation
 
     // Combine hexagon brightness pattern with spin gradient
     // Use mask to blend hexagon effect with gradient
     vec3 color = gradientColor * (1.0 + hexColor * mask * 2.0);
-    color = gradientColor1 * layer1;
-    color += gradientColor2 * layer2;
-    color += gradientColor3 * layer3;
+    vec3 color1 = gradientColor1 * layer1;
+    vec3 color2 = gradientColor2 * layer2;
+    vec3 color3 = gradientColor3 * layer3;
+    color = color1 + color2 + color3;
 
     //color = gradientColor * brightness;
 
@@ -213,5 +224,5 @@ void main() {
         color = mix(color, vec3(0, 0, 0), -uLightness);
     }
 
-    gl_FragColor = vec4(vec3(gradientColor), 1.0);
+    gl_FragColor = vec4(vec3(color), 1.0);
 }
