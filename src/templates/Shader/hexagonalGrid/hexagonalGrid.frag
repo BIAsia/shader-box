@@ -67,8 +67,33 @@ float random(vec2 st) {
     return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
 }
 
+#define S(a,b,t) smoothstep(a,b,t)
+
+mat2 Rot(float a) {
+    float s = sin(a);
+    float c = cos(a);
+    return mat2(c, -s, s, c);
+}
+
 mat2 rotate2D(float angle) {
     return mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
+}
+
+// Created by inigo quilez - iq/2014
+// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
+vec2 hash(vec2 p) {
+    p = vec2(dot(p, vec2(2127.1, 81.17)), dot(p, vec2(1269.5, 283.37)));
+    return fract(sin(p) * 43758.5453);
+}
+
+float noise(in vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+
+    vec2 u = f * f * (3.0 - 2.0 * f);
+
+    float n = mix(mix(dot(-1.0 + 2.0 * hash(i + vec2(0.0, 0.0)), f - vec2(0.0, 0.0)), dot(-1.0 + 2.0 * hash(i + vec2(1.0, 0.0)), f - vec2(1.0, 0.0)), u.x), mix(dot(-1.0 + 2.0 * hash(i + vec2(0.0, 1.0)), f - vec2(0.0, 1.0)), dot(-1.0 + 2.0 * hash(i + vec2(1.0, 1.0)), f - vec2(1.0, 1.0)), u.x), u.y);
+    return 0.5 + 0.5 * n;
 }
 
 // Abstract function for sparse hexagon grid layer with fixed brightness
@@ -91,39 +116,31 @@ float getHexagonLayer(vec2 id, float time, float threshold, float seed) {
 
 // Abstract function for gradient color calculation
 vec3 getGradientColor(vec2 spinPos, float time, float timeOffset) {
-    float r = length(spinPos) * 1.0;
-    float a = atan(spinPos.y, spinPos.x);
-    float count = uComplex;
-    float morph = 1.0 - uMorph / 0.7;
+    vec2 tuv = spinPos * 10.;
 
-    // Apply rotation to the angle instead of changing the shape over time
-    float rotationAngle = a + (time + timeOffset) * 8.0;
+    // rotate with Noise
+    float degree = noise(vec2((time + timeOffset) * .1, tuv.x * tuv.y));
 
-    // Use static shape calculations (no time variation in the shape itself)
-    float shape = abs(morph * sin(rotationAngle * (count * 0.5) + 0.4)) *
-        sin(rotationAngle * count - 0.2);
+    tuv *= Rot(radians((degree - .5) * 2. + 3.));
 
-    float shape2 = abs(0.2 * sin(rotationAngle * (count * 0.5) + 0.5)) *
-        cos(rotationAngle * count * 2.0 - 0.5);
-    shape += shape2;
-    shape = pow(shape, 1.0);
+    // Wave warp with sin
+    float frequency = 2.;
+    float amplitude = 7.;
+    float speed = (time + timeOffset) * 0.1;
+    tuv.x += sin(tuv.y * frequency + speed) / amplitude;
+    tuv.y += sin(tuv.x * frequency * 1.5 + 4.) / (amplitude * .5);
 
-    // Create four-color gradient using all colors
-    // First create radial gradient between color pairs
-    vec3 innerGradient = mix(uColor[0], uColor[1], r);
-    vec3 outerGradient = mix(uColor[2], uColor[3], r);
+    // Use project's uColor array to create gradient layers
+    // Layer 1: mix between uColor[0] and uColor[1]
+    vec3 layer1 = mix(uColor[0], uColor[1], S(-1.2, 2.5, (tuv * Rot(radians(-5.))).x));
 
-    // Use the rotation angle to blend between the two gradients
-    float angleBlend = (sin(rotationAngle * 2.0) + 1.0) * 0.5; // Normalize to 0-1
-    vec3 gradientColor = mix(innerGradient, outerGradient, angleBlend);
+    // Layer 2: mix between uColor[2] and uColor[3]
+    vec3 layer2 = mix(uColor[2], uColor[3], S(-2.2, 2.5, (tuv * Rot(radians(-5.))).x));
 
-    float alpha = (1.0 - smoothstep(shape, shape + 0.8, r)) + (1.0 - smoothstep(shape, shape + 1.5, r)) * 0.2;
-    alpha = clamp(alpha, 0.0, 1.0);
+    // Blend the two layers vertically
+    vec3 finalComp = mix(layer1, layer2, S(2.5, -2.0, tuv.y));
 
-    gradientColor = mix(uBgColor, gradientColor, alpha);
-    gradientColor = mix(uBgColor, gradientColor, r * 1.0);
-
-    return gradientColor;
+    return finalComp;
 }
 
 void main() {
@@ -171,15 +188,14 @@ void main() {
     // Apply brightness to base color only where hexagon exists
     vec3 hexColor = baseColor * brightness * mask;
 
-    // Get spin gradient from the position (similar to spin shader)
-    vec2 spinPos = vec2(vPos.x * 1. / (uScale.x) - uPosition.x, vPos.y * 1. / uScale.y + uPosition.y);
-    spinPos *= 0.1;
+    // Use the already transformed position for gradient calculation
+    vec2 gradientPos = position * 0.05; // Adjust scale for gradient effect
 
     // Use the abstracted gradient color function with timeOffset of 0.0
-    vec3 gradientColor = getGradientColor(spinPos, time, 0.0);
-    vec3 gradientColor1 = getGradientColor(spinPos, time, 0.0);
-    vec3 gradientColor2 = getGradientColor(spinPos, time, 3.0);
-    vec3 gradientColor3 = getGradientColor(spinPos, time, 10.0);
+    vec3 gradientColor = getGradientColor(gradientPos, time, 0.0);
+    vec3 gradientColor1 = getGradientColor(gradientPos, time, 0.0);
+    vec3 gradientColor2 = getGradientColor(gradientPos, time, 3.0);
+    vec3 gradientColor3 = getGradientColor(gradientPos, time, 10.0);
 
     // Combine hexagon brightness pattern with spin gradient
     // Use mask to blend hexagon effect with gradient
