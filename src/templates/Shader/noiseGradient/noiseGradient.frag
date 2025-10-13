@@ -122,7 +122,7 @@ void main() {
 
     // float n = noise(vPosition + t);
     // 改为：
-    vec3 timeOffset = vec3(cos(t * 0.8) + sin(t * 1.7) * 0.3, sin(t * 1.1) + cos(t * 0.6) * 0.3, cos(t * 0.7)) * 0.1;
+    vec3 timeOffset = vec3(cos(t * 0.8) + sin(t * 1.7) * 0.3, sin(t * 1.1) + cos(t * 0.6) * 0.3, cos(t * 0.7)) * (0.1 + 0.05 * uComplex);
     float n = noise(vPosition + timeOffset);
     vec3 color1 = uColor[0] + vec3(cos(t) * 0.1);
 
