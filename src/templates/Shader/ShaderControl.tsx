@@ -426,14 +426,14 @@ export const createShaderControls = (
                 scaleX: {
                     value: config.shape.scaleX,
                     min: 0.1,
-                    max: 2,
+                    max: 5,
                     onChange: (v) => { config.shape.scaleX = v },
                     transient: false
                 },
                 scaleY: {
                     value: config.shape.scaleY,
                     min: 0.1,
-                    max: 2,
+                    max: 5,
                     onChange: (v) => { config.shape.scaleY = v },
                     transient: false
                 },

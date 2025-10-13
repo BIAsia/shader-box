@@ -13,6 +13,7 @@ const NoiseGradientMaterial = shaderMaterial(
     {
         uResolution: new THREE.Vector2(0, 0),
         uTime: 0,
+        uTimeOffset: 0.0,
         uSpeed: 1.0,
         uLightness: 0.0,
         uPosition: new THREE.Vector2(0.0, 0.0),
@@ -41,7 +42,7 @@ const NoiseGradient: React.FC = (props: Mesh) => {
 
     // Use controls
     const {
-        animation: { speed },
+        animation: { speed, timeOffset },
         color: { color1, color2, color3, color4, bgColor, lightness },
         shape: { position, scaleX, scaleY, complex, morph }
     } = useShaderControls();
@@ -67,6 +68,7 @@ const NoiseGradient: React.FC = (props: Mesh) => {
                 key={NoiseGradientMaterial.key}
                 ref={materialRef}
                 uSpeed={speed}
+                uTimeOffset={timeOffset}
                 uLightness={lightness}
                 uPosition={new THREE.Vector2(position.x, position.y)}
                 uScale={new THREE.Vector2(scaleX, scaleY)}

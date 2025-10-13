@@ -5,6 +5,7 @@ varying vec2 vUV;
 
 uniform vec2 uResolution;
 uniform float uTime;
+uniform float uTimeOffset;
 uniform vec2 uPosition;
 uniform vec2 uScale;
 uniform vec3 uColor[4];
@@ -96,7 +97,7 @@ float noise(vec3 v) {
 }
 
 float lines(vec2 uv, float offset) {
-    return smoothstep(0.0, 0.5 + offset * 0.5, abs(0.4 * (sin(uv.y * 26.0) + offset * 2.0)));
+    return smoothstep(0.0, 0.5 + offset * 0.5, abs(0.4 * (sin(uv.y * 46.0) + offset * 2.0)));
 }
 
 mat2 rotate2D(float angle) {
@@ -106,19 +107,23 @@ mat2 rotate2D(float angle) {
 void main() {
     // position
     vec2 position = vec2(vPos.x * 1. / (uScale.x) - uPosition.x, vPos.y * 1. / uScale.y + uPosition.y);
-    position = position * 0.25 + 0.5;
-    position.y *= .8;
+    position = position * 0.3 + 0.5;
+    position *= .4;
+    // position.y -= 0.6;
     vec2 uv = vUV;
     vec2 scale = uScale;
     uv.x = (uv.x - 0.5) * (1. - scale.x) + 0.5;
     uv.y = (uv.y - 0.5) * (1. - scale.y) + 0.5;
 
-    float t = uTime * 0.3 * uSpeed;
+    float t = uTime * uSpeed + uTimeOffset;
     // Apply rotation
     position = rotate2D(uRotate) * position;
     vec3 vPosition = vec3(position.x, position.y, 1.0);
 
-    float n = noise(vPosition + t);
+    // float n = noise(vPosition + t);
+    // 改为：
+    vec3 timeOffset = vec3(cos(t * 0.8) + sin(t * 1.7) * 0.3, sin(t * 1.1) + cos(t * 0.6) * 0.3, cos(t * 0.7)) * 0.1;
+    float n = noise(vPosition + timeOffset);
     vec3 color1 = uColor[0] + vec3(cos(t) * 0.1);
 
     vec2 baseUV = rotate2D(n) * vPosition.xy * (noise(vPosition) + 0.5);
@@ -140,6 +145,6 @@ void main() {
     }
 
     gl_FragColor = vec4(finalColor, 1.0);
-    //gl_FragColor = vec4(vec3(baseUV.x), 1.0);
+    // gl_FragColor = vec4(vec3(basePattern), 1.0);
 
 }
