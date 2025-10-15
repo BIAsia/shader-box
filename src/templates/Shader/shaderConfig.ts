@@ -126,6 +126,17 @@ const shaderConfig = {
         path: 'hexagonalGrid/hexagonalGrid',
         category: 'background',
     },
+    hexagonZoom: {
+        id: 'hexagonZoom',
+        title: 'Hexagon Zoom',
+        subtitle: '-zoom',
+        iOS: false,
+        Android: false,
+        Lynx: false,
+        New: true,
+        path: 'hexagonZoom/hexagonZoom',
+        category: 'background',
+    },
 
     // Add other shaders as needed
 };
@@ -135,6 +146,7 @@ const shaderOrder = [
     'spin',
     'noiseGradient',
     'hexagonalGrid',
+    'hexagonZoom',
     'highlight',
     'zebraCurve',
     'sharpGradient',
