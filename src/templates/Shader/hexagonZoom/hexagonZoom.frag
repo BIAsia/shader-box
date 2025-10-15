@@ -12,6 +12,7 @@ uniform float uRotate;
 uniform float uMorph;
 uniform float uComplex;
 uniform float uLightness;
+uniform float uTimeOffset;
 #define PI 3.14159265359
 
 // Hexagon Signed Distance Function (SDF)
@@ -92,7 +93,7 @@ void main() {
     // To rotate the whole shape by 90 degrees, uncomment below:
     // position = rotate(position, uRotate + PI * 0.5);
     float roundness = 0.2;
-    float time = uTime * 0.1 * uSpeed;
+    float time = uTime * 0.05 * uSpeed + uTimeOffset;
     vec3 color = uBgColor;
     for(int i = 0; i < 4; i++) {
         float fi = float(i);
@@ -102,34 +103,34 @@ void main() {
         float hex = 1.0 - smoothstep(-0.01, 0.01, roundedHexSDFPointyTop(position, scale, roundness));
         float alpha = hex * fade;
         vec3 grad;
-        float rotateTime = (mod(fi, 2.0) == 0.0) ? time : -time;
-        rotateTime = mod(rotateTime, 100.0);
+        //float rotateTime = (mod(fi, 2.0) == 0.0) ? time : -time;
+        float rotateTime = mod(time, 100.0);
         if(i == 0) {
             vec3 colorArr[4];
             colorArr[0] = uColor[1];
-            colorArr[1] = uBgColor;
+            colorArr[1] = uColor[3];
             colorArr[2] = uColor[2];
             colorArr[3] = uColor[1];
-            grad = getGradientColor(position * .1, rotateTime, fi * 2.1, colorArr, uBgColor);
+            grad = getGradientColor(position * .1, 0.5 * rotateTime, fi * 2.1, colorArr, uBgColor);
         } else if(i == 1) {
             vec3 colorArr[4];
-            colorArr[0] = uBgColor;
+            colorArr[0] = uColor[3];
             colorArr[1] = uColor[3];
             colorArr[2] = uColor[2];
             colorArr[3] = uBgColor;
-            grad = getGradientColor(position * .1, rotateTime, fi * 2.1, colorArr, uBgColor);
+            grad = getGradientColor(position * .1, -rotateTime, fi * 2.1, colorArr, uBgColor);
         } else if(i == 2) {
             vec3 colorArr[4];
             colorArr[0] = uColor[0];
-            colorArr[1] = uBgColor;
-            colorArr[2] = uBgColor;
-            colorArr[3] = uBgColor;
+            colorArr[1] = uColor[2];
+            colorArr[2] = uColor[3];
+            colorArr[3] = uColor[3];
             grad = getGradientColor(position * .1, rotateTime, fi * 1.1, colorArr, uBgColor);
         } else {
             vec3 colorArr[4];
             colorArr[0] = uColor[1];
-            colorArr[1] = uBgColor;
-            colorArr[2] = uBgColor;
+            colorArr[1] = uColor[3];
+            colorArr[2] = uColor[3];
             colorArr[3] = uColor[1];
             grad = getGradientColor(position * .1, rotateTime, fi * 3.1, colorArr, uBgColor);
         }
