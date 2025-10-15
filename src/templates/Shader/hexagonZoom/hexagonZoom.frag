@@ -14,7 +14,7 @@ uniform float uComplex;
 uniform float uLightness;
 #define PI 3.14159265359
 
-// 六边形 SDF
+// Hexagon Signed Distance Function (SDF)
 float hexSDF(vec2 p, float r) {
     const vec3 k = vec3(-0.866025404, 0.5, 0.577350269);
     p = abs(p);
@@ -29,7 +29,7 @@ vec2 rotate(vec2 p, float angle) {
     return vec2(c * p.x - s * p.y, s * p.x + c * p.y);
 }
 
-// 组合渐变色
+// Generate combined gradient color
 vec3 getGradientColor(vec2 pos, float time, float timeOffset, vec3 colorArr[4], vec3 bgColor) {
     float r = length(pos) * 4.0;
     float a = atan(pos.y, pos.x);
@@ -71,7 +71,7 @@ vec3 getGradientColor(vec2 pos, float time, float timeOffset, vec3 colorArr[4], 
     return vec3(gradientColor);
 }
 
-// 带圆角的六边形 SDF
+// Rounded hexagon Signed Distance Function (SDF)
 float roundedHexSDF(vec2 p, float r, float roundness) {
     const vec3 k = vec3(-0.866025404, 0.5, 0.577350269);
     p = abs(p);
@@ -80,6 +80,7 @@ float roundedHexSDF(vec2 p, float r, float roundness) {
     return length(p) * sign(p.y) - roundness;
 }
 
+// Rounded hexagon SDF with pointy top orientation
 float roundedHexSDFPointyTop(vec2 p, float r, float roundness) {
     p = rotate(p, PI / 6.0);
     return roundedHexSDF(p, r, roundness);
@@ -88,8 +89,8 @@ float roundedHexSDFPointyTop(vec2 p, float r, float roundness) {
 void main() {
     vec2 position = vec2(vPos.x / uScale.x - uPosition.x, vPos.y / uScale.y + uPosition.y);
     position *= 0.5;
-    // 整体旋转 90 度
-    //position = rotate(position, uRotate + PI * 0.5);
+    // To rotate the whole shape by 90 degrees, uncomment below:
+    // position = rotate(position, uRotate + PI * 0.5);
     float roundness = 0.1;
     float time = uTime * 0.1 * uSpeed;
     vec3 color = uBgColor;
@@ -135,12 +136,11 @@ void main() {
         color = mix(color, grad, alpha);
     }
 
-    // 亮度调整
+    // Lightness adjustment
     if(uLightness >= 0.) {
         color = mix(color, vec3(1, 1, 1), uLightness);
     } else {
         color = mix(color, vec3(0, 0, 0), -uLightness);
     }
-    //vec3 testgrad = getGradientColor(position * .1, time, 1.1);
     gl_FragColor = vec4(color, 1.0);
 }
