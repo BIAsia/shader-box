@@ -104,17 +104,17 @@ void main() {
         if(i == 0) {
             vec3 colorArr[4];
             colorArr[0] = uColor[1];
-            colorArr[1] = uColor[1];
+            colorArr[1] = uBgColor;
             colorArr[2] = uColor[1];
-            colorArr[3] = uBgColor;
+            colorArr[3] = uColor[1];
             grad = getGradientColor(position * .1, time, fi * 2.1, colorArr, uBgColor);
 
         } else if(i == 1) {
             vec3 colorArr[4];
             colorArr[0] = uBgColor;
-            colorArr[1] = uBgColor;
+            colorArr[1] = uColor[3];
             colorArr[2] = uColor[2];
-            colorArr[3] = uColor[3];
+            colorArr[3] = uBgColor;
             grad = getGradientColor(position * .1, time, fi * 2.1, colorArr, uBgColor);
         } else if(i == 2) {
             vec3 colorArr[4];
@@ -127,9 +127,9 @@ void main() {
         } else {
             vec3 colorArr[4];
             colorArr[0] = uColor[1];
-            colorArr[1] = uColor[1];
+            colorArr[1] = uBgColor;
             colorArr[2] = uBgColor;
-            colorArr[3] = uBgColor;
+            colorArr[3] = uColor[1];
             grad = getGradientColor(position * .1, time, fi * 3.1, colorArr, uBgColor);
         }
         color = mix(color, grad, alpha);
