@@ -5,6 +5,7 @@ varying vec2 vUV;
 
 uniform vec2 uResolution;
 uniform float uTime;
+uniform float uTimeOffset;
 uniform vec2 uPosition;
 uniform vec2 uScale;
 uniform vec3 uColor[4];
@@ -113,7 +114,7 @@ void main() {
     uv.x = (uv.x - 0.5) * (1. - scale.x) + 0.5;
     uv.y = (uv.y - 0.5) * (1. - scale.y) + 0.5;
 
-    float t = uTime * 0.1 * uSpeed;
+    float t = uTime * 0.1 * uSpeed + uTimeOffset;
     // Apply rotation
     position = rotate2D(uRotate) * position;
     vec3 vPosition = vec3(position.x, position.y, 1.0);
@@ -131,7 +132,7 @@ void main() {
 
     vec3 baseColor = mix(uColor[1], color1, basePattern);
     vec3 secondBaseColor = mix(baseColor, uColor[2], secondPattern);
-    vec3 finalColor = mix(secondBaseColor, uColor[3], thirdPattern);
+    vec3 finalColor = mix(secondBaseColor, uBgColor, thirdPattern);
 
     if(uLightness >= 0.) {
         finalColor = mix(finalColor, vec3(1, 1, 1), uLightness);
