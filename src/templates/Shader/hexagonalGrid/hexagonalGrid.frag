@@ -186,8 +186,8 @@ void main() {
 
     // Create three layers of sparse hexagon grids
     float layer1 = getHexagonLayer(id, time, 0.2, .39) * 0.15 * mask;  // Most dense layer
-    float layer2 = getHexagonLayer(id, time, 0.8, 10.1) * 0.4 * mask;  // Medium density layer
-    float layer3 = getHexagonLayer(id, time, 0.9, 29.8) * 0.6 * mask; // Sparse layer
+    float layer2 = getHexagonLayer(id, time, 0.8, 10.1) * 0.3 * mask;  // Medium density layer
+    float layer3 = getHexagonLayer(id, time, 0.9, 9.8) * 0.6 * mask; // Sparse layer
 
     // Combine all three layers - additive blending
     float brightness = layer1 + layer2 + layer3;

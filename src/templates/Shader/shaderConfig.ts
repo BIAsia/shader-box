@@ -137,6 +137,17 @@ const shaderConfig = {
         path: 'hexagonZoom/hexagonZoom',
         category: 'background',
     },
+    multiStopGradient: {
+        id: 'multiStopGradient',
+        title: 'Multi Stop Gradient',
+        subtitle: '-wave',
+        iOS: false,
+        Android: false,
+        Lynx: false,
+        New: true,
+        path: 'multiStopGradient/multiStopGradient',
+        category: 'background',
+    },
 
     // Add other shaders as needed
 };
@@ -145,6 +156,7 @@ const shaderConfig = {
 const shaderOrder = [
     'spin',
     'noiseGradient',
+    'multiStopGradient',
     'hexagonalGrid',
     'hexagonZoom',
     'highlight',

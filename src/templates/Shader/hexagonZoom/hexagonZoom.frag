@@ -62,7 +62,7 @@ vec3 getGradientColor(vec2 pos, float time, float timeOffset, vec3 colorArr[4], 
         gradientColor = mix(colorArr[3], colorArr[0], st);
     }
     float alpha = (1.0 - smoothstep(shape, shape + 1., r * 1.)) + (1.0 - smoothstep(shape, shape + 3.5, r)) * 0.1;
-    float centerRadius = 0.1;
+    float centerRadius = 0.2;
     float centerFalloff = 0.3;
     float centerMask = 1.0 - smoothstep(centerRadius - centerFalloff, centerRadius + centerFalloff, r);
     alpha = alpha * (1.0 - centerMask * 1.0);
@@ -98,8 +98,8 @@ void main() {
     for(int i = 0; i < 4; i++) {
         float fi = float(i);
         float layerTime = mod(time + fi * 0.25, 1.0);
-        float scale = mix(0.2, 1.6, layerTime);
-        float fade = 1.0 - smoothstep(0.2, 1.6, scale);
+        float scale = mix(0.2, 1.4, layerTime);
+        float fade = 1.0 - smoothstep(0.2, 1.3, scale);
         float hex = 1.0 - smoothstep(-0.01, 0.01, roundedHexSDFPointyTop(position, scale, roundness));
         float alpha = hex * fade;
         vec3 grad;
@@ -114,15 +114,15 @@ void main() {
             grad = getGradientColor(position * .1, 0.5 * rotateTime, fi * 2.1, colorArr, uBgColor);
         } else if(i == 1) {
             vec3 colorArr[4];
-            colorArr[0] = uColor[3];
-            colorArr[1] = uColor[3];
+            colorArr[0] = uColor[0];
+            colorArr[1] = uColor[2];
             colorArr[2] = uColor[2];
             colorArr[3] = uBgColor;
             grad = getGradientColor(position * .1, -rotateTime, fi * 2.1, colorArr, uBgColor);
         } else if(i == 2) {
             vec3 colorArr[4];
-            colorArr[0] = uColor[0];
-            colorArr[1] = uColor[2];
+            colorArr[0] = uColor[1];
+            colorArr[1] = uColor[3];
             colorArr[2] = uColor[3];
             colorArr[3] = uColor[3];
             grad = getGradientColor(position * .1, rotateTime, fi * 1.1, colorArr, uBgColor);
@@ -143,5 +143,5 @@ void main() {
     } else {
         color = mix(color, vec3(0, 0, 0), -uLightness);
     }
-    gl_FragColor = vec4(color, 1.0);
+    gl_FragColor = vec4(vec3(color), 1.0);
 }

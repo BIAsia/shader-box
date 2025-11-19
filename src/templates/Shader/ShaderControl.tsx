@@ -395,7 +395,7 @@ export const createShaderControls = (
                 },
                 lightness: {
                     value: config.color.lightness,
-                    min: 0,
+                    min: -1,
                     max: 1,
                     onChange: (v) => { config.color.lightness = v },
                     transient: false
