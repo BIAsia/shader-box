@@ -45,10 +45,10 @@ export const useImmersiveCoverControls = createShaderControls(
     {
         shaderId: 'immersiveCover',
         immersive: {
-            uTop: 0.08,
+            uTop: 0.09,
             uScaleContent: 1.1,
             uTopBlur: 100,
-            uTopBlurRange: 0.16,
+            uTopBlurRange: 0.14,
             uBottomBlur: 100,
             uBottomBlurRange: 0.45,
             uTopGradientRange: 0.16,
