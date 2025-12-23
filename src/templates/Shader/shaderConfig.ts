@@ -148,6 +148,17 @@ const shaderConfig = {
         path: 'multiStopGradient/multiStopGradient',
         category: 'background',
     },
+    immersiveCover: {
+        id: 'immersiveCover',
+        title: 'Immersive Cover',
+        subtitle: '-immersive',
+        iOS: false,
+        Android: false,
+        Lynx: false,
+        New: true,
+        path: 'immersiveCover/immersiveCover',
+        category: 'effect',
+    },
 
     // Add other shaders as needed
 };
@@ -167,6 +178,7 @@ const shaderOrder = [
     'hole',
     'progressiveBlur',
     'advancedGradientBlur',
+    'immersiveCover',
 ];
 
 // Helper functions

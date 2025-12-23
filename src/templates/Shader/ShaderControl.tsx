@@ -67,6 +67,20 @@ export interface AIGenerateConfig {
     customText: string;
 }
 
+export interface ImmersiveConfig {
+    uTop: number;
+    uScaleContent: number;
+    uTopBlur: number;
+    uTopBlurRange: number;
+    uBottomBlur: number;
+    uBottomBlurRange: number;
+    uTopGradientRange: number;
+    uBottomGradientRange: number;
+    uColor1: string;
+    uColor2: string;
+    uColor3: string;
+}
+
 // 组合配置类型
 export interface ShaderConfig {
     shaderId: string;
@@ -76,6 +90,7 @@ export interface ShaderConfig {
     shape?: ShapeConfig;
     blur?: BlurConfig;
     gradient?: GradientConfig;
+    immersive?: ImmersiveConfig;
 }
 
 // 默认配置值
@@ -116,6 +131,20 @@ const defaultBlurConfig: BlurConfig = {
 
 const defaultAIGenerateConfig: AIGenerateConfig = {
     customText: ''
+};
+
+const defaultImmersiveConfig: ImmersiveConfig = {
+    uTop: 0.08,
+    uScaleContent: 1.1,
+    uTopBlur: 100,
+    uTopBlurRange: 0.02,
+    uBottomBlur: 100,
+    uBottomBlurRange: 0.45,
+    uTopGradientRange: 0.16,
+    uBottomGradientRange: 0.5,
+    uColor1: '#ffffff',
+    uColor2: '#000000',
+    uColor3: '#000000'
 };
 
 interface AIGenerateSchema {
@@ -540,6 +569,101 @@ export const createShaderControls = (
             setBlur = setBlurValues;
         }
 
+        // Immersive 控制
+        let immersiveControls: ImmersiveConfig = { ...defaultImmersiveConfig };
+        let setImmersive: (values: Partial<ImmersiveConfig>) => void = () => { };
+        if (configTypes.includes('immersive')) {
+            config.immersive = {
+                ...defaultImmersiveConfig,
+                ...initialConfig?.immersive
+            };
+
+            const [{ uTop, uScaleContent, uTopBlur, uTopBlurRange, uBottomBlur, uBottomBlurRange, uTopGradientRange, uBottomGradientRange, uColor1, uColor2, uColor3 }, setImmersiveValues] = useControls('immersive', () => ({
+                uTop: {
+                    value: config.immersive.uTop,
+                    min: -0.5,
+                    max: 0.5,
+                    step: 0.01,
+                    onChange: (v) => { config.immersive.uTop = v },
+                    transient: false
+                },
+                uScaleContent: {
+                    value: config.immersive.uScaleContent,
+                    min: 0.1,
+                    max: 3,
+                    step: 0.1,
+                    onChange: (v) => { config.immersive.uScaleContent = v },
+                    transient: false
+                },
+                uTopBlur: {
+                    value: config.immersive.uTopBlur,
+                    min: 0,
+                    max: 200,
+                    step: 1,
+                    onChange: (v) => { config.immersive.uTopBlur = v },
+                    transient: false
+                },
+                uTopBlurRange: {
+                    value: config.immersive.uTopBlurRange,
+                    min: 0,
+                    max: 1,
+                    step: 0.01,
+                    onChange: (v) => { config.immersive.uTopBlurRange = v },
+                    transient: false
+                },
+                uBottomBlur: {
+                    value: config.immersive.uBottomBlur,
+                    min: 0,
+                    max: 200,
+                    step: 1,
+                    onChange: (v) => { config.immersive.uBottomBlur = v },
+                    transient: false
+                },
+                uBottomBlurRange: {
+                    value: config.immersive.uBottomBlurRange,
+                    min: 0,
+                    max: 1,
+                    step: 0.01,
+                    onChange: (v) => { config.immersive.uBottomBlurRange = v },
+                    transient: false
+                },
+                uTopGradientRange: {
+                    value: config.immersive.uTopGradientRange,
+                    min: 0,
+                    max: 1,
+                    step: 0.01,
+                    onChange: (v) => { config.immersive.uTopGradientRange = v },
+                    transient: false
+                },
+                uBottomGradientRange: {
+                    value: config.immersive.uBottomGradientRange,
+                    min: 0,
+                    max: 1,
+                    step: 0.01,
+                    onChange: (v) => { config.immersive.uBottomGradientRange = v },
+                    transient: false
+                },
+                uColor1: {
+                    value: config.immersive.uColor1,
+                    onChange: (v) => { config.immersive.uColor1 = v },
+                    transient: false
+                },
+                uColor2: {
+                    value: config.immersive.uColor2,
+                    onChange: (v) => { config.immersive.uColor2 = v },
+                    transient: false
+                },
+                uColor3: {
+                    value: config.immersive.uColor3,
+                    onChange: (v) => { config.immersive.uColor3 = v },
+                    transient: false
+                }
+            }));
+
+            immersiveControls = { uTop, uScaleContent, uTopBlur, uTopBlurRange, uBottomBlur, uBottomBlurRange, uTopGradientRange, uBottomGradientRange, uColor1, uColor2, uColor3 };
+            setImmersive = setImmersiveValues;
+        }
+
         // 添加截图、导入导出配置功能
         useControls('utilities', () => ({
             'Capture Image': button(() => {
@@ -558,7 +682,8 @@ export const createShaderControls = (
                     color: config.color,
                     shape: config.shape,
                     blur: config.blur,
-                    gradient: config.gradient
+                    gradient: config.gradient,
+                    immersive: config.immersive
                 };
                 console.log('Exporting config:', exportConfig);
                 console.log('Current shader title:', currentShaderTitle); // 添加日志以便调试
@@ -590,7 +715,8 @@ export const createShaderControls = (
                         color: importedConfig.color,
                         shape: importedConfig.shape,
                         blur: importedConfig.blur,
-                        gradient: importedConfig.gradient
+                        gradient: importedConfig.gradient,
+                        immersive: importedConfig.immersive
                     };
 
                     updateConfig(filteredConfig);
@@ -629,6 +755,12 @@ export const createShaderControls = (
                 const blurUpdate = { ...importedConfig.blur };
                 Object.assign(config.blur, importedConfig.blur);
                 setBlur(blurUpdate);
+            }
+
+            if (importedConfig.immersive && config.immersive) {
+                const immersiveUpdate = { ...importedConfig.immersive };
+                Object.assign(config.immersive, importedConfig.immersive);
+                setImmersive(immersiveUpdate);
             }
 
             console.log('Config updated:', config);
@@ -671,6 +803,20 @@ export const createShaderControls = (
             amount: blurControls.amount,
             quality: blurControls.quality,
 
+            // Immersive 控制参数
+            uTop: immersiveControls.uTop,
+            uScaleContent: immersiveControls.uScaleContent,
+            uTopBlur: immersiveControls.uTopBlur,
+            uTopBlurRange: immersiveControls.uTopBlurRange,
+            uBottomBlur: immersiveControls.uBottomBlur,
+            uBottomBlurRange: immersiveControls.uBottomBlurRange,
+            uTopGradientRange: immersiveControls.uTopGradientRange,
+            uBottomGradientRange: immersiveControls.uBottomGradientRange,
+            uColor1: immersiveControls.uColor1,
+            uColor2: immersiveControls.uColor2,
+            uColor3: immersiveControls.uColor3,
+
+
             // 同时保留原有的分组结构，以便向后兼容
             aiGenerate: aiGenerateControls,
             animation: animationControls,
@@ -678,6 +824,7 @@ export const createShaderControls = (
             shape: shapeControls,
             gradient: gradientControls,
             blur: blurControls,
+            immersive: immersiveControls,
 
             // 添加更新配置函数，以便外部调用
             updateConfig

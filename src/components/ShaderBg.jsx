@@ -37,14 +37,14 @@ const ShaderBg = ({ initialShaderId = 'spin', setOverlay, setMockVisible, isMock
     // 处理背景图片和覆盖图片的更新
     useEffect(() => {
         // 先更新背景图片
-        if (currentShaderId === 'advancedGradientBlur') {
+        if (currentShaderId === 'advancedGradientBlur' || currentShaderId === 'immersiveCover') {
             setBackgroundImage('/img/Background2.png');
         } else if (currentShaderId === 'progressiveBlur') {
             setBackgroundImage('/img/Background.png');
         }
 
         // 再更新覆盖图片
-        if (currentShaderId === 'advancedGradientBlur') {
+        if (currentShaderId === 'advancedGradientBlur' || currentShaderId === 'immersiveCover') {
             setOverlay?.('/img/EffectOverlay.png');
         } else {
             setOverlay?.('/img/Overlay.png');

@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     }
 
     try {
-        const { image } = await request.json();
+        const { image, type } = await request.json();
 
         if (!image) {
             return NextResponse.json(
@@ -34,6 +34,20 @@ export async function POST(request: Request) {
 
         console.log('Making request to OpenRouter API...');
         console.log('Image data length:', image.length);
+        console.log('Request Type:', type);
+
+        let systemPrompt = 'Analyze this image and extract its main color(Avoid excessive saturation) along with 4 complementary colors that would work well together. Return ONLY a JSON object with exactly this structure, no markdown or explanation: {"mainColor": "#HEXCODE", "derivativeColors": ["#HEXCODE1", "#HEXCODE2", "#HEXCODE3", "#HEXCODE4"]}. All colors must be valid hex codes starting with #.';
+
+        if (type === 'immersive') {
+            systemPrompt = `
+Analyze the image specifically for an immersive cover background gradient.
+1. Extract the main dominant color from the TOP HALF of the image (for uColor1).
+2. Extract the main dominant color from the image (for uColor2).
+3. Constraints:
+    - Avoid extracting near-white or exceedingly pale background colors if possible, unless the area is purely white.
+Return ONLY a JSON object with exactly this structure, no markdown: {"topColor": "#HEXCODE", "bottomColor": "#HEXCODE"}.
+            `;
+        }
 
         const response = await fetch(API_URL, {
             method: 'POST',
@@ -51,7 +65,7 @@ export async function POST(request: Request) {
                         content: [
                             {
                                 type: 'text',
-                                text: 'Analyze this image and extract its main color(Avoid excessive saturation) along with 4 complementary colors that would work well together. Return ONLY a JSON object with exactly this structure, no markdown or explanation: {"mainColor": "#HEXCODE", "derivativeColors": ["#HEXCODE1", "#HEXCODE2", "#HEXCODE3", "#HEXCODE4"]}. All colors must be valid hex codes starting with #.'
+                                text: systemPrompt
                             },
                             {
                                 type: 'image_url',
@@ -96,14 +110,27 @@ export async function POST(request: Request) {
 
             const colors = JSON.parse(jsonContent);
 
-            if (!colors.mainColor || !Array.isArray(colors.derivativeColors) || colors.derivativeColors.length !== 4) {
+            // Validation for standard extraction
+            const isStandardResponse = colors.mainColor && Array.isArray(colors.derivativeColors) && colors.derivativeColors.length === 4;
+            // Validation for immersive extraction
+            const isImmersiveResponse = colors.topColor && colors.bottomColor;
+
+            if (!isStandardResponse && !isImmersiveResponse) {
+                console.error('Invalid extracted colors:', colors);
                 throw new Error('Invalid color data format received from API');
             }
 
             // Validate hex color formats
-            const isValidHex = (color: string) => /^#[0-9A-Fa-f]{6}$/.test(color);
-            if (!isValidHex(colors.mainColor) || !colors.derivativeColors.every(isValidHex)) {
-                throw new Error('Invalid hex color format received from API');
+            const isValidHex = (color: string) => typeof color === 'string' && /^#[0-9A-Fa-f]{6}$/.test(color);
+
+            if (isStandardResponse) {
+                if (!isValidHex(colors.mainColor) || !colors.derivativeColors.every(isValidHex)) {
+                    throw new Error('Invalid hex color format received from API (Standard)');
+                }
+            } else {
+                if (!isValidHex(colors.topColor) || !isValidHex(colors.bottomColor)) {
+                    throw new Error('Invalid hex color format received from API (Immersive)');
+                }
             }
 
             return NextResponse.json(colors);
