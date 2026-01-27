@@ -159,6 +159,22 @@ const shaderConfig = {
         path: 'immersiveCover/immersiveCover',
         category: 'effect',
     },
+    loadingMorph: {
+        id: 'loadingMorph',
+        title: 'Loading Morph',
+        subtitle: '-diffuse',
+        iOS: false,
+        Android: false,
+        Lynx: false,
+        New: true,
+        type: 'dynamic',
+        path: 'loadingMorph/loadingMorph',
+        category: 'background',
+        controls: [
+            { name: 'speed', defaultValue: 1.0 },
+            { name: 'intensity', defaultValue: 0.5 }
+        ],
+    },
 
     // Add other shaders as needed
 };
@@ -166,6 +182,7 @@ const shaderConfig = {
 // List of shader IDs in the order you want them to appear
 const shaderOrder = [
     'spin',
+    'loadingMorph',
     'noiseGradient',
     'multiStopGradient',
     'hexagonalGrid',
