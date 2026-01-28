@@ -40,10 +40,20 @@ float easeInOut(float t) {
     return t * t * (3.0 - 2.0 * t);
 }
 
-// Smooth circle with diffuse edges
-float smoothCircle(vec2 pos, vec2 center, float radius, float blur) {
-    float dist = length(pos - center);
-    return 1.0 - smoothstep(radius - blur, radius + blur, dist);
+vec2 rotate2D(vec2 p, float a) {
+    float c = cos(a);
+    float s = sin(a);
+    return vec2(c * p.x - s * p.y, s * p.x + c * p.y);
+}
+
+// Smooth deformed ellipse with diffuse edges
+float smoothEllipse(vec2 pos, vec2 center, float radius, float blur, vec2 axis, float warp, float time, float angle) {
+    vec2 wobble = vec2(sin(time * 0.9 + 1.3), cos(time * 0.9 - 0.6)) * (0.12 * warp);
+    vec2 axisWarp = axis * (1.0 + wobble);
+    vec2 p = rotate2D(pos - center, angle) / axisWarp;
+    float dist = length(p);
+    float r = radius * (1.0 + 0.06 * warp * sin((p.x + p.y) * 2.4 + time * 0.45));
+    return 1.0 - smoothstep(r - blur, r + blur, dist);
 }
 
 // Sample the audio array by phase [0,1)
@@ -71,40 +81,47 @@ void main() {
     // Use smoothed amplitude level (0..1) to reduce rapid waveform flicker
     float audioPos = clamp(uAudioLevel * uAudioStrength, 0.0, 1.0);
 
-    float circleRadius = 1.2 + uMorph * 0.1 + audioPos * 0.6 * uRadiusInfluence;
-    float blurAmount = 2.5 + uComplex * 0.1 + audioPos * 1.5;
+    float scaleAmp = mix(0.02, 0.18, audioPos);
+    float scalePulse = 1.0 + scaleAmp * sin(t);
+
+    float baseRadius = 0.6 + uMorph * 0.12;
+    float circleRadius = baseRadius * scalePulse * (1.0 + audioPos * 0.55 * uRadiusInfluence);
+    float blurAmount = 2.3 + uComplex * 0.2 + audioPos * 2.2;
+    float warpAmount = 0.6 + audioPos * 2.1 + uComplex * 0.3;
 
     // modulate frequency / trajectory by audio (Y-driven more than X)
     float freqMod = 1.0 + audioPos * 2.0 * uTrajYInfluence;
+    float trajBoost = 0.1 + audioPos * 1.1 * uTrajInfluence;
 
-    float xPos1 = .7 * sin(t * freqMod) + uMorph * (0.5 + audioPos * 0.5 * uTrajXInfluence);
-    float yPos1 = abs(sin(0.3 * t * (1.0 + audioPos * uTrajYInfluence))) * 0.7;
-    vec2 center1 = vec2(xPos1, yPos1);
-    float circle1 = smoothCircle(position, center1, circleRadius, blurAmount);
+    float xPos = (uMorph * 0.16 + audioPos * 0.7 * uTrajXInfluence) * trajBoost;
+    float yPos = sin(t * 0.25 * (1.0 + audioPos * uTrajYInfluence)) * 0.6 * freqMod * trajBoost;
+    vec2 center = vec2(xPos, yPos);
 
-    float xPos2 = -.7 * sin(t * freqMod + PI) - uMorph * (0.5 + audioPos * 0.5 * uTrajXInfluence);
-    float yPos2 = abs(sin(0.3 * t * (1.0 + audioPos * uTrajYInfluence) + PI)) * 0.7;
-    vec2 center2 = vec2(xPos2, yPos2);
-    float circle2 = smoothCircle(position, center2, circleRadius, blurAmount);
+    float radius1 = circleRadius;
+    float radius2 = circleRadius * 1.25;
+    float radius3 = circleRadius * 1.7;
+
+    float rotSpeed = 0.12 + audioPos * 0.65;
+    float rot1 = t * rotSpeed + uRotate * 0.4;
+    float rot2 = t * -rotSpeed * 0.7 + uRotate * 0.6;
+    float rot3 = t * rotSpeed * 0.45 + uRotate * 0.9;
+
+    float circle1 = smoothEllipse(position, center, radius1, blurAmount, vec2(1.25, 0.85), warpAmount, t, rot1);
+    float circle2 = smoothEllipse(position, center, radius2, blurAmount, vec2(1.10, 0.70), warpAmount * 0.9, t + 1.4, rot2);
+    float circle3 = smoothEllipse(position, center, radius3, blurAmount, vec2(1.35, 0.95), warpAmount * 0.8, t + 2.2, rot3);
 
     vec3 color1 = uColor[0];
     vec3 color2 = uColor[1];
     vec3 color3 = uColor[2];
     vec3 color4 = uColor[3];
 
-    vec3 circle1Color = mix(uBgColor, mix(color1, color2, 0.5), circle1);
-    vec3 circle2Color = mix(uBgColor, mix(color3, color4, 0.5), circle2);
+    float sharedInfluence = 0.15;
+    vec3 base1 = mix(color1, color4, sharedInfluence);
+    vec3 base2 = mix(color2, color4, sharedInfluence);
+    vec3 base3 = mix(color3, color4, sharedInfluence);
 
-    float totalWeight = circle1 + circle2;
-    vec3 blendedColor;
-    if(totalWeight > 0.0) {
-        blendedColor = (circle1Color * circle1 + circle2Color * circle2) / totalWeight;
-    } else {
-        blendedColor = uBgColor;
-    }
-
-    float combinedAlpha = clamp(circle1 + circle2, 0.0, 1.0);
-    vec3 finalColor = mix(uBgColor, blendedColor, combinedAlpha);
+    vec3 additive = base1 * circle1 + base2 * circle2 + base3 * circle3;
+    vec3 finalColor = clamp(uBgColor + additive * 1.25, 0.0, 1.0);
 
     if(uLightness >= 0.) {
         finalColor = mix(finalColor, vec3(1, 1, 1), uLightness);
