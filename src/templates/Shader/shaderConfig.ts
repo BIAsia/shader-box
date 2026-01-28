@@ -176,6 +176,23 @@ const shaderConfig = {
         ],
     },
 
+    audioWave: {
+        id: 'audioWave',
+        title: 'Audio Wave',
+        subtitle: '-audio dynamic',
+        iOS: false,
+        Android: false,
+        Lynx: false,
+        New: true,
+        type: 'dynamic',
+        path: 'audioWave/audioWave',
+        category: 'background',
+        controls: [
+            { name: 'speed', defaultValue: 1.0 },
+            { name: 'intensity', defaultValue: 0.5 }
+        ],
+    },
+
     // Add other shaders as needed
 };
 
