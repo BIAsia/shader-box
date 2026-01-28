@@ -72,7 +72,7 @@ float smoothCircle(vec2 pos, vec2 center, float radius, float blur) {
 
 void main() {
     // Position setup
-    vec2 position = vec2(vPos.x * 1. / (uScale.x) - uPosition.x, vPos.y * 1. / uScale.y + uPosition.y);
+    vec2 position = vec2(vPos.x * 1. / (uScale.x) - uPosition.x, vPos.y * 1. / uScale.y + uPosition.y + 3.);
     vec2 uv = vUV;
     vec2 scale = uScale;
     uv.x = (uv.x - 0.5) * (1. - scale.x) + 0.5;
