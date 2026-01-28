@@ -19,20 +19,32 @@ uniform float uComplex;
 uniform float uMorph;
 
 // audio uniforms
-uniform float uAudio[64];
-uniform float uAudioLen;
 uniform float uAudioStrength;
-uniform float uTrajInfluence;
-uniform float uTrajXInfluence;
-uniform float uTrajYInfluence;
 uniform float uRadiusInfluence;
 uniform float uAudioLevel;
 
 #define PI 3.1415927
-#define AUDIO_SIZE 64
 
 vec3 RGBColor(vec3 rgb) {
     return vec3(rgb.r / 255., rgb.g / 255., rgb.b / 255.);
+}
+
+vec3 linearToSRGB(vec3 c) {
+    c = clamp(c, 0.0, 1.0);
+    return pow(c, vec3(1.0 / 2.2));
+}
+
+vec3 screenBlend(vec3 base, vec3 blend) {
+    return 1.0 - (1.0 - base) * (1.0 - blend);
+}
+
+vec3 lightenBlend(vec3 base, vec3 blend) {
+    return max(base, blend);
+}
+
+vec3 adjustSaturation(vec3 color, float sat) {
+    float luma = dot(color, vec3(0.299, 0.587, 0.114));
+    return mix(vec3(luma), color, sat);
 }
 
 // Ease-in-out function (smoothstep)
@@ -46,25 +58,19 @@ vec2 rotate2D(vec2 p, float a) {
     return vec2(c * p.x - s * p.y, s * p.x + c * p.y);
 }
 
-// Smooth deformed ellipse with diffuse edges
-float smoothEllipse(vec2 pos, vec2 center, float radius, float blur, vec2 axis, float warp, float time, float angle) {
-    vec2 wobble = vec2(sin(time * 0.9 + 1.3), cos(time * 0.9 - 0.6)) * (0.12 * warp);
+// Soft-edged, gently deformed ellipse mask
+float softEllipse(vec2 pos, vec2 center, float radius, float blur, vec2 axis, float warp, float time, float angle) {
+    vec2 wobble = vec2(sin(time * 0.7 + 1.3), cos(time * 0.7 - 0.6)) * (0.08 * warp);
     vec2 axisWarp = axis * (1.0 + wobble);
     vec2 p = rotate2D(pos - center, angle) / axisWarp;
     float dist = length(p);
-    float r = radius * (1.0 + 0.06 * warp * sin((p.x + p.y) * 2.4 + time * 0.45));
-    return 1.0 - smoothstep(r - blur, r + blur, dist);
-}
-
-// Sample the audio array by phase [0,1)
-float sampleAudio(float phase) {
-    float idxf = fract(phase) * float(AUDIO_SIZE);
-    int i = int(floor(idxf));
-    int i2 = (i + 1) % AUDIO_SIZE;
-    float f = fract(idxf);
-    float v1 = uAudio[i];
-    float v2 = uAudio[i2];
-    return mix(v1, v2, f);
+    float r = radius * (1.0 + 0.05 * warp * sin((p.x - p.y) * 2.2 + time * 0.4));
+    float d = dist - r;
+    float tipT = clamp(0.5 + 0.5 * p.y, 0.0, 1.0);
+    float blurMin = blur * 0.55;
+    float blurMax = blur * 1.85;
+    float blurV = mix(blurMin, blurMax, tipT);
+    return smoothstep(blurV, -blurV, d);
 }
 
 void main() {
@@ -77,51 +83,53 @@ void main() {
     float time = uTime * 0.05 * uSpeed + uTimeOffset;
     float t = time;
 
-    // Get an audio-driven value based on time; range assumed ~[-1,1]
-    // Use smoothed amplitude level (0..1) to reduce rapid waveform flicker
-    float audioPos = clamp(uAudioLevel * uAudioStrength, 0.0, 1.0);
+    // Audio-driven parameter (0..1), based on smoothed amplitude from CPU.
+    // Keep motion in silence consistent with current look.
+    float audioParam = clamp(uAudioLevel * uAudioStrength, 0.0, 1.0);
 
-    float scaleAmp = mix(0.02, 0.18, audioPos);
-    float scalePulse = 1.0 + scaleAmp * sin(t);
+    float baseRadius = 1.3 + uMorph * 0.08;
+    float pulse = 1.0 + 0.01 * sin(t * 0.9);
+    float radiusFactor = 1.0 + audioParam * uRadiusInfluence;
+    float ellipseRadius = baseRadius * pulse * radiusFactor;
 
-    float baseRadius = 0.6 + uMorph * 0.12;
-    float circleRadius = baseRadius * scalePulse * (1.0 + audioPos * 0.55 * uRadiusInfluence);
-    float blurAmount = 2.3 + uComplex * 0.2 + audioPos * 2.2;
-    float warpAmount = 0.6 + audioPos * 2.1 + uComplex * 0.3;
+    float audioBoost = audioParam * uRadiusInfluence;
+    float audioFactor1 = 1.0 + audioBoost * 0.6;  // bottom ellipse (least)
+    float audioFactor2 = 1.0 + audioBoost * 1.0;
+    float audioFactor3 = 1.0 + audioBoost * 1.4;  // top ellipse (most)
 
-    // modulate frequency / trajectory by audio (Y-driven more than X)
-    float freqMod = 1.0 + audioPos * 2.0 * uTrajYInfluence;
-    float trajBoost = 0.1 + audioPos * 1.1 * uTrajInfluence;
+    float blurAmount = 0.48 + uComplex * 0.02 + audioParam * 2.;
+    float warpAmount = 0.45 + uComplex * 0.2 + audioParam * 2.;
 
-    float xPos = (uMorph * 0.16 + audioPos * 0.7 * uTrajXInfluence) * trajBoost;
-    float yPos = sin(t * 0.25 * (1.0 + audioPos * uTrajYInfluence)) * 0.6 * freqMod * trajBoost;
-    vec2 center = vec2(xPos, yPos);
+    float rotSpeed = 0.28;
+    float rot = mod(t * rotSpeed + uRotate * 0.35, 2.0 * PI);
 
-    float radius1 = circleRadius;
-    float radius2 = circleRadius * 1.25;
-    float radius3 = circleRadius * 1.7;
+    float rotSpeed2 = 0.30;
+    float rotSpeed3 = 0.36;
+    float rot2 = mod(t * rotSpeed2 + uRotate * 0.55 + 1.1, 2.0 * PI);
+    float rot3 = mod(t * rotSpeed3 + uRotate * 0.25 - 0.9, 2.0 * PI);
 
-    float rotSpeed = 0.12 + audioPos * 0.65;
-    float rot1 = t * rotSpeed + uRotate * 0.4;
-    float rot2 = t * -rotSpeed * 0.7 + uRotate * 0.6;
-    float rot3 = t * rotSpeed * 0.45 + uRotate * 0.9;
+    vec2 center = vec2(0.0, 0.0);
+    vec2 axis = vec2(1.25, 1.25 + 0.1 * cos(t));
+    vec2 axis2 = vec2(1.0, 1.0);
+    vec2 axis3 = vec2(1.0, 0.7);
 
-    float circle1 = smoothEllipse(position, center, radius1, blurAmount, vec2(1.25, 0.85), warpAmount, t, rot1);
-    float circle2 = smoothEllipse(position, center, radius2, blurAmount, vec2(1.10, 0.70), warpAmount * 0.9, t + 1.4, rot2);
-    float circle3 = smoothEllipse(position, center, radius3, blurAmount, vec2(1.35, 0.95), warpAmount * 0.8, t + 2.2, rot3);
+    float ellipse = softEllipse(position, center, ellipseRadius * audioFactor1, blurAmount * 1.3, axis, warpAmount, t, rot);
+    float ellipse2 = softEllipse(position, center, ellipseRadius * 0.8 * audioFactor2, blurAmount * 0.25, axis2, warpAmount * 0.9, t + 0.35, rot2);
+    float ellipse3 = softEllipse(position, center, ellipseRadius * 0.9 * audioFactor3, blurAmount * 0.2, axis3, warpAmount * 0.85, t + 0.4, rot3);
 
-    vec3 color1 = uColor[0];
-    vec3 color2 = uColor[1];
-    vec3 color3 = uColor[2];
-    vec3 color4 = uColor[3];
+    vec2 gradP = rotate2D(position - center, rot) / axis;
+    float gradT = clamp(0.5 + 0.5 * gradP.y, 0.0, 1.0);
+    vec3 ellipseColor = mix(uColor[0], uColor[3], gradT);
+    float satBoost = 1.0 + audioParam * 0.12;
+    float lightBoost = 1.0 + audioParam * 0.08;
+    ellipseColor = adjustSaturation(ellipseColor, satBoost) * lightBoost;
+    vec3 finalColor = mix(uBgColor, ellipseColor, ellipse);
 
-    float sharedInfluence = 0.15;
-    vec3 base1 = mix(color1, color4, sharedInfluence);
-    vec3 base2 = mix(color2, color4, sharedInfluence);
-    vec3 base3 = mix(color3, color4, sharedInfluence);
+    vec3 overlayColor2 = uColor[1];
+    vec3 overlayColor3 = uColor[2];
 
-    vec3 additive = base1 * circle1 + base2 * circle2 + base3 * circle3;
-    vec3 finalColor = clamp(uBgColor + additive * 1.25, 0.0, 1.0);
+    finalColor = mix(finalColor, screenBlend(finalColor, overlayColor2), ellipse2);
+    finalColor = mix(finalColor, lightenBlend(finalColor, overlayColor3), ellipse3);
 
     if(uLightness >= 0.) {
         finalColor = mix(finalColor, vec3(1, 1, 1), uLightness);
@@ -129,5 +137,5 @@ void main() {
         finalColor = mix(finalColor, vec3(0, 0, 0), -uLightness);
     }
 
-    gl_FragColor = vec4(finalColor, 1.0);
+    gl_FragColor = vec4(linearToSRGB(finalColor), 1.0);
 }
