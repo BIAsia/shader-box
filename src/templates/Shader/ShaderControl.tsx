@@ -374,8 +374,8 @@ export const createShaderControls = (
                 },
                 timeOffset: {
                     value: config.animation.timeOffset,
-                    min: 0,
-                    max: 10,
+                    min: -1,
+                    max: 1,
                     onChange: (v) => { config.animation.timeOffset = v },
                     transient: false
                 }

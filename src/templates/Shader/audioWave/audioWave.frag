@@ -61,7 +61,7 @@ vec2 rotate2D(vec2 p, float a) {
 }
 
 // Soft-edged, gently deformed ellipse mask
-float softEllipse(vec2 pos, vec2 center, float radius, float blur, vec2 axis, float warp, float time, float angle) {
+vec2 ellipseSDF(vec2 pos, vec2 center, float radius, float blur, vec2 axis, float warp, float time, float angle) {
     vec2 wobble = vec2(sin(time * 0.7 + 1.3), cos(time * 0.7 - 0.6)) * (0.08 * warp);
     vec2 axisWarp = axis * (1.0 + wobble);
     vec2 p = rotate2D(pos - center, angle) / axisWarp;
@@ -72,9 +72,14 @@ float softEllipse(vec2 pos, vec2 center, float radius, float blur, vec2 axis, fl
     float blurMin = blur * 0.55;
     float blurMax = blur * 1.85;
     float blurV = mix(blurMin, blurMax, tipT);
-    float aa = fwidth(d);
-    float edge = blurV + aa;
-    return smoothstep(edge, -edge, d);
+    return vec2(d, blurV);
+}
+
+vec2 roundRectSDF(vec2 pos, vec2 center, vec2 size, float radius, float blur, float angle) {
+    vec2 p = rotate2D(pos - center, angle);
+    vec2 q = abs(p) - size + vec2(radius);
+    float dist = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - radius;
+    return vec2(dist, blur);
 }
 
 void main() {
@@ -86,6 +91,7 @@ void main() {
 
     float stateT = clamp(uTimeOffset, 0.0, 1.0);
     float state = easeInOut(stateT);
+    float rectT = easeInOut(clamp(uTimeOffset + 1.0, 0.0, 1.0));
 
     float time = uTime * 0.05 * uSpeed;
     float t = time;
@@ -119,9 +125,37 @@ void main() {
     vec2 axis2 = mix(vec2(.7, .55), vec2(1.0, 1.0), state);
     vec2 axis3 = mix(vec2(.65, .6), vec2(1.0, 0.7), state);
 
-    float ellipse = softEllipse(position, center, ellipseRadius * audioFactor1, blurAmount * 1.3, axis, warpAmount, mix(0.0, t, state), rot);
-    float ellipse2 = softEllipse(position, center, mix(ellipseRadius, ellipseRadius * 0.8 * audioFactor2, state), mix(blurAmount * 1.3, blurAmount * 0.25, state), axis2, mix(warpAmount, warpAmount * 0.9, state), mix(0.0, t + 0.35, state), rot2);
-    float ellipse3 = softEllipse(position, center, mix(ellipseRadius, ellipseRadius * 0.9 * audioFactor3, state), mix(blurAmount * 1.3, blurAmount * 0.2, state), axis3, mix(warpAmount, warpAmount * 0.85, state), mix(0.0, t + 0.4, state), rot3);
+    vec2 rectSize1 = vec2(0.95, 0.15);
+    vec2 rectSize2 = vec2(0.9, 0.17);
+    vec2 rectSize3 = vec2(0.85, 0.2);
+    float rectRadius1 = min(rectSize1.x, rectSize1.y);
+    float rectRadius2 = min(rectSize2.x, rectSize2.y);
+    float rectRadius3 = min(rectSize3.x, rectSize3.y);
+    float rectBlur1 = max(blurAmount * 0.35, 0.003);
+    float rectBlur2 = max(blurAmount * 0.25, 0.003);
+    float rectBlur3 = max(blurAmount * 0.2, 0.003);
+
+    vec2 ellipseSdf1 = ellipseSDF(position, center, ellipseRadius * audioFactor1, blurAmount * 1.3, axis, warpAmount, mix(0.0, t, state), rot);
+    vec2 ellipseSdf2 = ellipseSDF(position, center, mix(ellipseRadius, ellipseRadius * 0.8 * audioFactor2, state), mix(blurAmount * 1.3, blurAmount * 0.25, state), axis2, mix(warpAmount, warpAmount * 0.9, state), mix(0.0, t + 0.35, state), rot2);
+    vec2 ellipseSdf3 = ellipseSDF(position, center, mix(ellipseRadius, ellipseRadius * 0.9 * audioFactor3, state), mix(blurAmount * 1.3, blurAmount * 0.2, state), axis3, mix(warpAmount, warpAmount * 0.85, state), mix(0.0, t + 0.4, state), rot3);
+
+    vec2 rectSdf1 = roundRectSDF(position, center, rectSize1, rectRadius1, rectBlur1, rot);
+    vec2 rectSdf2 = roundRectSDF(position, center, rectSize2, rectRadius2, rectBlur2, rot2);
+    vec2 rectSdf3 = roundRectSDF(position, center, rectSize3, rectRadius3, rectBlur3, rot3);
+
+    float d1 = mix(rectSdf1.x, ellipseSdf1.x, rectT);
+    float b1 = mix(rectSdf1.y, ellipseSdf1.y, rectT);
+    float d2 = mix(rectSdf2.x, ellipseSdf2.x, rectT);
+    float b2 = mix(rectSdf2.y, ellipseSdf2.y, rectT);
+    float d3 = mix(rectSdf3.x, ellipseSdf3.x, rectT);
+    float b3 = mix(rectSdf3.y, ellipseSdf3.y, rectT);
+
+    float aa1 = fwidth(d1);
+    float aa2 = fwidth(d2);
+    float aa3 = fwidth(d3);
+    float ellipse = smoothstep(b1 + aa1, -b1 - aa1, d1);
+    float ellipse2 = smoothstep(b2 + aa2, -b2 - aa2, d2);
+    float ellipse3 = smoothstep(b3 + aa3, -b3 - aa3, d3);
 
     vec2 gradP = rotate2D(position - center, rot) / axis;
     float gradT = clamp(0.5 + 0.5 * gradP.y, 0.0, 1.0);
