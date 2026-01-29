@@ -70,7 +70,9 @@ float softEllipse(vec2 pos, vec2 center, float radius, float blur, vec2 axis, fl
     float blurMin = blur * 0.55;
     float blurMax = blur * 1.85;
     float blurV = mix(blurMin, blurMax, tipT);
-    return smoothstep(blurV, -blurV, d);
+    float aa = fwidth(d);
+    float edge = blurV + aa;
+    return smoothstep(edge, -edge, d);
 }
 
 void main() {
@@ -100,8 +102,8 @@ void main() {
     float audioFactor2 = 1.0 + audioBoost * 1.0;
     float audioFactor3 = 1.0 + audioBoost * 1.4;  // top ellipse (most)
 
-    float blurAmount = 0.48 + uComplex * 0.02 + audioParam * 2.;
-    float warpAmount = 0.45 + uComplex * 0.2 + audioParam * 2.;
+    float blurAmount = (0.48 + uComplex * 0.02 + audioParam * 2.) * state;
+    float warpAmount = (0.45 + uComplex * 0.2 + audioParam * 2.) * state;
 
     float rotSpeed = 0.28;
     float rotSpeed2 = 0.30;
