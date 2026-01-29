@@ -34,8 +34,10 @@ vec3 linearToSRGB(vec3 c) {
     return pow(c, vec3(1.0 / 2.2));
 }
 
-vec3 screenBlend(vec3 base, vec3 blend) {
-    return 1.0 - (1.0 - base) * (1.0 - blend);
+vec4 screenBlend(vec4 base, vec4 blend) {
+    float a = 1.0 - (1.0 - base.a) * (1.0 - blend.a);
+    vec3 rgb = 1.0 - (1.0 - base.rgb) * (1.0 - blend.rgb);
+    return vec4(rgb, a);
 }
 
 vec3 lightenBlend(vec3 base, vec3 blend) {
@@ -93,7 +95,7 @@ void main() {
     float audioParam = clamp(uAudioLevel * uAudioStrength, 0.0, 1.0) * state;
 
     float baseRadius = 1.3 + uMorph * 0.08;
-    float pulse = mix(1.0, 1.0 + 0.01 * sin(t * 0.9), state);
+    float pulse = mix(0.3, 1.0 + 0.01 * sin(t * 0.9), state);
     float radiusFactor = 1.0 + audioParam * uRadiusInfluence;
     float ellipseRadius = baseRadius * pulse * radiusFactor;
 
@@ -112,10 +114,10 @@ void main() {
     float rot2 = mix(uRotate * 0.35, mod(t * rotSpeed2 + uRotate * 0.55 + 1.1, 2.0 * PI), state);
     float rot3 = mix(uRotate * 0.35, mod(t * rotSpeed3 + uRotate * 0.25 - 0.9, 2.0 * PI), state);
 
-    vec2 center = vec2(0.0, 0.0);
-    vec2 axis = mix(vec2(1.25, 1.25), vec2(1.25, 1.25 + 0.1 * cos(t)), state);
-    vec2 axis2 = mix(vec2(1.25, 1.25), vec2(1.0, 1.0), state);
-    vec2 axis3 = mix(vec2(1.25, 1.25), vec2(1.0, 0.7), state);
+    vec2 center = mix(vec2(0.0, 1.), vec2(0.0, 0.2), state);
+    vec2 axis = mix(vec2(0.8, .5), vec2(1.25, 1.25 + 0.1 * cos(t)), state);
+    vec2 axis2 = mix(vec2(.7, .55), vec2(1.0, 1.0), state);
+    vec2 axis3 = mix(vec2(.65, .6), vec2(1.0, 0.7), state);
 
     float ellipse = softEllipse(position, center, ellipseRadius * audioFactor1, blurAmount * 1.3, axis, warpAmount, mix(0.0, t, state), rot);
     float ellipse2 = softEllipse(position, center, mix(ellipseRadius, ellipseRadius * 0.8 * audioFactor2, state), mix(blurAmount * 1.3, blurAmount * 0.25, state), axis2, mix(warpAmount, warpAmount * 0.9, state), mix(0.0, t + 0.35, state), rot2);
@@ -124,16 +126,22 @@ void main() {
     vec2 gradP = rotate2D(position - center, rot) / axis;
     float gradT = clamp(0.5 + 0.5 * gradP.y, 0.0, 1.0);
     vec3 ellipseColor = mix(uColor[0], uColor[3], gradT);
-    float satBoost = 1.0 + audioParam * 0.12;
-    float lightBoost = 1.0 + audioParam * 0.08;
-    ellipseColor = adjustSaturation(ellipseColor, satBoost) * lightBoost;
-    vec3 finalColor = mix(uBgColor, ellipseColor, ellipse);
+    float satBoost1 = 1.0 + audioParam * 2.;
+    float lightBoost1 = 1.0 + audioParam * 2.;
+    float satBoost2 = 1.0 + audioParam * 2.;
+    float lightBoost2 = 1.0 + audioParam * 2.;
+    float satBoost3 = 1.0 + audioParam * 2.;
+    float lightBoost3 = 1.0 + audioParam * 2.;
 
-    vec3 overlayColor2 = uColor[1];
-    vec3 overlayColor3 = uColor[2];
+    ellipseColor = adjustSaturation(ellipseColor, satBoost1) * lightBoost1;
+    vec3 overlayColor2 = adjustSaturation(uColor[1], satBoost2) * lightBoost2;
+    vec3 overlayColor3 = adjustSaturation(uColor[2], satBoost3) * lightBoost3;
 
-    finalColor = mix(finalColor, screenBlend(finalColor, overlayColor2), ellipse2);
-    finalColor = mix(finalColor, lightenBlend(finalColor, overlayColor3), ellipse3);
+    vec4 ellipse1 = vec4(ellipseColor * ellipse, ellipse);
+    vec4 ellipse2Color = vec4(overlayColor2 * ellipse2, ellipse2);
+    vec4 ellipse3Color = vec4(overlayColor3 * ellipse3, ellipse3);
+    vec4 ellipseBlend = screenBlend(screenBlend(ellipse1, ellipse2Color), ellipse3Color);
+    vec3 finalColor = clamp(uBgColor * (1.0 - ellipseBlend.a) + ellipseBlend.rgb, 0.0, 1.0);
 
     if(uLightness >= 0.) {
         finalColor = mix(finalColor, vec3(1, 1, 1), uLightness);
