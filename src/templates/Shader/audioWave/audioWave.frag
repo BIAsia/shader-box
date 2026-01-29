@@ -80,15 +80,18 @@ void main() {
     uv.x = (uv.x - 0.5) * (1. - scale.x) + 0.5;
     uv.y = (uv.y - 0.5) * (1. - scale.y) + 0.5;
 
-    float time = uTime * 0.05 * uSpeed + uTimeOffset;
+    float stateT = clamp(uTimeOffset, 0.0, 1.0);
+    float state = easeInOut(stateT);
+
+    float time = uTime * 0.05 * uSpeed;
     float t = time;
 
     // Audio-driven parameter (0..1), based on smoothed amplitude from CPU.
     // Keep motion in silence consistent with current look.
-    float audioParam = clamp(uAudioLevel * uAudioStrength, 0.0, 1.0);
+    float audioParam = clamp(uAudioLevel * uAudioStrength, 0.0, 1.0) * state;
 
     float baseRadius = 1.3 + uMorph * 0.08;
-    float pulse = 1.0 + 0.01 * sin(t * 0.9);
+    float pulse = mix(1.0, 1.0 + 0.01 * sin(t * 0.9), state);
     float radiusFactor = 1.0 + audioParam * uRadiusInfluence;
     float ellipseRadius = baseRadius * pulse * radiusFactor;
 
@@ -101,21 +104,20 @@ void main() {
     float warpAmount = 0.45 + uComplex * 0.2 + audioParam * 2.;
 
     float rotSpeed = 0.28;
-    float rot = mod(t * rotSpeed + uRotate * 0.35, 2.0 * PI);
-
     float rotSpeed2 = 0.30;
     float rotSpeed3 = 0.36;
-    float rot2 = mod(t * rotSpeed2 + uRotate * 0.55 + 1.1, 2.0 * PI);
-    float rot3 = mod(t * rotSpeed3 + uRotate * 0.25 - 0.9, 2.0 * PI);
+    float rot = mix(uRotate * 0.35, mod(t * rotSpeed + uRotate * 0.35, 2.0 * PI), state);
+    float rot2 = mix(uRotate * 0.35, mod(t * rotSpeed2 + uRotate * 0.55 + 1.1, 2.0 * PI), state);
+    float rot3 = mix(uRotate * 0.35, mod(t * rotSpeed3 + uRotate * 0.25 - 0.9, 2.0 * PI), state);
 
     vec2 center = vec2(0.0, 0.0);
-    vec2 axis = vec2(1.25, 1.25 + 0.1 * cos(t));
-    vec2 axis2 = vec2(1.0, 1.0);
-    vec2 axis3 = vec2(1.0, 0.7);
+    vec2 axis = mix(vec2(1.25, 1.25), vec2(1.25, 1.25 + 0.1 * cos(t)), state);
+    vec2 axis2 = mix(vec2(1.25, 1.25), vec2(1.0, 1.0), state);
+    vec2 axis3 = mix(vec2(1.25, 1.25), vec2(1.0, 0.7), state);
 
-    float ellipse = softEllipse(position, center, ellipseRadius * audioFactor1, blurAmount * 1.3, axis, warpAmount, t, rot);
-    float ellipse2 = softEllipse(position, center, ellipseRadius * 0.8 * audioFactor2, blurAmount * 0.25, axis2, warpAmount * 0.9, t + 0.35, rot2);
-    float ellipse3 = softEllipse(position, center, ellipseRadius * 0.9 * audioFactor3, blurAmount * 0.2, axis3, warpAmount * 0.85, t + 0.4, rot3);
+    float ellipse = softEllipse(position, center, ellipseRadius * audioFactor1, blurAmount * 1.3, axis, warpAmount, mix(0.0, t, state), rot);
+    float ellipse2 = softEllipse(position, center, mix(ellipseRadius, ellipseRadius * 0.8 * audioFactor2, state), mix(blurAmount * 1.3, blurAmount * 0.25, state), axis2, mix(warpAmount, warpAmount * 0.9, state), mix(0.0, t + 0.35, state), rot2);
+    float ellipse3 = softEllipse(position, center, mix(ellipseRadius, ellipseRadius * 0.9 * audioFactor3, state), mix(blurAmount * 1.3, blurAmount * 0.2, state), axis3, mix(warpAmount, warpAmount * 0.85, state), mix(0.0, t + 0.4, state), rot3);
 
     vec2 gradP = rotate2D(position - center, rot) / axis;
     float gradT = clamp(0.5 + 0.5 * gradP.y, 0.0, 1.0);
