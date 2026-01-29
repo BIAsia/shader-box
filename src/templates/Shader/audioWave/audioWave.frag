@@ -41,17 +41,19 @@ vec3 adjustSaturation(vec3 color, float sat) {
     return mix(vec3(luma), color, sat);
 }
 
-// Ease-in-out function (smoothstep)
-float easeInOut(float t) {
-    return t * t * (3.0 - 2.0 * t);
+// Overdamped spring response (no overshoot)
+float springOverdamped(float t) {
+    t = clamp(t, 0.0, 1.0);
+    float k = 6.5;
+    return 1.0 - exp(-k * t) * (1.0 + k * t);
 }
 
 float phaseA(float delay) {
-    return easeInOut(clamp((uTimeOffset + 1.0) / (1.0 + delay), 0.0, 1.0));
+    return springOverdamped((uTimeOffset + 1.0) / (1.0 + delay));
 }
 
 float phaseB(float delay) {
-    return easeInOut(clamp((uTimeOffset - delay) / (1.0 - delay), 0.0, 1.0));
+    return springOverdamped((uTimeOffset + delay) / (1.0 + delay));
 }
 
 vec2 rotate2D(vec2 p, float a) {
@@ -84,10 +86,10 @@ vec2 roundRectSDF(vec2 pos, vec2 center, vec2 size, float radius, float blur, fl
 
 void main() {
     vec2 position = vec2(vPos.x * 1. / (uScale.x) - uPosition.x, vPos.y * 1. / uScale.y + uPosition.y + 3.);
-    float delayStep = 0.08;
-    float delay1 = 0.0;
+    float delayStep = 0.12;
+    float delay3 = 0.0;
     float delay2 = delayStep;
-    float delay3 = delayStep * 2.0;
+    float delay1 = delayStep * 2.0;
     float phaseA1 = phaseA(delay1);
     float phaseA2 = phaseA(delay2);
     float phaseA3 = phaseA(delay3);
@@ -136,7 +138,7 @@ void main() {
     float rot2 = mix(uRotate * 0.35, mod(t * rotSpeed2 + uRotate * 0.55 + 1.1, 2.0 * PI), phaseB2);
     float rot3 = mix(uRotate * 0.35, mod(t * rotSpeed3 + uRotate * 0.25 - 0.9, 2.0 * PI), phaseB3);
 
-    float stateCenter = easeInOut(clamp(uTimeOffset, 0.0, 1.0));
+    float stateCenter = springOverdamped((uTimeOffset + 1.0) * 0.5);
     vec2 center = mix(vec2(0.0, .8), vec2(0.0, 0.2), stateCenter);
     vec2 axisBase = vec2(0.8, .5);
     vec2 axisTarget1 = vec2(1.2, 1.1 + 0.1 * cos(t));
@@ -151,9 +153,9 @@ void main() {
     vec2 rectTargetSize1 = rectBaseSize;
     vec2 rectTargetSize2 = vec2(0.9, 0.17);
     vec2 rectTargetSize3 = vec2(0.85, 0.2);
-    vec2 rectSize1A = mix(rectBaseSize, rectSquareSize, phaseA1);
-    vec2 rectSize2A = mix(rectBaseSize, rectSquareSize, phaseA2);
-    vec2 rectSize3A = mix(rectBaseSize, rectSquareSize, phaseA3);
+    vec2 rectSize1A = mix(rectBaseSize, rectSquareSize + 0.2, phaseA1);
+    vec2 rectSize2A = mix(rectBaseSize, rectSquareSize + 0.2, phaseA2);
+    vec2 rectSize3A = mix(rectBaseSize, rectSquareSize + 0.2, phaseA3);
     vec2 rectSize1 = mix(rectSize1A, rectTargetSize1, phaseB1);
     vec2 rectSize2 = mix(rectSize2A, rectTargetSize2, phaseB2);
     vec2 rectSize3 = mix(rectSize3A, rectTargetSize3, phaseB3);
