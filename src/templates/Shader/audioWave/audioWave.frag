@@ -138,7 +138,7 @@ void main() {
     float rot2 = mix(uRotate * 0.35, mod(t * rotSpeed2 + uRotate * 0.55 + 1.1, 2.0 * PI), phaseB2);
     float rot3 = mix(uRotate * 0.35, mod(t * rotSpeed3 + uRotate * 0.25 - 0.9, 2.0 * PI), phaseB3);
 
-    float stateCenter = springOverdamped((uTimeOffset + 1.0) * 0.5);
+    float stateCenter = phaseB(0.0);
     vec2 center = mix(vec2(0.0, .8), vec2(0.0, 0.2), stateCenter);
     vec2 axisBase = vec2(0.8, .5);
     vec2 axisTarget1 = vec2(1.2, 1.1 + 0.1 * cos(t));
